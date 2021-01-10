@@ -25,10 +25,12 @@ public class ContentActivity extends BaseActivity {
         initToolbar();
         initComponets();
 
-        Bundle extras = getIntent().getExtras();
+        Bundle extras = getBundle();
         String tmp = extras.getString("content");
 
         Toast.makeText(this, tmp, Toast.LENGTH_LONG).show();
+        textView.setText(tmp);
+
     }
 
     private void initToolbar() {
