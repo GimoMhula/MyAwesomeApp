@@ -11,4 +11,5 @@
     <string name="login_failed">"Login failed"</string>
     <string name="greetings">Hello user, please select on of the icons to get started</string>
     <string name="title_activity_main">Dashboard</string>
+    <string name="msg_holder">You have selected</string>
 </resources>

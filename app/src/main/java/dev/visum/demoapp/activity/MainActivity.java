@@ -1,6 +1,5 @@
 package dev.visum.demoapp.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,9 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.google.android.material.snackbar.Snackbar;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends BaseActivity {
@@ -53,7 +49,11 @@ public class MainActivity extends BaseActivity {
         mAdapter.setOnItemClickListener(new AdapterGridItemCategory.OnItemClickListener() {
             @Override
             public void onItemClick(View view, ItemCategory obj, int position) {
-                Toast.makeText(MainActivity.this,  "Item " + obj.title + " clicked", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(MainActivity.this,  "Item " + obj.title + " clicked", Toast.LENGTH_SHORT).show();
+                Bundle bundle = new Bundle();
+                bundle.putString("content",obj.title);
+
+                startActivity(ContentActivity.class,bundle,null);
 
             }
         });
