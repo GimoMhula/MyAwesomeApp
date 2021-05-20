@@ -1,58 +1,29 @@
 package dev.visum.demoapp.activity;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.view.View;
-import android.widget.ProgressBar;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
+import androidx.fragment.app.FragmentTransaction;
 
 import dev.visum.demoapp.R;
+import dev.visum.demoapp.data.local.KeyStoreLocal;
+import dev.visum.demoapp.fragment.LoginFragment;
 import dev.visum.demoapp.model.BaseActivity;
 
 public class LoginActivity extends BaseActivity {
-
-    private ProgressBar progress_bar;
-    private FloatingActionButton fab;
-    private View parent_view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        parent_view = findViewById(android.R.id.content);
-        progress_bar = (ProgressBar) findViewById(R.id.progress_bar);
-        fab = (FloatingActionButton) findViewById(R.id.fab);
 
-        ((View) findViewById(R.id.sign_up_for_account)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(parent_view, "Sign up for an account", Snackbar.LENGTH_SHORT).show();
-            }
-        });
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                searchAction();
-            }
-        });
-    }
-
-    private void searchAction() {
-        progress_bar.setVisibility(View.VISIBLE);
-        fab.setAlpha(0f);
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                progress_bar.setVisibility(View.GONE);
-                fab.setAlpha(1f);
-
-                Snackbar.make(parent_view, "Login data submitted", Snackbar.LENGTH_SHORT).show();
-                startActivity(MainActivity.class, null, null);
-            }
-        }, 1000);
+        if (KeyStoreLocal.getInstance(this).getToken() != null) {
+            startActivity(MainActivity.class, null, null);
+        } else {
+            FragmentTransaction fragmentTransaction = getInstance().getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.content, new LoginFragment());
+            fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        }
     }
 }

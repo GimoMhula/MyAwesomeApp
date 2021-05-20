@@ -12,3 +12,7 @@
 /captures
 .externalNativeBuild
 .cxx
+
+# Pascoal
+.idea/jarRepositories.xml
+.idea/.name

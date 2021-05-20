@@ -12,4 +12,11 @@
     <string name="greetings">Hello user, please select on of the icons to get started</string>
     <string name="title_activity_main">Dashboard</string>
     <string name="msg_holder">You have selected</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="sign_in_msg">A iniciar sessão...</string>
+    <string name="success_login_msg">Iniciou sessão com sucesso!</string>
+    <string name="user_credentials_invalid_msg">Credênciais inválidas!</string>
+    <string name="failed_sign_in_msg">Ocorreu um erro!</string>
+    <string name="wrong_text_input">Tem alguns campos inválidos!</string>
 </resources>
