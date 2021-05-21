@@ -28,7 +28,6 @@ import dev.visum.demoapp.utils.Constants;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import timber.log.Timber;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -129,7 +128,7 @@ public class LoginFragment extends Fragment {
 
                     if (response.code() > 100 && response.code() < 399 && response.body() != null && response.body().getResponse() != null && response.body().getResponse().getToken() != null) {
                         Snackbar.make(parent_view, getString(R.string.success_login_msg), Snackbar.LENGTH_SHORT).show();
-                        KeyStoreLocal.getInstance(getActivity()).setToken(response.body().getResponse().getToken());
+                        KeyStoreLocal.getInstance(getActivity()).setToken("Bearer " + response.body().getResponse().getToken());
                         getActivity().startActivity(new Intent(getActivity(), MainActivity.class));
                     } else {
                         Snackbar.make(parent_view, getString(R.string.user_credentials_invalid_msg), Snackbar.LENGTH_SHORT).show();
