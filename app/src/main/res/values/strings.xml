@@ -19,4 +19,6 @@
     <string name="user_credentials_invalid_msg">Credênciais inválidas!</string>
     <string name="failed_sign_in_msg">Ocorreu um erro!</string>
     <string name="wrong_text_input">Tem alguns campos inválidos!</string>
+    <string name="no_data_available">Vazio!</string>
+    <string name="loading_data">A carregar...</string>
 </resources>
