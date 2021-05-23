@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,6 +18,7 @@ import java.util.List;
 import dev.visum.demoapp.R;
 import dev.visum.demoapp.adapter.AdapterGridItemCategory;
 import dev.visum.demoapp.data.DataGenerator;
+import dev.visum.demoapp.fragment.AddSaleFragment;
 import dev.visum.demoapp.fragment.ProductGridFragment;
 import dev.visum.demoapp.model.BaseActivity;
 import dev.visum.demoapp.model.ItemCategory;
@@ -50,6 +52,12 @@ public class MainActivity extends BaseActivity {
         itemCategory.title = "Produtos";
         itemCategory.imageDrw = AppCompatResources.getDrawable(this, itemCategory.image);
         items.add(itemCategory);
+
+        ItemCategory itemCategorySales = new ItemCategory();
+        itemCategorySales.image = R.drawable.ic_image_black_24dp;
+        itemCategorySales.title = "Vendas";
+        itemCategorySales.imageDrw = AppCompatResources.getDrawable(this, itemCategorySales.image);
+        items.add(itemCategorySales);
         //set data and list dev.visum.demoapp.adapter
         mAdapter = new AdapterGridItemCategory(this, items);
         recyclerView.setAdapter(mAdapter);
@@ -60,21 +68,28 @@ public class MainActivity extends BaseActivity {
             public void onItemClick(View view, ItemCategory obj, int position) {
                Toast.makeText(MainActivity.this,  "Item " + obj.title + " clicked", Toast.LENGTH_SHORT).show();
 
-               if (obj.title.equals("Produtos")) {
-                   FragmentTransaction fragmentTransaction = getInstance().getSupportFragmentManager().beginTransaction();
-                   fragmentTransaction.add(R.id.parent_view, new ProductGridFragment());
-                   fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                   fragmentTransaction.addToBackStack(null);
-                   fragmentTransaction.commit();
-               } else {
-                   Bundle bundle = new Bundle();
-                   bundle.putString("content",obj.title);
-                   startActivity(ContentActivity.class,bundle,null);
+               switch (obj.title) {
+                   case "Produtos":
+                       goToFragment(new ProductGridFragment());
+                       break;
+                   case "Vendas":
+                       goToFragment(new AddSaleFragment());
+                       break;
+                   default:Bundle bundle = new Bundle();
+                       bundle.putString("content",obj.title);
+                       startActivity(ContentActivity.class,bundle,null);
+                       break;
                }
-
             }
         });
+    }
 
+    private void goToFragment(Fragment f) {
+        FragmentTransaction fragmentTransaction = getInstance().getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.add(R.id.parent_view, f);
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
 
