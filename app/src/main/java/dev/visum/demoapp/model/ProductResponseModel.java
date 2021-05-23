@@ -90,4 +90,17 @@ public class ProductResponseModel {
     public void setCategory(CategoryResponseModel category) {
         this.category = category;
     }
+
+    @Override
+    public String toString() {
+        return "ProductResponseModel{" +
+                "id=" + id +
+                ", category_id='" + category_id + '\'' +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", image='" + image + '\'' +
+                ", qty=" + qty +
+                ", category=" + category +
+                '}';
+    }
 }

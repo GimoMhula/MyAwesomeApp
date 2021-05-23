@@ -4,6 +4,9 @@ import com.google.gson.annotations.SerializedName;
 
 public class UserAgentResponseModel {
 
+    @SerializedName("id")
+    private String id;
+
     @SerializedName("name")
     private String name;
 
@@ -13,10 +16,19 @@ public class UserAgentResponseModel {
     @SerializedName("token")
     private String token;
 
-    public UserAgentResponseModel(String name, String email, String token) {
+    public UserAgentResponseModel(String id, String name, String email, String token) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.token = token;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
