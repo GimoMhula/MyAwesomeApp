@@ -21,4 +21,12 @@
     <string name="wrong_text_input">Tem alguns campos inválidos!</string>
     <string name="no_data_available">Vazio!</string>
     <string name="loading_data">A carregar...</string>
+    <string name="date_sale_fragment">Data</string>
+    <string name="error_sale_fragment">Ocorreu um erro no carregamento!</string>
+    <string name="error_sale_fragment_fail">Ocorreu um erro!</string>
+    <string name="loading_sale_fragment">A processar venda...</string>
+    <string name="success_sale_fragment">Adicionou venda com sucesso!</string>
+    <string name="error_sale_fragment_failed">Ocorreu um erro na venda!!</string>
+    <string name="missing_data_sale_fragment">tem campos em falta!</string>
+    <string name="error_sale_fragment_fail_gps">Não deu permissão a GPS!</string>
 </resources>
