@@ -13,9 +13,12 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -35,11 +38,13 @@ import androidx.core.widget.NestedScrollView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 import dev.visum.demoapp.R;
 
@@ -52,6 +57,35 @@ public class Tools {
                     .into(img);
         } catch (Exception e) {
         }
+    }
+
+    public static Map<String, String> convertObjToMap(Object o) {
+        return new ObjectMapper().convertValue(o, Map.class);
+    }
+
+    public static boolean isGPS_ON(Context context) {
+        LocationManager lm = (LocationManager)
+                context.getSystemService(Context.LOCATION_SERVICE);
+        assert lm != null;
+        return lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    }
+
+    public static Location getLatLng(Context context) {
+        LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
+        return lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+    }
+
+    public static int getMapKey(Map<Integer, String> map, String value) {
+        for (Map.Entry<Integer, String> entry : map.entrySet()) {
+            if (entry.getValue().equals(value)) {
+                return entry.getKey();
+            }
+        }
+        return -1;
+    }
+
+    public static boolean isStringNil(String o) {
+        return TextUtils.isEmpty(o);
     }
 
     public static void setSystemBarColor(Activity act) {
@@ -126,13 +160,8 @@ public class Tools {
         }
     }
 
-
-
-
-
-
     public static String getFormattedDateShort(Long dateTime) {
-        SimpleDateFormat newFormat = new SimpleDateFormat("MMM dd, yyyy");
+        SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd");
         return newFormat.format(new Date(dateTime));
     }
 
