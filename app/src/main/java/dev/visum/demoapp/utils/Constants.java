@@ -17,7 +17,12 @@ public class Constants {
     // SharedPreferences
     public String SP_NAME = "MyApp";
     public String SP_TOKEN = "accessToken";
+    public String SP_USER_ID = "id";
 
     // API
     public String API = "http://34.237.238.49";
+
+    // Query
+    public String EMAIL_QUERY = "email";
+    public String PASSWORD_QUERY = "password";
 }
