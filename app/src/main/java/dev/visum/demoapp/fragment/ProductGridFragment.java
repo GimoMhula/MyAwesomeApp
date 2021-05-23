@@ -26,7 +26,6 @@ import dev.visum.demoapp.R;
 import dev.visum.demoapp.adapter.AdapterGridProductCard;
 import dev.visum.demoapp.data.api.GetDataService;
 import dev.visum.demoapp.data.api.MozCarbonAPI;
-import dev.visum.demoapp.data.local.KeyStoreLocal;
 import dev.visum.demoapp.model.ProductModel;
 import dev.visum.demoapp.model.ProductResponseModel;
 import dev.visum.demoapp.model.ResponseModel;
@@ -122,8 +121,8 @@ public class ProductGridFragment extends Fragment {
         progressDialog.setMessage(getString(R.string.loading_data));
         progressDialog.show();
 
-        GetDataService service = MozCarbonAPI.getRetrofit().create(GetDataService.class);
-        Call<ResponseModel<List<ProductResponseModel>>> call = service.getProductsList(KeyStoreLocal.getInstance(getContext()).getToken());
+        GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
+        Call<ResponseModel<List<ProductResponseModel>>> call = service.getProductsList();
 
         call.enqueue(new Callback<ResponseModel<List<ProductResponseModel>>>() {
             @Override
@@ -174,6 +173,8 @@ public class ProductGridFragment extends Fragment {
                 Snackbar.make(parent_view, obj.title + " (" + item.getTitle() + ") clicked", Snackbar.LENGTH_SHORT).show();
             }
         });
+
+        // TODO: missing refresh list and load more items
     }
 
     @Override
