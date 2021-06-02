@@ -85,6 +85,7 @@
                     android:numStars="5"
                     android:rating="3.5"
                     android:stepSize="1"
+                    android:visibility="invisible"
                     android:theme="@style/Yellow.Small.AppCompatRatingBar" />
 
                 <View

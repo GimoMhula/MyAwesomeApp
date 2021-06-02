@@ -100,19 +100,15 @@ public class ProductGridFragment extends Fragment {
         activity = ((AppCompatActivity)getActivity());
         parent_view = inflater.inflate(R.layout.fragment_product_grid, container, false);
 
-        // initToolbar();
+        initToolbar();
         initComponent();
 
         return parent_view;
     }
 
     private void initToolbar() {
-        Toolbar toolbar = (Toolbar) parent_view.findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_menu);
-        /*activity.setSupportActionBar(toolbar);
-        activity.getSupportActionBar().setTitle("Produtos");
-        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
-        Tools.setSystemBarColor(getActivity());
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Lista de Produtos");
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void initComponent() {
@@ -175,11 +171,5 @@ public class ProductGridFragment extends Fragment {
         });
 
         // TODO: missing refresh list and load more items
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        activity.getMenuInflater().inflate(R.menu.menu_cart_setting, menu);
-        super.onCreateOptionsMenu(menu, inflater);
     }
 }

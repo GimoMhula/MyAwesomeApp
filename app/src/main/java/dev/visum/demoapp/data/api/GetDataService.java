@@ -1,5 +1,7 @@
 package dev.visum.demoapp.data.api;
 
+import com.google.gson.JsonObject;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -12,9 +14,12 @@ import dev.visum.demoapp.model.SaleAddedResponseModel;
 import dev.visum.demoapp.model.SaleCreatedModel;
 import dev.visum.demoapp.model.UserAgentBodyModel;
 import dev.visum.demoapp.model.UserAgentResponseModel;
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
 
@@ -34,4 +39,8 @@ public interface GetDataService {
 
     @POST("sale_product")
     Call<SaleAddedResponseModel> postSale(@NotNull @QueryMap Map<String, String> saleCreatedModel);
+
+    @Multipart
+    @POST("client/signature")
+    Call<JsonObject> uploadDigitalSignatureImage(@Part MultipartBody.Part file, @NotNull @Query("id") String input);
 }

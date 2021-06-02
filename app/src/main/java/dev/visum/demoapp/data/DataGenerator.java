@@ -35,7 +35,7 @@ public class DataGenerator {
         TypedArray drw_arr_bg = ctx.getResources().obtainTypedArray(R.array.item_category_bg);
         String title_arr[] = ctx.getResources().getStringArray(R.array.item_category_title);
         String brief_arr[] = ctx.getResources().getStringArray(R.array.item_category_brief);
-        for (int i = 0; i < drw_arr.length(); i++) {
+        for (int i = 0; i < title_arr.length; i++) {
             ItemCategory obj = new ItemCategory();
             obj.image = drw_arr.getResourceId(i, -1);
             obj.image_bg = drw_arr_bg.getResourceId(i, -1);

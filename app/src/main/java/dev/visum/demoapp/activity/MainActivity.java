@@ -6,6 +6,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -19,13 +20,15 @@ import dev.visum.demoapp.R;
 import dev.visum.demoapp.adapter.AdapterGridItemCategory;
 import dev.visum.demoapp.data.DataGenerator;
 import dev.visum.demoapp.fragment.AddSaleFragment;
+import dev.visum.demoapp.fragment.CustomerSignSaleFragment;
+import dev.visum.demoapp.fragment.ListSoldItemsFragment;
 import dev.visum.demoapp.fragment.ProductGridFragment;
 import dev.visum.demoapp.model.BaseActivity;
 import dev.visum.demoapp.model.ItemCategory;
 import dev.visum.demoapp.utils.Tools;
 import dev.visum.demoapp.widget.SpacingItemDecoration;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements AddSaleFragment.OnAddSaleSelectedListener, ListSoldItemsFragment.OnListSoldItemsSelectedListener {
 
     private RecyclerView recyclerView;
     private AdapterGridItemCategory mAdapter;
@@ -66,14 +69,14 @@ public class MainActivity extends BaseActivity {
         mAdapter.setOnItemClickListener(new AdapterGridItemCategory.OnItemClickListener() {
             @Override
             public void onItemClick(View view, ItemCategory obj, int position) {
-               Toast.makeText(MainActivity.this,  "Item " + obj.title + " clicked", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(MainActivity.this,  "Item " + obj.title + " clicked", Toast.LENGTH_SHORT).show();
 
                switch (obj.title) {
                    case "Produtos":
                        goToFragment(new ProductGridFragment());
                        break;
                    case "Vendas":
-                       goToFragment(new AddSaleFragment());
+                       goToFragment(new ListSoldItemsFragment()); // goToFragment(new AddSaleFragment());
                        break;
                    default:Bundle bundle = new Bundle();
                        bundle.putString("content",obj.title);
@@ -86,23 +89,21 @@ public class MainActivity extends BaseActivity {
 
     private void goToFragment(Fragment f) {
         FragmentTransaction fragmentTransaction = getInstance().getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.parent_view, f);
+        fragmentTransaction.replace(R.id.parent_view, f);
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
+        fragmentTransaction.commitAllowingStateLoss();
     }
 
 
     private void initToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(null);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        Tools.setSystemBarColor(this, R.color.grey_10);
-        Tools.setSystemBarLight(this);
+        toolbar.setTitle("Dashboard");
+        toolbar.setNavigationIcon(null);
+        setSupportActionBar(toolbar);
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_setting, menu);
         Tools.changeMenuIconColor(menu, getResources().getColor(R.color.grey_60));
@@ -117,5 +118,40 @@ public class MainActivity extends BaseActivity {
             Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_SHORT).show();
         }
         return super.onOptionsItemSelected(item);
+        getSupportActionBar().setTitle("Dashboard");
+                    getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+    }*/
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.onBackPressed();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onAttachFragment(@NonNull Fragment fragment) {
+        if (fragment instanceof AddSaleFragment) {
+            AddSaleFragment addSaleFragment = (AddSaleFragment) fragment;
+            addSaleFragment.setCallback(this);
+        } else if (fragment instanceof ListSoldItemsFragment) {
+            ListSoldItemsFragment listSoldItemsFragment = (ListSoldItemsFragment) fragment;
+            listSoldItemsFragment.setCallback(this);
+        }
+    }
+
+    // fragments interfaces
+
+    @Override
+    public void navigateToCustomerSignSale() {
+        goToFragment(new CustomerSignSaleFragment());
+    }
+
+    @Override
+    public void navigateToAddSale() {
+        goToFragment(new AddSaleFragment());
     }
 }

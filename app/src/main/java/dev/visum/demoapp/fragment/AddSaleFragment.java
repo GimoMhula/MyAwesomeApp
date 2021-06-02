@@ -3,16 +3,22 @@ package dev.visum.demoapp.fragment;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.snackbar.Snackbar;
 import com.jakewharton.rxbinding4.widget.RxTextView;
 import com.jakewharton.rxbinding4.widget.TextViewTextChangeEvent;
@@ -87,6 +93,14 @@ public class AddSaleFragment extends Fragment {
         payTypeMap.put(4, "Transferência");
     }
 
+    MaterialCheckBox checkbox_sign;
+
+    OnAddSaleSelectedListener callback;
+
+    public void setCallback(OnAddSaleSelectedListener callback) {
+        this.callback = callback;
+    }
+
     public AddSaleFragment() {
         // Required empty public constructor
     }
@@ -109,6 +123,10 @@ public class AddSaleFragment extends Fragment {
         return fragment;
     }
 
+    public interface OnAddSaleSelectedListener {
+        public void navigateToCustomerSignSale();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,9 +142,15 @@ public class AddSaleFragment extends Fragment {
         // Inflate the layout for this fragment
         parent_view = inflater.inflate(R.layout.fragment_add_sale, container, false);
 
+        initToolbar();
         initComponent();
 
         return parent_view;
+    }
+
+    private void initToolbar() {
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.add_sale_title));
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void initComponent() {
@@ -137,6 +161,7 @@ public class AddSaleFragment extends Fragment {
         act_qty = parent_view.findViewById(R.id.act_qty);
         bt_submit = parent_view.findViewById(R.id.bt_submit);
         bt_sale_date = parent_view.findViewById(R.id.bt_sale_date);
+        checkbox_sign = parent_view.findViewById(R.id.checkbox_sign);
 
         List<String> list = new ArrayList(payTypeMap.values());
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
@@ -149,6 +174,13 @@ public class AddSaleFragment extends Fragment {
                 if (hasFocus)
                     act_pay_type.showDropDown();
 
+            }
+        });
+
+        checkbox_sign.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                System.out.println(b);
             }
         });
 
@@ -198,7 +230,8 @@ public class AddSaleFragment extends Fragment {
         bt_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                processSale();
+                callback.navigateToCustomerSignSale();
+                // processSale();
             }
         });
 
@@ -374,6 +407,7 @@ public class AddSaleFragment extends Fragment {
 
                         if (response.isSuccessful() && response.body() != null) {
                             Snackbar.make(parent_view, getString(R.string.success_sale_fragment), Snackbar.LENGTH_LONG).show();
+
                         } else {
                             Snackbar.make(parent_view, getString(R.string.error_sale_fragment_failed), Snackbar.LENGTH_LONG).show();
                         }
