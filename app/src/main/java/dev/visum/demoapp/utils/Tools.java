@@ -10,13 +10,15 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -27,23 +29,64 @@ import android.webkit.URLUtil;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.RoundedBitmapDrawable;
-import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import androidx.core.widget.NestedScrollView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
+
 import dev.visum.demoapp.R;
 
 public class Tools {
+    public static void displayImageOriginal(Context ctx, ImageView img, @DrawableRes int drawable, String url) {
+        try {
+            Glide.with(ctx).load(drawable == 0 ? url : R.drawable.ic_image_black_24dp)
+                    .crossFade()
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .into(img);
+        } catch (Exception e) {
+        }
+    }
+
+    public static Map<String, String> convertObjToMap(Object o) {
+        return new ObjectMapper().convertValue(o, Map.class);
+    }
+
+    public static boolean isGPS_ON(Context context) {
+        LocationManager lm = (LocationManager)
+                context.getSystemService(Context.LOCATION_SERVICE);
+        assert lm != null;
+        return lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    }
+
+    public static Location getLatLng(Context context) {
+        LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
+        return lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+    }
+
+    public static int getMapKey(Map<Integer, String> map, String value) {
+        for (Map.Entry<Integer, String> entry : map.entrySet()) {
+            if (entry.getValue().equals(value)) {
+                return entry.getKey();
+            }
+        }
+        return -1;
+    }
+
+    public static boolean isStringNil(String o) {
+        return TextUtils.isEmpty(o);
+    }
 
     public static void setSystemBarColor(Activity act) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -60,6 +103,15 @@ public class Tools {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.setStatusBarColor(act.getResources().getColor(color));
+        }
+    }
+
+    public static void setSystemBarTitle(Activity act, String title) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = act.getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setTitle(title);
         }
     }
 
@@ -117,13 +169,8 @@ public class Tools {
         }
     }
 
-
-
-
-
-
     public static String getFormattedDateShort(Long dateTime) {
-        SimpleDateFormat newFormat = new SimpleDateFormat("MMM dd, yyyy");
+        SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd");
         return newFormat.format(new Date(dateTime));
     }
 

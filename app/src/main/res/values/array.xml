@@ -27,15 +27,8 @@
         <item>@drawable/bg</item>
     </integer-array>
     <string-array name="item_category_title">
-        <item>Dashboard</item>
-        <item>Messages</item>
-        <item>Users</item>
-        <item>Reports</item>
-        <item>Files</item>
-
-        <item>Settings</item>
-        <item>Blit</item>
-        <item>Exit</item>
+        <item>Clientes</item>
+        <item>Perfil</item>
     </string-array>
 
     <string-array name="item_category_brief">

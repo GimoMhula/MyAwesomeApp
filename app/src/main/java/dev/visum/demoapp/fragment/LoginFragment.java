@@ -23,12 +23,13 @@ import dev.visum.demoapp.data.api.GetDataService;
 import dev.visum.demoapp.data.api.MozCarbonAPI;
 import dev.visum.demoapp.data.local.KeyStoreLocal;
 import dev.visum.demoapp.model.ResponseModel;
+import dev.visum.demoapp.model.UserAgentBodyModel;
 import dev.visum.demoapp.model.UserAgentResponseModel;
 import dev.visum.demoapp.utils.Constants;
+import dev.visum.demoapp.utils.Tools;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import timber.log.Timber;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -118,9 +119,9 @@ public class LoginFragment extends Fragment {
         loginBtn.setAlpha(0f);
 
         if (isValid(passwordEditText.getText(), sPatternPassword) && isValid(emailEditText.getText(), sPatternEmail)) {
-            GetDataService service = MozCarbonAPI.getRetrofit().create(GetDataService.class);
+            GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
 
-            Call<ResponseModel<UserAgentResponseModel>> call = service.loginUser(emailEditText.getText().toString(), passwordEditText.getText().toString());
+            Call<ResponseModel<UserAgentResponseModel>> call = service.loginUser(Tools.convertObjToMap(new UserAgentBodyModel(emailEditText.getText().toString(), passwordEditText.getText().toString())));
             call.enqueue(new Callback<ResponseModel<UserAgentResponseModel>>() {
                 @Override
                 public void onResponse(Call<ResponseModel<UserAgentResponseModel>> call, Response<ResponseModel<UserAgentResponseModel>> response) {
@@ -129,7 +130,8 @@ public class LoginFragment extends Fragment {
 
                     if (response.code() > 100 && response.code() < 399 && response.body() != null && response.body().getResponse() != null && response.body().getResponse().getToken() != null) {
                         Snackbar.make(parent_view, getString(R.string.success_login_msg), Snackbar.LENGTH_SHORT).show();
-                        KeyStoreLocal.getInstance(getActivity()).setToken(response.body().getResponse().getToken());
+                        KeyStoreLocal.getInstance(getActivity()).setToken("Bearer " + response.body().getResponse().getToken());
+                        KeyStoreLocal.getInstance(getActivity()).setUserId(response.body().getResponse().getId());
                         getActivity().startActivity(new Intent(getActivity(), MainActivity.class));
                     } else {
                         Snackbar.make(parent_view, getString(R.string.user_credentials_invalid_msg), Snackbar.LENGTH_SHORT).show();

@@ -51,4 +51,13 @@ public class KeyStoreLocal {
     public String getToken() {
         return getString(Constants.getInstance().SP_TOKEN);
     }
+
+    // store user id
+    public void setUserId(String value) {
+        setString(Constants.getInstance().SP_USER_ID, value);
+    }
+
+    public String getUserId() {
+        return getString(Constants.getInstance().SP_USER_ID);
+    }
 }

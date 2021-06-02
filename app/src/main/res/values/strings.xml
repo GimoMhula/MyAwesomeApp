@@ -9,7 +9,7 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
-    <string name="greetings">Hello user, please select on of the icons to get started</string>
+    <string name="greetings">Escolha uma opção na lista abaixo</string>
     <string name="title_activity_main">Dashboard</string>
     <string name="msg_holder">You have selected</string>
     <!-- TODO: Remove or change this placeholder text -->
@@ -19,4 +19,33 @@
     <string name="user_credentials_invalid_msg">Credênciais inválidas!</string>
     <string name="failed_sign_in_msg">Ocorreu um erro!</string>
     <string name="wrong_text_input">Tem alguns campos inválidos!</string>
+    <string name="no_data_available">Vazio!</string>
+    <string name="loading_data">A carregar...</string>
+    <string name="date_sale_fragment">Data</string>
+    <string name="error_sale_fragment">Ocorreu um erro no carregamento!</string>
+    <string name="error_sale_fragment_fail">Ocorreu um erro!</string>
+    <string name="loading_sale_fragment">A processar venda...</string>
+    <string name="success_sale_fragment">Adicionou venda com sucesso!</string>
+    <string name="error_sale_fragment_failed">Ocorreu um erro na venda!!</string>
+    <string name="missing_data_sale_fragment">tem campos em falta!</string>
+    <string name="error_sale_fragment_fail_gps">Não deu permissão a GPS!</string>
+    <string name="hint_save">Salvar</string>
+    <string name="hint_clear">Limpar</string>
+    <string name="dialog_title">Assinatura</string>
+    <string name="use_same_signature">Usar a mesma assinatura</string>
+    <string name="act_qty">Quantidade</string>
+    <string name="act_total_sale">Total(MT)</string>
+    <string name="act_number_sales_installments">Nº de Prestações</string>
+    <string name="act_value_to_pay_sales_installments">Valor da prestação a pagar</string>
+    <string name="act_pay_method">Método de Pagamento</string>
+    <string name="act_date_picker">Data</string>
+    <string name="btn_process_sale">Processar</string>
+    <string name="act_products">Produto</string>
+    <string name="act_client">Cliente</string>
+    <string name="txtv_login_title">MozCarbon</string>
+    <string name="txtv_login_inputs_title">Iniciar Sessão</string>
+    <string name="input_email">E-mail</string>
+    <string name="input_password">Palavra-passe</string>
+    <string name="list_sold_items_title">Lista de Vendas</string>
+    <string name="add_sale_title">Adicionar Venda</string>
 </resources>
