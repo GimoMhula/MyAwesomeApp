@@ -1,5 +1,6 @@
 package dev.visum.demoapp.fragment;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -10,11 +11,17 @@ import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.print.PrintAttributes;
+import android.print.PrintDocumentAdapter;
+import android.print.PrintJob;
+import android.print.PrintManager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -22,18 +29,23 @@ import android.widget.ProgressBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.JsonObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 import dev.visum.demoapp.R;
 import dev.visum.demoapp.data.api.GetDataService;
 import dev.visum.demoapp.data.api.MozCarbonAPI;
+import dev.visum.demoapp.model.SaleAddedResponseModel;
+import dev.visum.demoapp.utils.Constants;
 import dev.visum.demoapp.utils.ProgressRequestBody;
 import okhttp3.MultipartBody;
 import retrofit2.Call;
@@ -53,13 +65,13 @@ public class CustomerSignSaleFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private Map<String, String> addSaleMap;
 
     //
     private View parent_view;
+    private ProgressDialog progressDialog;
     private ProgressBar progressBarSignature;
-    Button save_sign_btn, clear_sign_btn, sign_btn;
+    Button clear_sign_btn, sign_btn;
     LinearLayout mContent;
     signature mSignature;
     Bitmap bitmap;
@@ -77,16 +89,14 @@ public class CustomerSignSaleFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param addSaleMap Parameter add sale map.
      * @return A new instance of fragment CustomerSignSaleFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static CustomerSignSaleFragment newInstance(String param1, String param2) {
+    public static CustomerSignSaleFragment newInstance(Map<String, String> addSaleMap) {
         CustomerSignSaleFragment fragment = new CustomerSignSaleFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putSerializable(ARG_PARAM1, (Serializable) addSaleMap);
         fragment.setArguments(args);
         return fragment;
     }
@@ -95,8 +105,7 @@ public class CustomerSignSaleFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            addSaleMap = (Map<String, String>) getArguments().getSerializable(ARG_PARAM1);
         }
     }
 
@@ -117,10 +126,11 @@ public class CustomerSignSaleFragment extends Fragment {
     }
 
     private void init() {
+        System.out.println("Map: " + addSaleMap.size());
+        progressDialog = new ProgressDialog(getActivity());
         progressBarSignature = parent_view.findViewById(R.id.progressBarSignature);
         mContent = parent_view.findViewById(R.id.linearLayout);
         clear_sign_btn = parent_view.findViewById(R.id.clear_sign_btn);
-        save_sign_btn = parent_view.findViewById(R.id.save_sign_btn);
         sign_btn = parent_view.findViewById(R.id.submit_signature_btn);
         mSignature = new signature(getContext(), null);
 
@@ -136,7 +146,7 @@ public class CustomerSignSaleFragment extends Fragment {
             }
         });
 
-        save_sign_btn.setOnClickListener(new View.OnClickListener() {
+        sign_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -184,7 +194,7 @@ public class CustomerSignSaleFragment extends Fragment {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
-                    System.out.println("Ok");
+                    processSale();
                 } else {
                     System.out.println("Failed " + response.message());
                     try {
@@ -205,9 +215,75 @@ public class CustomerSignSaleFragment extends Fragment {
     }
 
     public void changeSignSaveBtn(boolean isEnable) {
-        save_sign_btn.setEnabled(isEnable);
         sign_btn.setEnabled(isEnable);
     }
+
+    private void processSale() {
+        progressDialog.setMessage(getString(R.string.loading_sale_fragment));
+        progressDialog.show();
+        GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
+
+        Call<SaleAddedResponseModel> call = service.postSale(addSaleMap);
+
+        call.enqueue(new Callback<SaleAddedResponseModel>() {
+            @Override
+            public void onResponse(Call<SaleAddedResponseModel> call, Response<SaleAddedResponseModel> response) {
+                progressDialog.hide();
+
+                if (response.isSuccessful() && response.body() != null) {
+                    Snackbar.make(parent_view, getString(R.string.success_sale_fragment), Snackbar.LENGTH_LONG).show();
+                    /*String url = Constants.getInstance().API + Constants.getInstance().INVOICE_PATH + "/" + response.body().getData().getId();
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(url));
+                    getActivity().startActivity(i);*/
+                    WebView webView = new WebView(getContext());
+                    webView.getSettings().setJavaScriptEnabled(true);
+                    webView.setWebViewClient(new WebViewClient() {
+
+                        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                            return false;
+                        }
+
+                        @Override
+                        public void onPageFinished(WebView view, String url) {
+                            System.out.println("page finished loading " + url);
+                            createWebPrintJob(view);
+                        }
+                    });
+                    getActivity().setContentView(webView);
+                    webView.loadUrl(Constants.getInstance().API + Constants.getInstance().INVOICE_PATH + "/" + response.body().getData().getId());
+                } else {
+                    Snackbar.make(parent_view, getString(R.string.error_sale_fragment_failed), Snackbar.LENGTH_LONG).show();
+                }
+            }
+
+            private void createWebPrintJob(WebView webView) {
+
+                // Get a PrintManager instance
+                PrintManager printManager = (PrintManager) getActivity()
+                        .getSystemService(Context.PRINT_SERVICE);
+
+                String jobName = getString(R.string.app_name) + " Document";
+
+                // Get a print adapter instance
+                PrintDocumentAdapter printAdapter = webView.createPrintDocumentAdapter(jobName);
+
+                // Create a print job with name and adapter instance
+                PrintJob printJob = printManager.print(jobName, printAdapter,
+                        new PrintAttributes.Builder().build());
+
+                // Save the job object for later status checking
+                // printJobs.add(printJob);
+            }
+
+            @Override
+            public void onFailure(Call<SaleAddedResponseModel> call, Throwable t) {
+                progressDialog.hide();
+                Snackbar.make(parent_view, getString(R.string.error_sale_fragment_failed), Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
+
 
     public class signature extends View {
         private static final float STROKE_WIDTH = 5f;

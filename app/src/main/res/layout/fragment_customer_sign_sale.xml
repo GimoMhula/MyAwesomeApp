@@ -32,7 +32,7 @@
             android:id="@+id/linearLayout2"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:weightSum="2"
+            android:weightSum="1"
             android:background="@android:color/white">
 
             <Button
@@ -46,6 +46,7 @@
                 android:background="@color/colorPrimary" />
 
             <Button
+                android:visibility="gone"
                 android:id="@+id/save_sign_btn"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
