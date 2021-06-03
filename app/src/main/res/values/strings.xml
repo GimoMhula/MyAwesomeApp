@@ -48,4 +48,15 @@
     <string name="input_password">Palavra-passe</string>
     <string name="list_sold_items_title">Lista de Vendas</string>
     <string name="add_sale_title">Adicionar Venda</string>
+    <string name="btn_create_client">Criar</string>
+    <string name="btn_cancel">Cancelar</string>
+    <string name="act_contact">Contacto</string>
+    <string name="act_email">E-mail</string>
+    <string name="act_address">Morada</string>
+    <string name="act_name">Nome</string>
+    <string name="dialog_title_add_client">Adicionar Cliente</string>
+    <string name="fields_invalid_client">Campos inválidos/vazios!</string>
+    <string name="create_client_ok">Adicionou o cliente com sucesso!</string>
+    <string name="error_client">Ocorreu um erro!</string>
+    <string name="failed_client">Não foi possível criar o cliente!</string>
 </resources>
