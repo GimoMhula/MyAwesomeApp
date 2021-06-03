@@ -117,7 +117,7 @@ public class ListSoldItemsFragment extends Fragment {
 
                 fab_add_sale.shrink();
             }
-        }, 500);
+        }, 1200);
 
         List<SoldItem> soldItemList = new ArrayList<>();
         soldItemList.add(new SoldItem("a1", "Fogao X", "falta 3 prestações de 1000mt", "2021-05-25", "https://picsum.photos/200"));
