@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.Map;
 
 import dev.visum.demoapp.R;
 import dev.visum.demoapp.adapter.AdapterGridItemCategory;
@@ -146,8 +147,8 @@ public class MainActivity extends BaseActivity implements AddSaleFragment.OnAddS
     // fragments interfaces
 
     @Override
-    public void navigateToCustomerSignSale() {
-        goToFragment(new CustomerSignSaleFragment());
+    public void navigateToCustomerSignSale(Map<String, String> addSaleMap) {
+        goToFragment(new CustomerSignSaleFragment().newInstance(addSaleMap));
     }
 
     @Override
