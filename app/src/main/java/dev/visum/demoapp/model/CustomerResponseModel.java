@@ -13,10 +13,14 @@ public class CustomerResponseModel {
     @SerializedName("contact")
     private String contact;
 
-    public CustomerResponseModel(String id, String name, String contact) {
+    @SerializedName("signature")
+    private String signature;
+
+    public CustomerResponseModel(String id, String name, String contact, String signature) {
         this.id = id;
         this.name = name;
         this.contact = contact;
+        this.signature = signature;
     }
 
     public String getId() {
@@ -41,6 +45,14 @@ public class CustomerResponseModel {
 
     public void setContact(String contact) {
         this.contact = contact;
+    }
+
+    public String getSignature() {
+        return signature;
+    }
+
+    public void setSignature(String signature) {
+        this.signature = signature;
     }
 
     @Override

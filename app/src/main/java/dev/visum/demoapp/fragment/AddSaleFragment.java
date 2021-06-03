@@ -3,7 +3,6 @@ package dev.visum.demoapp.fragment;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -12,27 +11,26 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 
-import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 import com.jakewharton.rxbinding4.widget.RxTextView;
 import com.jakewharton.rxbinding4.widget.TextViewTextChangeEvent;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import dev.visum.demoapp.R;
 import dev.visum.demoapp.adapter.AdapterSaleCustomerFiltered;
@@ -40,8 +38,10 @@ import dev.visum.demoapp.adapter.AdapterSaleProductFiltered;
 import dev.visum.demoapp.data.api.GetDataService;
 import dev.visum.demoapp.data.api.MozCarbonAPI;
 import dev.visum.demoapp.data.local.KeyStoreLocal;
+import dev.visum.demoapp.model.AddClientModel;
 import dev.visum.demoapp.model.CustomerResponseModel;
 import dev.visum.demoapp.model.ProductResponseModel;
+import dev.visum.demoapp.model.ResponseAddClientModel;
 import dev.visum.demoapp.model.ResponseModel;
 import dev.visum.demoapp.model.SaleAddedResponseModel;
 import dev.visum.demoapp.model.SaleCreatedModel;
@@ -71,8 +71,11 @@ public class AddSaleFragment extends Fragment {
     private String mParam2;
 
     //
+    private ProgressBar pb_loading;
     private View parent_view;
+    private ImageView iv_add_client;
     private ProgressDialog progressDialog;
+    private TextInputLayout text_input_username;
     private AutoCompleteTextView act_product, act_client, act_qty, act_pay_type, bt_sale_date;
     private Button bt_submit;
     private CompositeDisposable disposable = new CompositeDisposable();
@@ -124,7 +127,7 @@ public class AddSaleFragment extends Fragment {
     }
 
     public interface OnAddSaleSelectedListener {
-        public void navigateToCustomerSignSale();
+        public void navigateToCustomerSignSale(Map<String, String> addSaleMap);
     }
 
     @Override
@@ -154,7 +157,10 @@ public class AddSaleFragment extends Fragment {
     }
 
     private void initComponent() {
+        pb_loading = parent_view.findViewById(R.id.pb_loading);
+        iv_add_client = parent_view.findViewById(R.id.iv_add_client);
         progressDialog = new ProgressDialog(getActivity());
+        text_input_username= parent_view.findViewById(R.id.text_input_username);
         act_client = parent_view.findViewById(R.id.act_client);
         act_pay_type = parent_view.findViewById(R.id.act_pay_type);
         act_product = parent_view.findViewById(R.id.act_product);
@@ -162,6 +168,96 @@ public class AddSaleFragment extends Fragment {
         bt_submit = parent_view.findViewById(R.id.bt_submit);
         bt_sale_date = parent_view.findViewById(R.id.bt_sale_date);
         checkbox_sign = parent_view.findViewById(R.id.checkbox_sign);
+
+        iv_add_client.setColorFilter(getContext().getResources().getColor(R.color.mdtp_transparent_black));
+        iv_add_client.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                act_client.setText("");
+                // final Dialog dialog = new Dialog(getActivity());
+
+                final AlertDialog dialog = new AlertDialog.Builder(getContext()).create();
+                dialog.setTitle(R.string.dialog_title_add_client);
+                final View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.add_client_alert_dialog, null);
+                dialog.setView(dialogView);
+
+                AutoCompleteTextView act_name = dialogView.findViewById(R.id.act_name);
+                AutoCompleteTextView act_address = dialogView.findViewById(R.id.act_address);
+                AutoCompleteTextView act_email = dialogView.findViewById(R.id.act_email);
+                AutoCompleteTextView act_contact = dialogView.findViewById(R.id.act_contact);
+
+                Button bt_cancel = dialogView.findViewById(R.id.bt_cancel);
+                Button bt_create_client = dialogView.findViewById(R.id.bt_create_client);
+
+                bt_cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+
+                bt_create_client.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        bt_create_client.setEnabled(false);
+                        pb_loading.setVisibility(View.VISIBLE);
+                        dialog.dismiss();
+                        try {
+                            String name = act_name.getText().toString();
+                            String address = act_address.getText().toString();
+                            String email = act_email.getText().toString();
+                            String contact = act_contact.getText().toString();
+
+                            if (!Tools.isStringNil(name)
+                                    && !Tools.isStringNil(address)
+                                    && !Tools.isStringNil(email)
+                                    && !Tools.isStringNil(contact)) {
+
+                                GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
+                                Call<ResponseAddClientModel> call = service.postAddClient(Tools.convertObjToMap(new AddClientModel(name, email, address, contact)));
+
+                                call.enqueue(new Callback<ResponseAddClientModel>() {
+                                    @Override
+                                    public void onResponse(Call<ResponseAddClientModel> call, Response<ResponseAddClientModel> response) {
+                                        if (response.isSuccessful()) {
+                                            Snackbar.make(getView(), getString(R.string.create_client_ok), Snackbar.LENGTH_LONG).show();
+                                            customerFilteredAdapter.clear();
+                                            customerFilteredAdapter.add(response.body().getData());
+                                            customerFilteredAdapter.notifyDataSetChanged();
+                                            act_client.showDropDown();
+                                        } else {
+                                            bt_create_client.setEnabled(true);
+                                            System.out.println(response.message());
+                                            Snackbar.make(getView(), getString(R.string.failed_client), Snackbar.LENGTH_LONG).show();
+                                        }
+
+                                        pb_loading.setVisibility(View.GONE);
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<ResponseAddClientModel> call, Throwable t) {
+                                        System.out.println(t.getMessage());
+                                        bt_create_client.setEnabled(true);
+                                        pb_loading.setVisibility(View.GONE);
+                                        Snackbar.make(getView(), getString(R.string.error_client), Snackbar.LENGTH_LONG).show();
+                                    }
+                                });
+                            } else {
+                                bt_create_client.setEnabled(true);
+                                pb_loading.setVisibility(View.GONE);
+                                Snackbar.make(getView(), getString(R.string.fields_invalid_client), Snackbar.LENGTH_LONG).show();
+                            }
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                            bt_create_client.setEnabled(true);
+                            pb_loading.setVisibility(View.GONE);
+                            Snackbar.make(getView(), getString(R.string.error_client), Snackbar.LENGTH_LONG).show();
+                        }
+                    }
+                });
+                dialog.show();
+            }
+        });
 
         List<String> list = new ArrayList(payTypeMap.values());
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
@@ -223,6 +319,14 @@ public class AddSaleFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if (customersRespList.get(i) != null) {
                     customerId = customersRespList.get(i).getId();
+
+                    if (!Tools.isStringNil(customersRespList.get(i).getSignature())) {
+                        checkbox_sign.setVisibility(View.VISIBLE);
+                        checkbox_sign.setChecked(true);
+                    } else {
+                        checkbox_sign.setVisibility(View.INVISIBLE);
+                        checkbox_sign.setChecked(false);
+                    }
                 }
             }
         });
@@ -230,8 +334,42 @@ public class AddSaleFragment extends Fragment {
         bt_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                callback.navigateToCustomerSignSale();
-                // processSale();
+                if (checkbox_sign.isChecked()) {
+                    processSale();
+                } else {
+                    try {
+                        String pay_type = act_pay_type.getText().toString();
+                        String qty = act_qty.getText().toString();
+                        String date = bt_sale_date.getText().toString();
+                        double lat = Tools.getLatLng(getContext()).getLatitude();
+                        double lng = Tools.getLatLng(getContext()).getLongitude();
+
+                        if (!Tools.isStringNil(pay_type)
+                                && !Tools.isStringNil(date)
+                                && !Tools.isStringNil(qty) && !customerId.equals("") && !productId.equals("")) {
+
+                            callback.navigateToCustomerSignSale(Tools.convertObjToMap(new SaleCreatedModel(
+                                    productId,
+                                    customerId,
+                                    "1", // KeyStoreLocal.getInstance(getContext()).getUserId(),
+                                    qty,
+                                    Tools.getMapKey(payTypeMap, pay_type) + "",
+                                    date,
+                                    lat,
+                                    lng
+                            )));
+                        } else {
+                            Snackbar.make(parent_view, getString(R.string.missing_data_sale_fragment), Snackbar.LENGTH_LONG).show();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        if (!Tools.isGPS_ON(getContext())) {
+                            Snackbar.make(parent_view, getString(R.string.error_sale_fragment_fail_gps), Snackbar.LENGTH_LONG).show();
+                        } else {
+                            Snackbar.make(parent_view, getString(R.string.error_sale_fragment_fail), Snackbar.LENGTH_LONG).show();
+                        }
+                    }
+                }
             }
         });
 
@@ -392,7 +530,7 @@ public class AddSaleFragment extends Fragment {
                 Call<SaleAddedResponseModel> call = service.postSale(Tools.convertObjToMap(new SaleCreatedModel(
                         productId,
                         customerId,
-                        KeyStoreLocal.getInstance(getContext()).getUserId(),
+                        "1", // KeyStoreLocal.getInstance(getContext()).getUserId(),
                         qty,
                         Tools.getMapKey(payTypeMap, pay_type) + "",
                         date,

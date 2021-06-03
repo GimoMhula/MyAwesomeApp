@@ -21,6 +21,7 @@ public class Constants {
 
     // API
     public String API = "http://34.237.238.49";
+    public String INVOICE_PATH = "/final_invoice";
 
     // Query
     public String EMAIL_QUERY = "email";
