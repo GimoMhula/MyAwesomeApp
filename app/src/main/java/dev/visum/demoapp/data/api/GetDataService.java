@@ -9,6 +9,7 @@ import java.util.Map;
 
 import dev.visum.demoapp.model.CustomerResponseModel;
 import dev.visum.demoapp.model.ProductResponseModel;
+import dev.visum.demoapp.model.ResponseAddClientModel;
 import dev.visum.demoapp.model.ResponseModel;
 import dev.visum.demoapp.model.SaleAddedResponseModel;
 import dev.visum.demoapp.model.SaleCreatedModel;
@@ -43,4 +44,7 @@ public interface GetDataService {
     @Multipart
     @POST("client/signature")
     Call<JsonObject> uploadDigitalSignatureImage(@Part MultipartBody.Part file, @NotNull @Query("id") String input);
+
+    @POST("clients/store")
+    Call<ResponseAddClientModel> postAddClient(@NotNull @QueryMap Map<String, String> addClientModel);
 }
