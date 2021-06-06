@@ -59,4 +59,5 @@
     <string name="create_client_ok">Adicionou o cliente com sucesso!</string>
     <string name="error_client">Ocorreu um erro!</string>
     <string name="failed_client">Não foi possível criar o cliente!</string>
+    <string name="NEXT">Proximo</string>
 </resources>
