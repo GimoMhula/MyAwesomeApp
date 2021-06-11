@@ -15,6 +15,12 @@ import dev.visum.demoapp.model.ProductResponseModel;
 import dev.visum.demoapp.model.ResponseAddClientModel;
 import dev.visum.demoapp.model.ResponseModel;
 import dev.visum.demoapp.model.SaleAddedResponseModel;
+
+import dev.visum.demoapp.model.SaleCreatedModel;
+import dev.visum.demoapp.model.SurveyQuestionResponseModel;
+import dev.visum.demoapp.model.SurveyResponseModel;
+import dev.visum.demoapp.model.UserAgentBodyModel;
+
 import dev.visum.demoapp.model.UserAgentResponseModel;
 import okhttp3.MultipartBody;
 import retrofit2.Call;
@@ -35,6 +41,12 @@ public interface GetDataService {
 
     @GET("products/find")
     Call<ResponseModel<List<ProductResponseModel>>> getProductFilteredList(@NotNull @Query("input") String input);
+
+    @GET("inquiry")
+    Call<ResponseModel<List<SurveyResponseModel>>> getSurveysList();
+
+    @GET("link_question")
+    Call<ResponseModel<List<SurveyQuestionResponseModel>>> getSurveyQuestionsList(@NotNull @Query("inquire_id") String input);
 
     @GET("client/find")
     Call<ResponseModel<List<CustomerResponseModel>>> getClientFilteredList(@NotNull @Query("input") String input);

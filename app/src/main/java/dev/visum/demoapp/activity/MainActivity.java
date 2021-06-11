@@ -32,6 +32,8 @@ import dev.visum.demoapp.fragment.AddSaleFragment;
 import dev.visum.demoapp.fragment.CustomerSignSaleFragment;
 import dev.visum.demoapp.fragment.ListSoldItemsFragment;
 import dev.visum.demoapp.fragment.ProductGridFragment;
+import dev.visum.demoapp.fragment.SurveyFragment;
+import dev.visum.demoapp.fragment.SurveyFragmentMenu;
 import dev.visum.demoapp.model.BaseActivity;
 import dev.visum.demoapp.model.ItemCategory;
 import dev.visum.demoapp.model.SaleType;
@@ -75,6 +77,13 @@ public class MainActivity extends BaseActivity implements AddSaleFragment.OnAddS
         itemCategorySales.title = "Vendas";
         itemCategorySales.imageDrw = AppCompatResources.getDrawable(this, itemCategorySales.image);
         items.add(itemCategorySales);
+
+        ItemCategory itemCategorySurvey = new ItemCategory();
+        itemCategorySurvey.image = R.drawable.ic_image_black_24dp;
+        itemCategorySurvey.title = "Inqueritos";
+        itemCategorySurvey.imageDrw = AppCompatResources.getDrawable(this, itemCategorySurvey.image);
+        items.add(itemCategorySurvey);
+
         //set data and list dev.visum.demoapp.adapter
         mAdapter = new AdapterGridItemCategory(this, items);
         recyclerView.setAdapter(mAdapter);
@@ -91,6 +100,9 @@ public class MainActivity extends BaseActivity implements AddSaleFragment.OnAddS
                        break;
                    case "Vendas":
                        goToFragment(new ListSoldItemsFragment()); // goToFragment(new AddSaleFragment());
+                       break;
+                   case "Inqueritos":
+                       goToFragment(new SurveyFragmentMenu());
                        break;
                    default:Bundle bundle = new Bundle();
                        bundle.putString("content",obj.title);
