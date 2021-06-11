@@ -59,6 +59,21 @@
     <string name="create_client_ok">Adicionou o cliente com sucesso!</string>
     <string name="error_client">Ocorreu um erro!</string>
     <string name="failed_client">Não foi possível criar o cliente!</string>
+
     <string name="NEXT">Proximo</string>
     <string name="survey_submited">Inquerito submetido com sucesso!</string>
+
+    <string name="error_get_products">Erro ao carregar produtos</string>
+    <string name="error_get_sales">Erro ao carregar vendas</string>
+    <string name="act_ref_street">Perto/Rua/Beco</string>
+    <string name="act_nr_house">Nº da Casa</string>
+    <string name="act_quart">Quarteirão</string>
+    <string name="act_area">Bairro</string>
+    <string name="act_region">Região</string>
+    <string name="add_sale_prest_title">Adicionar Prestação</string>
+    <string name="add_sale_first_prest_title">Adicionar 1a Prestação</string>
+    <string name="remain">Falta pagar</string>
+    <string name="success_sale_next_prest_fragment">Adicionou a prestação com sucesso!</string>
+    <string name="error_sale_next_prest_fragment_failed">Ocorreu um erro adicionar prestação!</string>
+
 </resources>

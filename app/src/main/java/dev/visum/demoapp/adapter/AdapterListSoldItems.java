@@ -74,10 +74,10 @@ public class AdapterListSoldItems extends RecyclerView.Adapter<RecyclerView.View
             OriginalViewHolder view = (OriginalViewHolder) holder;
 
             SoldItem soldItem = items.get(position);
-            view.title.setText(soldItem.title);
-            view.subtitle.setText(soldItem.subtitle);
-            view.date.setText(soldItem.date);
-            Tools.displayImageOriginal(ctx, view.image, 0, soldItem.imgUrl);
+            view.title.setText(soldItem.getTitle());
+            view.subtitle.setText(soldItem.getSubtitle());
+            view.date.setText(soldItem.getDate());
+            Tools.displayImageOriginal(ctx, view.image, 0, soldItem.getImgUrl());
             view.lyt_parent.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
