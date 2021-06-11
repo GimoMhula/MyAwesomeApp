@@ -118,7 +118,7 @@ public class LoginFragment extends Fragment {
         progressDialog.show();
         loginBtn.setAlpha(0f);
 
-        if (isValid(passwordEditText.getText(), sPatternPassword) && isValid(emailEditText.getText(), sPatternEmail)) {
+        if (passwordEditText.getText().toString() != null && !passwordEditText.getText().toString().trim().isEmpty() && isValid(emailEditText.getText(), sPatternEmail)) { // isValid(passwordEditText.getText(), sPatternPassword)
             GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
 
             Call<ResponseModel<UserAgentResponseModel>> call = service.loginUser(Tools.convertObjToMap(new UserAgentBodyModel(emailEditText.getText().toString(), passwordEditText.getText().toString())));
@@ -134,8 +134,7 @@ public class LoginFragment extends Fragment {
                         KeyStoreLocal.getInstance(getActivity()).setUserId(response.body().getResponse().getId());
                         getActivity().startActivity(new Intent(getActivity(), MainActivity.class));
                     } else {
-                        getActivity().startActivity(new Intent(getActivity(), MainActivity.class));
-                        // Snackbar.make(parent_view, getString(R.string.user_credentials_invalid_msg), Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(parent_view, getString(R.string.user_credentials_invalid_msg), Snackbar.LENGTH_SHORT).show();
                     }
                 }
 
