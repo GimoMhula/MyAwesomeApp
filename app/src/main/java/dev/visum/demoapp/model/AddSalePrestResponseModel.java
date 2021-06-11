@@ -2,21 +2,16 @@ package dev.visum.demoapp.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class SaleAddedResponseModel {
-
+public class AddSalePrestResponseModel {
     @SerializedName("success")
     private boolean success;
 
     @SerializedName("message")
     private String message;
 
-    @SerializedName("response")
-    private SaleAddedModel response;
-
-    public SaleAddedResponseModel(boolean success, String message, SaleAddedModel response) {
+    public AddSalePrestResponseModel(boolean success, String message) {
         this.success = success;
         this.message = message;
-        this.response = response;
     }
 
     public boolean isSuccess() {
@@ -33,13 +28,5 @@ public class SaleAddedResponseModel {
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public SaleAddedModel getResponse() {
-        return response;
-    }
-
-    public void setResponse(SaleAddedModel response) {
-        this.response = response;
     }
 }

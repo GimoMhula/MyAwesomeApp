@@ -12,10 +12,14 @@ public class CategoryResponseModel {
     @SerializedName("prestations_num")
     private String prestations_num;
 
-    public CategoryResponseModel(int id, String name, String prestations_num) {
+    @SerializedName("price")
+    private double price;
+
+    public CategoryResponseModel(int id, String name, String prestations_num, double price) {
         this.id = id;
         this.name = name;
         this.prestations_num = prestations_num;
+        this.price = price;
     }
 
     public int getId() {
@@ -40,5 +44,13 @@ public class CategoryResponseModel {
 
     public void setPrestations_num(String prestations_num) {
         this.prestations_num = prestations_num;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 }

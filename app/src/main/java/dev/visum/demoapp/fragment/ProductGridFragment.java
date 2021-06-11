@@ -113,9 +113,21 @@ public class ProductGridFragment extends Fragment {
 
     private void initComponent() {
         empty_view = parent_view.findViewById(R.id.empty_view);
+
         progressDialog = new ProgressDialog(activity);
         progressDialog.setMessage(getString(R.string.loading_data));
         progressDialog.show();
+
+        recyclerView = parent_view.findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        recyclerView.addItemDecoration(new SpacingItemDecoration(2, Tools.dpToPx(getContext(), 8), true));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setNestedScrollingEnabled(false);
+
+        //set data and list adapter
+        mAdapter = new AdapterGridProductCard(getContext(), items);
+        recyclerView.setAdapter(mAdapter);
+
 
         GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
         Call<ResponseModel<List<ProductResponseModel>>> call = service.getProductsList();
@@ -128,7 +140,7 @@ public class ProductGridFragment extends Fragment {
                     recyclerView.setVisibility(View.VISIBLE);
 
                     for (ProductResponseModel productResponseModel : response.body().getResponse()) {
-                        items.add(new ProductModel(productResponseModel.getName(), Double.toString(productResponseModel.getPrice()), Constants.getInstance().API + productResponseModel.getImage()));
+                        items.add(new ProductModel(productResponseModel.getName(), Double.toString(productResponseModel.getPrice()) + "MT", Constants.getInstance().API + productResponseModel.getImage()));
                     }
 
                     recyclerView.getAdapter().notifyDataSetChanged();
@@ -142,18 +154,9 @@ public class ProductGridFragment extends Fragment {
             @Override
             public void onFailure(Call<ResponseModel<List<ProductResponseModel>>> call, Throwable t) {
                 progressDialog.dismiss();
+                Snackbar.make(getView(), getString(R.string.error_get_products), Snackbar.LENGTH_LONG).show();
             }
         });
-
-        recyclerView = parent_view.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        recyclerView.addItemDecoration(new SpacingItemDecoration(2, Tools.dpToPx(getContext(), 8), true));
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setNestedScrollingEnabled(false);
-
-        //set data and list adapter
-        mAdapter = new AdapterGridProductCard(getContext(), items);
-        recyclerView.setAdapter(mAdapter);
 
         // on item list clicked
         mAdapter.setOnItemClickListener(new AdapterGridProductCard.OnItemClickListener() {

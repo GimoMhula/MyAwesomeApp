@@ -2,25 +2,21 @@ package dev.visum.demoapp.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class SaleCreatedModel {
-
-    @SerializedName("product_id")
-    private String product_id;
+public class AddSaleModel {
+    @SerializedName("agent_id")
+    private String agent_id;
 
     @SerializedName("customer_id")
     private String customer_id;
 
-    @SerializedName("user_id")
-    private String user_id;
+    @SerializedName("product_id")
+    private String product_id;
 
-    @SerializedName("qty")
-    private String qty;
+    @SerializedName("first_prestation")
+    private double first_prestation;
 
-    @SerializedName("payment_method")
-    private String payment_method;
-
-    @SerializedName("date")
-    private String date;
+    @SerializedName("payment_method_id")
+    private String payment_method_id;
 
     @SerializedName("lat")
     private double lat;
@@ -43,13 +39,12 @@ public class SaleCreatedModel {
     @SerializedName("reference_point")
     private String reference_point;
 
-    public SaleCreatedModel(String product_id, String customer_id, String user_id, String qty, String payment_method, String date, double lat, double lng, String region, String neighborhood, String city_block, String house_number, String reference_point) {
-        this.product_id = product_id;
+    public AddSaleModel(String agent_id, String customer_id, String product_id, double first_prestation, String payment_method_id, double lat, double lng, String region, String neighborhood, String city_block, String house_number, String reference_point) {
+        this.agent_id = agent_id;
         this.customer_id = customer_id;
-        this.user_id = user_id;
-        this.qty = qty;
-        this.payment_method = payment_method;
-        this.date = date;
+        this.product_id = product_id;
+        this.first_prestation = first_prestation;
+        this.payment_method_id = payment_method_id;
         this.lat = lat;
         this.lng = lng;
         this.region = region;
@@ -59,12 +54,12 @@ public class SaleCreatedModel {
         this.reference_point = reference_point;
     }
 
-    public String getProduct_id() {
-        return product_id;
+    public String getAgent_id() {
+        return agent_id;
     }
 
-    public void setProduct_id(String product_id) {
-        this.product_id = product_id;
+    public void setAgent_id(String agent_id) {
+        this.agent_id = agent_id;
     }
 
     public String getCustomer_id() {
@@ -75,36 +70,28 @@ public class SaleCreatedModel {
         this.customer_id = customer_id;
     }
 
-    public String getUser_id() {
-        return user_id;
+    public String getProduct_id() {
+        return product_id;
     }
 
-    public void setUser_id(String user_id) {
-        this.user_id = user_id;
+    public void setProduct_id(String product_id) {
+        this.product_id = product_id;
     }
 
-    public String getQty() {
-        return qty;
+    public double getFirst_prestation() {
+        return first_prestation;
     }
 
-    public void setQty(String qty) {
-        this.qty = qty;
+    public void setFirst_prestation(double first_prestation) {
+        this.first_prestation = first_prestation;
     }
 
-    public String getPayment_method() {
-        return payment_method;
+    public String getPayment_method_id() {
+        return payment_method_id;
     }
 
-    public void setPayment_method(String payment_method) {
-        this.payment_method = payment_method;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
+    public void setPayment_method_id(String payment_method_id) {
+        this.payment_method_id = payment_method_id;
     }
 
     public double getLat() {
@@ -161,24 +148,5 @@ public class SaleCreatedModel {
 
     public void setReference_point(String reference_point) {
         this.reference_point = reference_point;
-    }
-
-    @Override
-    public String toString() {
-        return "SaleCreatedModel{" +
-                "product_id='" + product_id + '\'' +
-                ", customer_id='" + customer_id + '\'' +
-                ", user_id='" + user_id + '\'' +
-                ", qty='" + qty + '\'' +
-                ", payment_method='" + payment_method + '\'' +
-                ", date='" + date + '\'' +
-                ", lat=" + lat +
-                ", lng=" + lng +
-                ", region='" + region + '\'' +
-                ", neighborhood='" + neighborhood + '\'' +
-                ", city_block='" + city_block + '\'' +
-                ", house_number='" + house_number + '\'' +
-                ", reference_point='" + reference_point + '\'' +
-                '}';
     }
 }

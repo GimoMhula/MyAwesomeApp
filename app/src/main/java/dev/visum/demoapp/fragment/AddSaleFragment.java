@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AlertDialog;
@@ -39,12 +40,18 @@ import dev.visum.demoapp.data.api.GetDataService;
 import dev.visum.demoapp.data.api.MozCarbonAPI;
 import dev.visum.demoapp.data.local.KeyStoreLocal;
 import dev.visum.demoapp.model.AddClientModel;
+import dev.visum.demoapp.model.AddSaleModel;
+import dev.visum.demoapp.model.AddSalePrestModel;
+import dev.visum.demoapp.model.AddSalePrestResponseModel;
+import dev.visum.demoapp.model.AddSaleResponseModel;
 import dev.visum.demoapp.model.CustomerResponseModel;
 import dev.visum.demoapp.model.ProductResponseModel;
 import dev.visum.demoapp.model.ResponseAddClientModel;
 import dev.visum.demoapp.model.ResponseModel;
 import dev.visum.demoapp.model.SaleAddedResponseModel;
 import dev.visum.demoapp.model.SaleCreatedModel;
+import dev.visum.demoapp.model.SaleType;
+import dev.visum.demoapp.model.SoldItem;
 import dev.visum.demoapp.utils.Tools;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -75,11 +82,11 @@ public class AddSaleFragment extends Fragment {
     private View parent_view;
     private ImageView iv_add_client;
     private ProgressDialog progressDialog;
-    private TextInputLayout text_input_username;
-    private AutoCompleteTextView act_product, act_client, act_qty, act_pay_type, bt_sale_date;
+    private TextInputLayout text_input_username, text_input_total;
+    private AutoCompleteTextView act_product, act_client, act_pay_type, act_total, act_installments_nr, act_installments, act_region, act_area, act_quart, act_nr_house, act_ref_street;
     private Button bt_submit;
     private CompositeDisposable disposable = new CompositeDisposable();
-
+    private LinearLayout ll_sale_prest, ll_total, ll_product_client, ll_region_date;
     private AdapterSaleCustomerFiltered customerFilteredAdapter;
     private ArrayList<CustomerResponseModel> customersRespList = new ArrayList<>();
     private String customerId = "";
@@ -99,6 +106,8 @@ public class AddSaleFragment extends Fragment {
     MaterialCheckBox checkbox_sign;
 
     OnAddSaleSelectedListener callback;
+    private SoldItem soldItem;
+    private SaleType saleType;
 
     public void setCallback(OnAddSaleSelectedListener callback) {
         this.callback = callback;
@@ -112,30 +121,31 @@ public class AddSaleFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param saleType Parameter sale type
+     * @param soldItem
      * @return A new instance of fragment AddSaleFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static AddSaleFragment newInstance(String param1, String param2) {
+    public static AddSaleFragment newInstance(SaleType saleType, SoldItem soldItem) {
         AddSaleFragment fragment = new AddSaleFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putSerializable(ARG_PARAM1, saleType);
+        args.putSerializable(ARG_PARAM2, soldItem);
         fragment.setArguments(args);
         return fragment;
     }
 
     public interface OnAddSaleSelectedListener {
-        public void navigateToCustomerSignSale(Map<String, String> addSaleMap);
+        public void navigateToCustomerSignSale(Map<String, String> addSaleMap, SaleType saleType);
+        public void renderWebView(String saleId);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            saleType = (SaleType) getArguments().getSerializable(ARG_PARAM1);
+            soldItem = (SoldItem) getArguments().getSerializable(ARG_PARAM2);
         }
     }
 
@@ -152,22 +162,50 @@ public class AddSaleFragment extends Fragment {
     }
 
     private void initToolbar() {
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.add_sale_title));
+        String title = getString(R.string.add_sale_title);
+        if (saleType == SaleType.NEXT_PREST) {
+            title = getString(R.string.add_sale_prest_title);
+        } else if (saleType == SaleType.FIRST_PAY) {
+            title = getString(R.string.add_sale_title);
+        }
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(title);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void initComponent() {
+        ll_sale_prest = parent_view.findViewById(R.id.ll_sale_prest);
+        ll_total = parent_view.findViewById(R.id.ll_total);
+        ll_product_client = parent_view.findViewById(R.id.ll_product_client);
+        ll_region_date = parent_view.findViewById(R.id.ll_region_date);
+        act_region = parent_view.findViewById(R.id.act_region);
+        act_area = parent_view.findViewById(R.id.act_area);
+        act_quart = parent_view.findViewById(R.id.act_quart);
+        act_nr_house = parent_view.findViewById(R.id.act_nr_house);
+        act_ref_street = parent_view.findViewById(R.id.act_ref_street);
+        act_total = parent_view.findViewById(R.id.act_total);
+        act_installments = parent_view.findViewById(R.id.act_installments);
+        act_installments_nr = parent_view.findViewById(R.id.act_installments_nr);
         pb_loading = parent_view.findViewById(R.id.pb_loading);
         iv_add_client = parent_view.findViewById(R.id.iv_add_client);
         progressDialog = new ProgressDialog(getActivity());
         text_input_username= parent_view.findViewById(R.id.text_input_username);
+        text_input_total= parent_view.findViewById(R.id.text_input_total);
         act_client = parent_view.findViewById(R.id.act_client);
         act_pay_type = parent_view.findViewById(R.id.act_pay_type);
         act_product = parent_view.findViewById(R.id.act_product);
-        act_qty = parent_view.findViewById(R.id.act_qty);
         bt_submit = parent_view.findViewById(R.id.bt_submit);
-        bt_sale_date = parent_view.findViewById(R.id.bt_sale_date);
+        // bt_sale_date = parent_view.findViewById(R.id.bt_sale_date);
         checkbox_sign = parent_view.findViewById(R.id.checkbox_sign);
+
+        if (saleType == SaleType.FIRST_PAY) {
+            ll_sale_prest.setVisibility(View.VISIBLE);
+        } else if (saleType == SaleType.NEXT_PREST) {
+            ll_sale_prest.setVisibility(View.VISIBLE);
+            text_input_total.setHint(getString(R.string.remain));
+            act_total.setText(soldItem.getRemain() + "MT");
+            ll_product_client.setVisibility(View.GONE);
+            ll_region_date.setVisibility(View.GONE);
+        }
 
         iv_add_client.setColorFilter(getContext().getResources().getColor(R.color.mdtp_transparent_black));
         iv_add_client.setOnClickListener(new View.OnClickListener() {
@@ -298,6 +336,7 @@ public class AddSaleFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if (productsRespList.get(i) != null) {
                     productId = productsRespList.get(i).getId() + "";
+                    act_total.setText(productsRespList.get(i).getPrice() + "");
                 }
             }
         });
@@ -334,79 +373,80 @@ public class AddSaleFragment extends Fragment {
         bt_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (checkbox_sign.isChecked()) {
-                    processSale();
-                } else {
-                    try {
-                        String pay_type = act_pay_type.getText().toString();
-                        String qty = act_qty.getText().toString();
-                        String date = bt_sale_date.getText().toString();
-                        double lat = Tools.getLatLng(getContext()).getLatitude();
-                        double lng = Tools.getLatLng(getContext()).getLongitude();
+                progressDialog.setMessage(getString(R.string.loading_sale_fragment));
+                progressDialog.show();
+                try {
+                    String pay_type = act_pay_type.getText().toString();
+                    String region = act_region.getText().toString();
+                    String neighborhood = act_area.getText().toString();
+                    String city_block = act_quart.getText().toString();
+                    String house_number = act_nr_house.getText().toString();
+                    String reference_point = act_ref_street.getText().toString();
+                    double first_prestation = Double.parseDouble(act_installments.getText().toString());
+                    double total = (saleType == SaleType.NEXT_PREST) ? 0 : Double.parseDouble(act_total.getText().toString());
+                    boolean check_for_first_pay = !productId.equals("") && first_prestation > 0 && first_prestation <= total && !customerId.equals("");
+                    boolean check_for_next_prest = saleType == SaleType.NEXT_PREST && first_prestation > 0 && first_prestation <= soldItem.getRemain();
+                    double lat = 0;
+                    double lng = 0;
 
-                        if (!Tools.isStringNil(pay_type)
-                                && !Tools.isStringNil(date)
-                                && !Tools.isStringNil(qty) && !customerId.equals("") && !productId.equals("")) {
+                    if (Tools.getLatLng(getContext()) != null) {
+                        lat = Tools.getLatLng(getContext()).getLatitude();
+                        lng = Tools.getLatLng(getContext()).getLongitude();
+                    }
 
-                            callback.navigateToCustomerSignSale(Tools.convertObjToMap(new SaleCreatedModel(
-                                    productId,
-                                    customerId,
-                                    "1", // KeyStoreLocal.getInstance(getContext()).getUserId(),
-                                    qty,
-                                    Tools.getMapKey(payTypeMap, pay_type) + "",
-                                    date,
-                                    lat,
-                                    lng
-                            )));
-                        } else {
-                            Snackbar.make(parent_view, getString(R.string.missing_data_sale_fragment), Snackbar.LENGTH_LONG).show();
+                    System.out.println("first " + check_for_first_pay);
+                    System.out.println("next " + check_for_next_prest);
+
+                    if (!Tools.isStringNil(pay_type) && (check_for_first_pay || check_for_next_prest)) {
+
+                        Object saleData =  new AddSaleModel(
+                                KeyStoreLocal.getInstance(getContext()).getUserId(),
+                                customerId,
+                                productId,
+                                first_prestation,
+                                Tools.getMapKey(payTypeMap, pay_type) + "",
+                                lat,
+                                lng,
+                                region,
+                                neighborhood,
+                                city_block,
+                                house_number,
+                                reference_point
+                        );
+
+                        if (saleType == SaleType.NEXT_PREST) {
+                            saleData = new AddSalePrestModel(
+                                    Integer.parseInt(soldItem.getId().replace(".0", "")),
+                                    first_prestation,
+                                    Tools.getMapKey(payTypeMap, pay_type)
+                            );
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        if (!Tools.isGPS_ON(getContext())) {
-                            Snackbar.make(parent_view, getString(R.string.error_sale_fragment_fail_gps), Snackbar.LENGTH_LONG).show();
+
+                        if (saleType != SaleType.NEXT_PREST) {
+                            if (!checkbox_sign.isChecked()) {
+                                progressDialog.hide();
+                                callback.navigateToCustomerSignSale(Tools.convertObjToMap(saleData), saleType);
+                            } else {
+                                processSale(Tools.convertObjToMap(saleData));
+                            }
                         } else {
-                            Snackbar.make(parent_view, getString(R.string.error_sale_fragment_fail), Snackbar.LENGTH_LONG).show();
+                            processSale(Tools.convertObjToMap(saleData));
                         }
+                    } else {
+                        progressDialog.hide();
+                        Snackbar.make(parent_view, getString(R.string.missing_data_sale_fragment), Snackbar.LENGTH_LONG).show();
+                    }
+                } catch (Exception e) {
+                    progressDialog.hide();
+                    e.printStackTrace();
+                    if (!Tools.isGPS_ON(getContext())) {
+                        Snackbar.make(parent_view, getString(R.string.error_sale_fragment_fail_gps), Snackbar.LENGTH_LONG).show();
+                    } else {
+                        Snackbar.make(parent_view, getString(R.string.error_sale_fragment_fail), Snackbar.LENGTH_LONG).show();
                     }
                 }
             }
         });
-
-        bt_sale_date.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialogDatePickerLight(view);
-            }
-        });
-
-        // get latitude and longitude
-        // get signature
-    }
-
-    private void dialogDatePickerLight(final View v) {
-        Calendar cur_calender = Calendar.getInstance();
-        DatePickerDialog datePicker = DatePickerDialog.newInstance(
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.set(Calendar.YEAR, year);
-                        calendar.set(Calendar.MONTH, monthOfYear);
-                        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        long date = calendar.getTimeInMillis();
-                        ((EditText) v).setText(Tools.getFormattedDateShort(date));
-                    }
-                },
-                cur_calender.get(Calendar.YEAR),
-                cur_calender.get(Calendar.MONTH),
-                cur_calender.get(Calendar.DAY_OF_MONTH)
-        );
-        //set dark light
-        datePicker.setThemeDark(false);
-        datePicker.setAccentColor(getResources().getColor(R.color.colorPrimary));
-        datePicker.setMinDate(cur_calender);
-        datePicker.show(getActivity().getFragmentManager(), getString(R.string.date_sale_fragment));
     }
 
     private DisposableObserver<TextViewTextChangeEvent> searchQueryClient() {
@@ -511,65 +551,53 @@ public class AddSaleFragment extends Fragment {
     }
 
 
-    private void processSale() {
-        progressDialog.setMessage(getString(R.string.loading_sale_fragment));
-        progressDialog.show();
+    private void processSale(Map<String, String> map) {
+        GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
 
-        try {
-            String pay_type = act_pay_type.getText().toString();
-            String qty = act_qty.getText().toString();
-            String date = bt_sale_date.getText().toString();
-            double lat = Tools.getLatLng(getContext()).getLatitude();
-            double lng = Tools.getLatLng(getContext()).getLongitude();
+        if (saleType == SaleType.FIRST_PAY) {
+            Call<SaleAddedResponseModel> call = service.postSale(map);
 
-            if (!Tools.isStringNil(pay_type)
-                    && !Tools.isStringNil(date)
-                    && !Tools.isStringNil(qty) && !customerId.equals("") && !productId.equals("")) {
-                GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
+            call.enqueue(new Callback<SaleAddedResponseModel>() {
+                @Override
+                public void onResponse(Call<SaleAddedResponseModel> call, Response<SaleAddedResponseModel> response) {
+                    progressDialog.hide();
 
-                Call<SaleAddedResponseModel> call = service.postSale(Tools.convertObjToMap(new SaleCreatedModel(
-                        productId,
-                        customerId,
-                        "1", // KeyStoreLocal.getInstance(getContext()).getUserId(),
-                        qty,
-                        Tools.getMapKey(payTypeMap, pay_type) + "",
-                        date,
-                        lat,
-                        lng
-                )));
-
-                call.enqueue(new Callback<SaleAddedResponseModel>() {
-                    @Override
-                    public void onResponse(Call<SaleAddedResponseModel> call, Response<SaleAddedResponseModel> response) {
-                        progressDialog.hide();
-
-                        if (response.isSuccessful() && response.body() != null) {
-                            Snackbar.make(parent_view, getString(R.string.success_sale_fragment), Snackbar.LENGTH_LONG).show();
-
-                        } else {
-                            Snackbar.make(parent_view, getString(R.string.error_sale_fragment_failed), Snackbar.LENGTH_LONG).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<SaleAddedResponseModel> call, Throwable t) {
-                        progressDialog.hide();
+                    if (response.isSuccessful() && response.body() != null) {
+                        Snackbar.make(parent_view, getString(R.string.success_sale_fragment), Snackbar.LENGTH_LONG).show();
+                        callback.renderWebView(response.body().getResponse().getId() + "");
+                    } else {
                         Snackbar.make(parent_view, getString(R.string.error_sale_fragment_failed), Snackbar.LENGTH_LONG).show();
                     }
-                });
+                }
 
-            } else {
-                progressDialog.hide();
-                Snackbar.make(parent_view, getString(R.string.missing_data_sale_fragment), Snackbar.LENGTH_LONG).show();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            progressDialog.hide();
-            if (!Tools.isGPS_ON(getContext())) {
-                Snackbar.make(parent_view, getString(R.string.error_sale_fragment_fail_gps), Snackbar.LENGTH_LONG).show();
-            } else {
-                Snackbar.make(parent_view, getString(R.string.error_sale_fragment_fail), Snackbar.LENGTH_LONG).show();
-            }
+                @Override
+                public void onFailure(Call<SaleAddedResponseModel> call, Throwable t) {
+                    progressDialog.hide();
+                    Snackbar.make(parent_view, getString(R.string.error_sale_fragment_failed), Snackbar.LENGTH_LONG).show();
+                }
+            });
+        } else {
+            Call<AddSalePrestResponseModel> call = service.postNextPrestSale(map);
+
+            call.enqueue(new Callback<AddSalePrestResponseModel>() {
+                @Override
+                public void onResponse(Call<AddSalePrestResponseModel> call, Response<AddSalePrestResponseModel> response) {
+                    progressDialog.hide();
+
+                    if (response.isSuccessful() && response.body() != null) {
+                        Snackbar.make(parent_view, getString(R.string.success_sale_next_prest_fragment), Snackbar.LENGTH_LONG).show();
+                        getActivity().onBackPressed();
+                    } else {
+                        Snackbar.make(parent_view, getString(R.string.error_sale_next_prest_fragment_failed), Snackbar.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<AddSalePrestResponseModel> call, Throwable t) {
+                    progressDialog.hide();
+                    Snackbar.make(parent_view, getString(R.string.error_sale_fragment_failed), Snackbar.LENGTH_LONG).show();
+                }
+            });
         }
     }
 

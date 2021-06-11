@@ -1,18 +1,24 @@
 package dev.visum.demoapp.model;
 
-public class SoldItem {
-    private String id;
-    public String title;
-    public String subtitle;
-    public String date;
-    public String imgUrl;
+import java.io.Serializable;
 
-    public SoldItem(String id, String title, String subtitle, String date, String imgUrl) {
+public class SoldItem implements Serializable {
+    private String id;
+    private String title;
+    private String subtitle;
+    private String date;
+    private String imgUrl;
+    private double remain;
+    private boolean containsPrest;
+
+    public SoldItem(String id, String title, String subtitle, String date, String imgUrl, double remain, boolean containsPrest) {
         this.id = id;
         this.title = title;
         this.subtitle = subtitle;
         this.date = date;
         this.imgUrl = imgUrl;
+        this.remain = remain;
+        this.containsPrest = containsPrest;
     }
 
     public String getId() {
@@ -53,5 +59,21 @@ public class SoldItem {
 
     public void setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl;
+    }
+
+    public double getRemain() {
+        return remain;
+    }
+
+    public void setRemain(double remain) {
+        this.remain = remain;
+    }
+
+    public boolean isContainsPrest() {
+        return containsPrest;
+    }
+
+    public void setContainsPrest(boolean containsPrest) {
+        this.containsPrest = containsPrest;
     }
 }
