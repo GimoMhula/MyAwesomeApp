@@ -207,8 +207,8 @@
                     android:layout_width="@dimen/spacing_smlarge"
                     android:layout_height="@dimen/spacing_smlarge"
                     android:layout_gravity="center"
-                    android:tint="@android:color/white"
-                    app:srcCompat="@drawable/ic_arrow_back" />
+                    app:srcCompat="@drawable/ic_arrow_back"
+                    app:tint="@android:color/white" />
 
             </com.balysv.materialripple.MaterialRippleLayout>
 
@@ -241,8 +241,8 @@
                         android:layout_marginLeft="@dimen/spacing_medium"
                         android:layout_marginStart="@dimen/spacing_medium"
                         android:rotation="180"
-                        android:tint="@android:color/white"
-                        app:srcCompat="@drawable/ic_arrow_back" />
+                        app:srcCompat="@drawable/ic_arrow_back"
+                        app:tint="@android:color/white" />
 
                 </LinearLayout>
 

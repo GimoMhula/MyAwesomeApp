@@ -13,9 +13,12 @@ import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.jakewharton.rxbinding4.widget.RxTextView;
+import com.jakewharton.rxbinding4.widget.TextViewTextChangeEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,13 +28,20 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import dev.visum.demoapp.R;
 import dev.visum.demoapp.adapter.AdapterListSurveyCard;
+import dev.visum.demoapp.adapter.AdapterSaleCustomerFiltered;
+import dev.visum.demoapp.adapter.AdapterSaleProductFiltered;
 import dev.visum.demoapp.data.api.GetDataService;
 import dev.visum.demoapp.data.api.MozCarbonAPI;
+import dev.visum.demoapp.model.CustomerResponseModel;
 import dev.visum.demoapp.model.SurveyModel;
 import dev.visum.demoapp.model.SurveyResponseModel;
 import dev.visum.demoapp.model.ResponseModel;
 import dev.visum.demoapp.utils.Tools;
 import dev.visum.demoapp.widget.SpacingItemDecoration;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.observers.DisposableObserver;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -62,6 +72,10 @@ public class SurveyFragment extends Fragment {
     private TextView empty_view;
     private List<SurveyModel> items = new ArrayList<>();
     private AutoCompleteTextView act_client;
+    private AdapterSaleCustomerFiltered customerFilteredAdapter;
+
+    private CompositeDisposable disposable = new CompositeDisposable();
+    private ArrayList<CustomerResponseModel> customersRespList = new ArrayList<>();
 
     public SurveyFragment() {
         // Required empty public constructor
@@ -170,6 +184,25 @@ public class SurveyFragment extends Fragment {
 
         act_client = parent_view.findViewById(R.id.act_client);
 
+        try {
+            debounce(act_client, searchQueryClient());
+            customerFilteredAdapter = new AdapterSaleCustomerFiltered(getContext(), android.R.layout.simple_dropdown_item_1line, customersRespList);
+            act_client.setAdapter(customerFilteredAdapter);
+
+            act_client.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus)
+                        act_client.showDropDown();
+
+                }
+            });
+        }catch (IllegalArgumentException e){
+            Log.d("TAG", "initComponent: "+e.getMessage());
+        }
+
+
         // on item list clicked
         mAdapter.setOnItemClickListener(new AdapterListSurveyCard.OnItemClickListener() {
             @Override
@@ -187,6 +220,68 @@ public class SurveyFragment extends Fragment {
         });
 
         // TODO: missing refresh list and load more items
+    }
+
+
+    private DisposableObserver<TextViewTextChangeEvent> searchQueryClient() {
+        return new DisposableObserver<TextViewTextChangeEvent>() {
+            @Override
+            public void onNext(TextViewTextChangeEvent textViewTextChangeEvent) {
+                GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
+                Call<ResponseModel<List<CustomerResponseModel>>> call = service.getClientFilteredList(textViewTextChangeEvent.getText().toString());
+
+                call.enqueue(new Callback<ResponseModel<List<CustomerResponseModel>>>() {
+                    @Override
+                    public void onResponse(Call<ResponseModel<List<CustomerResponseModel>>> call, Response<ResponseModel<List<CustomerResponseModel>>> response) {
+                        customerFilteredAdapter.clear();
+
+                        if (response.isSuccessful()) {
+                            if (!response.body().getResponse().isEmpty() && response.body().getResponse() instanceof ArrayList) {
+                                for (CustomerResponseModel customerResponseModel:
+                                        response.body().getResponse()) {
+                                    customerFilteredAdapter.add(customerResponseModel);
+                                }
+                            }
+                        } else {
+                            Snackbar.make(parent_view, getString(R.string.error_sale_fragment), Snackbar.LENGTH_LONG).show();
+                        }
+                        customerFilteredAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseModel<List<CustomerResponseModel>>> call, Throwable t) {
+                        customerFilteredAdapter.clear();
+//                        customerId = "";
+                        Snackbar.make(parent_view, getString(R.string.error_sale_fragment_fail), Snackbar.LENGTH_LONG).show();
+                    }
+                });
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+            }
+        };
+    }
+
+    private void debounce(AutoCompleteTextView v, DisposableObserver<TextViewTextChangeEvent> searchQuery) {
+        disposable.add(
+                RxTextView.textChangeEvents(v)
+                        .skipInitialValue()
+                        .debounce(300, TimeUnit.MILLISECONDS)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeWith(searchQuery));
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        disposable.clear();
     }
 
     @Override

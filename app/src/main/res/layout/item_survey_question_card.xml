@@ -79,8 +79,10 @@
                     android:layout_height="0dp" />
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/description"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:inputType="text|textMultiLine"
+                android:gravity="top"
                 android:text="description"
                 android:textSize="14sp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
@@ -119,12 +121,14 @@
                        android:layout_width="wrap_content"
                        android:layout_height="wrap_content"
                        android:text="Sim"
+                       android:textSize="14sp"
                        />
 
                     <RadioButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Nao"
+                        android:textSize="14sp"
                         />
                 </RadioGroup>
 
@@ -160,12 +164,20 @@
                     android:layout_width="@dimen/spacing_middle"
                     android:layout_height="0dp" />
 
-               <Spinner
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   >
-
-               </Spinner>
+                <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                    android:id="@+id/autoComplete"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#000"
+                    android:textCursorDrawable="@null"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginStart="15dp"
+                    android:textSize="12sp"
+                    android:backgroundTint="#FAFAFA"
+                    android:imeOptions="actionNext"
+                    android:inputType="none"
+                    android:background="@drawable/edit_bg"
+                    android:layout_marginBottom="15dp"/>
 
 
 

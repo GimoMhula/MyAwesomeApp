@@ -12,10 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
@@ -25,7 +29,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import dev.visum.demoapp.R;
@@ -69,6 +76,7 @@ public class SurveyQuestionFragment extends Fragment {
     private AppCompatActivity activity;
     private TextView empty_view;
     private List<SurveyQuestionsModel> items = new ArrayList<>();
+    private AutoCompleteTextView classification;
 
     public SurveyQuestionFragment() {
         // Required empty public constructor
@@ -128,6 +136,7 @@ public class SurveyQuestionFragment extends Fragment {
         progressDialog = new ProgressDialog(activity);
         progressDialog.setMessage(getString(R.string.loading_data));
         progressDialog.show();
+
 
         GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
         Call<ResponseModel<List<SurveyQuestionResponseModel>>> call = service.getSurveyQuestionsList("1");
@@ -193,6 +202,43 @@ public class SurveyQuestionFragment extends Fragment {
         // TODO: missing refresh list and load more items
     }
 
+
+    @Override
+    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+
+        classification = view.findViewById(R.id.autoComplete);
+
+        ArrayList<String> arrayList = new ArrayList<>(Arrays.asList("Ma", "Boa","Excelente"));
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), R.layout.list_item, R.id.tvItem, arrayList);
+
+//        classification.setAdapter(adapter);
+
+        /*
+        classification.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (parent.getItemAtPosition(position).equals("Escolha ")) {
+
+
+                } else{
+
+                }
+
+//                    item4 = parent.getItemAtPosition(position).toString();
+
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+*/
+        super.onViewCreated(view, savedInstanceState);
+    }
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
