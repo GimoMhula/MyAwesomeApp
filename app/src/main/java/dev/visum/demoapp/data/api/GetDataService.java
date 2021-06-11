@@ -7,13 +7,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Map;
 
+import dev.visum.demoapp.model.AddSaleResponseModel;
+import dev.visum.demoapp.model.AddSalePrestResponseModel;
 import dev.visum.demoapp.model.CustomerResponseModel;
+import dev.visum.demoapp.model.MySaleKeyModel;
 import dev.visum.demoapp.model.ProductResponseModel;
 import dev.visum.demoapp.model.ResponseAddClientModel;
 import dev.visum.demoapp.model.ResponseModel;
 import dev.visum.demoapp.model.SaleAddedResponseModel;
-import dev.visum.demoapp.model.SaleCreatedModel;
-import dev.visum.demoapp.model.UserAgentBodyModel;
 import dev.visum.demoapp.model.UserAgentResponseModel;
 import okhttp3.MultipartBody;
 import retrofit2.Call;
@@ -38,8 +39,14 @@ public interface GetDataService {
     @GET("client/find")
     Call<ResponseModel<List<CustomerResponseModel>>> getClientFilteredList(@NotNull @Query("input") String input);
 
-    @POST("sale_product")
+    @POST("store_sale")
     Call<SaleAddedResponseModel> postSale(@NotNull @QueryMap Map<String, String> saleCreatedModel);
+
+    @POST("store_prestation")
+    Call<AddSalePrestResponseModel> postNextPrestSale(@NotNull @QueryMap Map<String, String> nextPrestSaleCreatedModel);
+
+    @GET("sales")
+    Call<MySaleKeyModel> getMySales();
 
     @Multipart
     @POST("client/signature")
