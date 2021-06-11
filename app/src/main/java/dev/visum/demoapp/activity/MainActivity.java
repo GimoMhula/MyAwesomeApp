@@ -1,9 +1,16 @@
 package dev.visum.demoapp.activity;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.print.PrintAttributes;
+import android.print.PrintDocumentAdapter;
+import android.print.PrintJob;
+import android.print.PrintManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,6 +21,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,10 +34,15 @@ import dev.visum.demoapp.fragment.ListSoldItemsFragment;
 import dev.visum.demoapp.fragment.ProductGridFragment;
 import dev.visum.demoapp.model.BaseActivity;
 import dev.visum.demoapp.model.ItemCategory;
+import dev.visum.demoapp.model.SaleType;
+import dev.visum.demoapp.model.SoldItem;
+import dev.visum.demoapp.utils.Constants;
 import dev.visum.demoapp.utils.Tools;
 import dev.visum.demoapp.widget.SpacingItemDecoration;
 
-public class MainActivity extends BaseActivity implements AddSaleFragment.OnAddSaleSelectedListener, ListSoldItemsFragment.OnListSoldItemsSelectedListener {
+public class MainActivity extends BaseActivity implements AddSaleFragment.OnAddSaleSelectedListener
+        , ListSoldItemsFragment.OnListSoldItemsSelectedListener
+        , CustomerSignSaleFragment.OnCustomerSignSaleListener {
 
     private RecyclerView recyclerView;
     private AdapterGridItemCategory mAdapter;
@@ -50,7 +63,7 @@ public class MainActivity extends BaseActivity implements AddSaleFragment.OnAddS
         recyclerView.setNestedScrollingEnabled(false);
 
 
-        List<ItemCategory> items = DataGenerator.getItemCategory(this);
+        List<ItemCategory> items = new ArrayList<>();
         ItemCategory itemCategory = new ItemCategory();
         itemCategory.image = R.drawable.ic_image_black_24dp;
         itemCategory.title = "Produtos";
@@ -141,18 +154,60 @@ public class MainActivity extends BaseActivity implements AddSaleFragment.OnAddS
         } else if (fragment instanceof ListSoldItemsFragment) {
             ListSoldItemsFragment listSoldItemsFragment = (ListSoldItemsFragment) fragment;
             listSoldItemsFragment.setCallback(this);
+        } else if (fragment instanceof CustomerSignSaleFragment) {
+            CustomerSignSaleFragment customerSignSaleFragment = (CustomerSignSaleFragment) fragment;
+            customerSignSaleFragment.setCallback(this);
         }
     }
 
     // fragments interfaces
 
     @Override
-    public void navigateToCustomerSignSale(Map<String, String> addSaleMap) {
-        goToFragment(new CustomerSignSaleFragment().newInstance(addSaleMap));
+    public void navigateToCustomerSignSale(Map<String, String> addSaleMap, SaleType saleType) {
+        goToFragment(new CustomerSignSaleFragment().newInstance(addSaleMap, saleType));
     }
 
     @Override
-    public void navigateToAddSale() {
-        goToFragment(new AddSaleFragment());
+    public void navigateToAddSale(SaleType saleType, SoldItem soldItem) {
+        goToFragment(new AddSaleFragment().newInstance(saleType, soldItem));
     }
+
+    @Override
+    public void renderWebView(String saleId) {
+        WebView webView = new WebView(this);
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.setWebViewClient(new WebViewClient() {
+
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return false;
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                System.out.println("page finished loading " + url);
+                createWebPrintJob(view);
+            }
+        });
+        this.setContentView(webView);
+        webView.loadUrl(Constants.getInstance().API + Constants.getInstance().INVOICE_PATH + "/" + saleId);
+    }
+
+    private void createWebPrintJob(WebView webView) {
+
+        // Get a PrintManager instance
+        PrintManager printManager = (PrintManager) this.getSystemService(Context.PRINT_SERVICE);
+
+        String jobName = getString(R.string.app_name) + " Document";
+
+        // Get a print adapter instance
+        PrintDocumentAdapter printAdapter = webView.createPrintDocumentAdapter(jobName);
+
+        // Create a print job with name and adapter instance
+        PrintJob printJob = printManager.print(jobName, printAdapter,
+                new PrintAttributes.Builder().build());
+
+        // Save the job object for later status checking
+        // printJobs.add(printJob);
+    }
+
 }
