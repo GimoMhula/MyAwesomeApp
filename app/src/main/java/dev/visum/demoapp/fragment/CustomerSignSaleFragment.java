@@ -31,6 +31,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.JsonObject;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -44,7 +45,9 @@ import java.util.Map;
 import dev.visum.demoapp.R;
 import dev.visum.demoapp.data.api.GetDataService;
 import dev.visum.demoapp.data.api.MozCarbonAPI;
+import dev.visum.demoapp.model.AddSaleResponseModel;
 import dev.visum.demoapp.model.SaleAddedResponseModel;
+import dev.visum.demoapp.model.SaleType;
 import dev.visum.demoapp.utils.Constants;
 import dev.visum.demoapp.utils.ProgressRequestBody;
 import okhttp3.MultipartBody;
@@ -81,6 +84,18 @@ public class CustomerSignSaleFragment extends Fragment {
     String pic_name = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
     String StoredPath = DIRECTORY + pic_name + ".png";
 
+    private SaleType saleType;
+
+    OnCustomerSignSaleListener callback;
+
+    public void setCallback(OnCustomerSignSaleListener callback) {
+        this.callback = callback;
+    }
+
+    public interface OnCustomerSignSaleListener {
+        public void renderWebView(String saleId);
+    }
+
     public CustomerSignSaleFragment() {
         // Required empty public constructor
     }
@@ -90,13 +105,15 @@ public class CustomerSignSaleFragment extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param addSaleMap Parameter add sale map.
+     * @param saleType Parameter pass sale type - full, first prest or next prest
      * @return A new instance of fragment CustomerSignSaleFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static CustomerSignSaleFragment newInstance(Map<String, String> addSaleMap) {
+    public static CustomerSignSaleFragment newInstance(Map<String, String> addSaleMap, SaleType saleType) {
         CustomerSignSaleFragment fragment = new CustomerSignSaleFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_PARAM1, (Serializable) addSaleMap);
+        args.putSerializable(ARG_PARAM2, saleType);
         fragment.setArguments(args);
         return fragment;
     }
@@ -106,6 +123,7 @@ public class CustomerSignSaleFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             addSaleMap = (Map<String, String>) getArguments().getSerializable(ARG_PARAM1);
+            saleType = (SaleType) getArguments().getSerializable(ARG_PARAM2);
         }
     }
 
@@ -188,7 +206,7 @@ public class CustomerSignSaleFragment extends Fragment {
         MultipartBody.Part filePart = MultipartBody.Part.createFormData("signature", file.getName(), fileBody);
 
         GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
-        Call<JsonObject> call = service.uploadDigitalSignatureImage(filePart, "2");
+        Call<JsonObject> call = service.uploadDigitalSignatureImage(filePart, addSaleMap.get("customer_id"));
 
         call.enqueue(new Callback<JsonObject>() {
             @Override
@@ -232,48 +250,10 @@ public class CustomerSignSaleFragment extends Fragment {
 
                 if (response.isSuccessful() && response.body() != null) {
                     Snackbar.make(parent_view, getString(R.string.success_sale_fragment), Snackbar.LENGTH_LONG).show();
-                    /*String url = Constants.getInstance().API + Constants.getInstance().INVOICE_PATH + "/" + response.body().getData().getId();
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setData(Uri.parse(url));
-                    getActivity().startActivity(i);*/
-                    WebView webView = new WebView(getContext());
-                    webView.getSettings().setJavaScriptEnabled(true);
-                    webView.setWebViewClient(new WebViewClient() {
-
-                        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                            return false;
-                        }
-
-                        @Override
-                        public void onPageFinished(WebView view, String url) {
-                            System.out.println("page finished loading " + url);
-                            createWebPrintJob(view);
-                        }
-                    });
-                    getActivity().setContentView(webView);
-                    webView.loadUrl(Constants.getInstance().API + Constants.getInstance().INVOICE_PATH + "/" + response.body().getData().getId());
+                    callback.renderWebView(response.body().getResponse().getId() + "");
                 } else {
                     Snackbar.make(parent_view, getString(R.string.error_sale_fragment_failed), Snackbar.LENGTH_LONG).show();
                 }
-            }
-
-            private void createWebPrintJob(WebView webView) {
-
-                // Get a PrintManager instance
-                PrintManager printManager = (PrintManager) getActivity()
-                        .getSystemService(Context.PRINT_SERVICE);
-
-                String jobName = getString(R.string.app_name) + " Document";
-
-                // Get a print adapter instance
-                PrintDocumentAdapter printAdapter = webView.createPrintDocumentAdapter(jobName);
-
-                // Create a print job with name and adapter instance
-                PrintJob printJob = printManager.print(jobName, printAdapter,
-                        new PrintAttributes.Builder().build());
-
-                // Save the job object for later status checking
-                // printJobs.add(printJob);
             }
 
             @Override
@@ -283,7 +263,6 @@ public class CustomerSignSaleFragment extends Fragment {
             }
         });
     }
-
 
     public class signature extends View {
         private static final float STROKE_WIDTH = 5f;
