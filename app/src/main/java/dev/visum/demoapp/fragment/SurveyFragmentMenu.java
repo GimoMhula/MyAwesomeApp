@@ -1,15 +1,20 @@
 package dev.visum.demoapp.fragment;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -22,6 +27,8 @@ import dev.visum.demoapp.R;
 public class SurveyFragmentMenu extends Fragment {
     private FragmentActivity myContext;
     private SurveyViewModel galleryViewModel;
+    private TextView next_text;
+
     private enum State {
         SHIPPING,
         PAYMENT,
@@ -59,6 +66,7 @@ public class SurveyFragmentMenu extends Fragment {
         tv_shipping = (TextView) v.findViewById(R.id.tv_shipping);
         tv_payment = (TextView) v.findViewById(R.id.tv_payment);
         tv_confirm = (TextView) v.findViewById(R.id.tv_confirm);
+        next_text=(TextView) v.findViewById(R.id.lyt_next_text);
         displayFragment(array_state[idx_state]);
 
         image_payment.setColorFilter(getResources().getColor(R.color.grey_10), PorterDuff.Mode.SRC_ATOP);
@@ -69,9 +77,21 @@ public class SurveyFragmentMenu extends Fragment {
             public void onClick(View v) {
                 if (idx_state == array_state.length - 1) return;
                 idx_state++;
+                if(idx_state==1){
+                    next_text.setText("Submeter");
+                    if(next_text.getText().toString().equals("Submeter")){
+
+                    }
+                }if(idx_state==2){
+                    showCustomDialog();
+                }else {
+                    next_text.setText("Proximo");
+                }
+
                 displayFragment(array_state[idx_state]);
             }
         });
+
 
         (v.findViewById(R.id.lyt_previous)).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,6 +120,8 @@ public class SurveyFragmentMenu extends Fragment {
             image_shipping.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
             image_payment.clearColorFilter();
             tv_payment.setTextColor(getResources().getColor(R.color.grey_90));
+            //TODO
+
         } else if (state.name().equalsIgnoreCase(State.CONFIRMATION.name())) {
 //            fragment = new FragmentConfirmation();
             line_second.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
@@ -118,7 +140,29 @@ public class SurveyFragmentMenu extends Fragment {
         tv_payment.setTextColor(getResources().getColor(R.color.grey_20));
         tv_confirm.setTextColor(getResources().getColor(R.color.grey_20));
     }
+    private void showCustomDialog() {
+        final Dialog dialog = new Dialog(getActivity());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); // before
+        dialog.setContentView(R.layout.dialog_info);
+        dialog.setCancelable(true);
 
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(dialog.getWindow().getAttributes());
+        lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
+
+        ((AppCompatButton) dialog.findViewById(R.id.bt_close)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(), ((AppCompatButton) v).getText().toString() + " Clicked", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+        dialog.getWindow().setAttributes(lp);
+    }
     @Override
     public void onAttach(@NonNull Activity activity) {
         myContext=(FragmentActivity) activity;

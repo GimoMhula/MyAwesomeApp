@@ -9,6 +9,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -60,6 +61,7 @@ public class SurveyFragment extends Fragment {
     private AppCompatActivity activity;
     private TextView empty_view;
     private List<SurveyModel> items = new ArrayList<>();
+    private AutoCompleteTextView act_client;
 
     public SurveyFragment() {
         // Required empty public constructor
@@ -165,6 +167,8 @@ public class SurveyFragment extends Fragment {
         //set data and list adapter
         mAdapter = new AdapterListSurveyCard(getContext(), items);
         recyclerView.setAdapter(mAdapter);
+
+        act_client = parent_view.findViewById(R.id.act_client);
 
         // on item list clicked
         mAdapter.setOnItemClickListener(new AdapterListSurveyCard.OnItemClickListener() {

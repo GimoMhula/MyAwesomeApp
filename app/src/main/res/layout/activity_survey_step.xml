@@ -167,6 +167,24 @@
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/text_input_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            >
+
+            <AutoCompleteTextView
+                android:id="@+id/act_client"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/act_client"
+                android:maxLines="1"
+                android:singleLine="true"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
         <FrameLayout
             android:id="@+id/frame_content"
             android:layout_width="match_parent"
@@ -210,6 +228,7 @@
                     android:orientation="horizontal">
 
                     <TextView
+                        android:id="@+id/lyt_next_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/NEXT"

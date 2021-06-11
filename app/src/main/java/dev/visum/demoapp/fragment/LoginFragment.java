@@ -114,7 +114,7 @@ public class LoginFragment extends Fragment {
 
     // login action
     private void loginUser() {
-        getActivity().startActivity(new Intent(getActivity(), MainActivity.class));
+       // getActivity().startActivity(new Intent(getActivity(), MainActivity.class));
         progressDialog.setMessage(getString(R.string.sign_in_msg));
         progressDialog.show();
         loginBtn.setAlpha(0f);

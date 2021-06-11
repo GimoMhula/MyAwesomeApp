@@ -60,4 +60,5 @@
     <string name="error_client">Ocorreu um erro!</string>
     <string name="failed_client">Não foi possível criar o cliente!</string>
     <string name="NEXT">Proximo</string>
+    <string name="survey_submited">Inquerito submetido com sucesso!</string>
 </resources>
