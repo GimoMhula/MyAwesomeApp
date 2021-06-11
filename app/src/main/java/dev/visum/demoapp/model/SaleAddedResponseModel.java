@@ -10,13 +10,13 @@ public class SaleAddedResponseModel {
     @SerializedName("message")
     private String message;
 
-    @SerializedName("data")
-    private SaleAddedModel data;
+    @SerializedName("response")
+    private SaleAddedModel response;
 
-    public SaleAddedResponseModel(boolean success, String message, SaleAddedModel data) {
+    public SaleAddedResponseModel(boolean success, String message, SaleAddedModel response) {
         this.success = success;
         this.message = message;
-        this.data = data;
+        this.response = response;
     }
 
     public boolean isSuccess() {
@@ -35,11 +35,11 @@ public class SaleAddedResponseModel {
         this.message = message;
     }
 
-    public SaleAddedModel getData() {
-        return data;
+    public SaleAddedModel getResponse() {
+        return response;
     }
 
-    public void setData(SaleAddedModel data) {
-        this.data = data;
+    public void setResponse(SaleAddedModel response) {
+        this.response = response;
     }
 }
