@@ -1,17 +1,18 @@
 package dev.visum.demoapp.activity;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
 import android.print.PrintJob;
 import android.print.PrintManager;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -27,12 +28,10 @@ import java.util.Map;
 
 import dev.visum.demoapp.R;
 import dev.visum.demoapp.adapter.AdapterGridItemCategory;
-import dev.visum.demoapp.data.DataGenerator;
 import dev.visum.demoapp.fragment.AddSaleFragment;
 import dev.visum.demoapp.fragment.CustomerSignSaleFragment;
 import dev.visum.demoapp.fragment.ListSoldItemsFragment;
 import dev.visum.demoapp.fragment.ProductGridFragment;
-import dev.visum.demoapp.fragment.SurveyFragment;
 import dev.visum.demoapp.fragment.SurveyFragmentMenu;
 import dev.visum.demoapp.model.BaseActivity;
 import dev.visum.demoapp.model.ItemCategory;
@@ -48,6 +47,10 @@ public class MainActivity extends BaseActivity implements AddSaleFragment.OnAddS
 
     private RecyclerView recyclerView;
     private AdapterGridItemCategory mAdapter;
+    private ImageButton bt_clear;
+    private LinearLayout ll_search_bar;
+    private MenuItem menu_search;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +61,23 @@ public class MainActivity extends BaseActivity implements AddSaleFragment.OnAddS
     }
 
     private void initComponent() {
+        bt_clear = findViewById(R.id.bt_clear);
+        ll_search_bar = findViewById(R.id.ll_search_bar);
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         recyclerView.addItemDecoration(new SpacingItemDecoration(2, Tools.dpToPx(this, 8), true));
         recyclerView.setHasFixedSize(true);
         recyclerView.setNestedScrollingEnabled(false);
+
+        bt_clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ll_search_bar.setVisibility(View.GONE);
+                menu_search.setVisible(true);
+                getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources()
+                        .getColor(R.color.colorPrimary)));
+            }
+        });
 
 
         List<ItemCategory> items = new ArrayList<>();
@@ -114,6 +129,12 @@ public class MainActivity extends BaseActivity implements AddSaleFragment.OnAddS
     }
 
     private void goToFragment(Fragment f) {
+        ll_search_bar.setVisibility(View.GONE);
+        if (menu_search != null) {
+            menu_search.setVisible(true);
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources()
+                    .getColor(R.color.colorPrimary)));
+        }
         FragmentTransaction fragmentTransaction = getInstance().getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.parent_view, f);
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -123,7 +144,7 @@ public class MainActivity extends BaseActivity implements AddSaleFragment.OnAddS
 
 
     private void initToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Dashboard");
         toolbar.setNavigationIcon(null);
         setSupportActionBar(toolbar);
@@ -153,6 +174,13 @@ public class MainActivity extends BaseActivity implements AddSaleFragment.OnAddS
         switch (item.getItemId()) {
             case android.R.id.home:
                 this.onBackPressed();
+                break;
+            case R.id.menu_search_sales:
+                menu_search = item;
+                item.setVisible(false);
+                ll_search_bar.setVisibility(View.VISIBLE);
+                getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources()
+                        .getColor(R.color.mdtp_white)));
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -221,5 +249,4 @@ public class MainActivity extends BaseActivity implements AddSaleFragment.OnAddS
         // Save the job object for later status checking
         // printJobs.add(printJob);
     }
-
 }
