@@ -16,3 +16,6 @@
 # Pascoal
 .idea/jarRepositories.xml
 .idea/.name
+
+# firebase stuffs
+app/google-services.json

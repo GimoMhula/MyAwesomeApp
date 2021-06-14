@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,7 +23,27 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.google.android.material.snackbar.Snackbar;
+import com.jakewharton.rxbinding4.widget.RxTextView;
+import com.jakewharton.rxbinding4.widget.TextViewTextChangeEvent;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import dev.visum.demoapp.R;
+import dev.visum.demoapp.adapter.AdapterSaleCustomerFiltered;
+import dev.visum.demoapp.data.api.GetDataService;
+import dev.visum.demoapp.data.api.MozCarbonAPI;
+import dev.visum.demoapp.model.CustomerResponseModel;
+import dev.visum.demoapp.model.ResponseModel;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.observers.DisposableObserver;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class SurveyFragmentMenu extends Fragment {
@@ -40,6 +62,10 @@ public class SurveyFragmentMenu extends Fragment {
     private ImageView image_shipping, image_payment, image_confirm;
     private TextView tv_shipping, tv_payment, tv_confirm;
     private int idx_state = 0;
+    private AutoCompleteTextView act_client;
+    private AdapterSaleCustomerFiltered customerFilteredAdapter;
+    private ArrayList<CustomerResponseModel> customersRespList = new ArrayList<>();
+    private CompositeDisposable disposable = new CompositeDisposable();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -57,6 +83,7 @@ public class SurveyFragmentMenu extends Fragment {
         return root;
     }
     private void initComponent(View v) {
+        act_client = v.findViewById(R.id.act_client);
         line_first = (View) v.findViewById(R.id.line_first);
         line_second = (View) v.findViewById(R.id.line_second);
         image_shipping = (ImageView) v.findViewById(R.id.image_shipping);
@@ -101,6 +128,26 @@ public class SurveyFragmentMenu extends Fragment {
                 displayFragment(array_state[idx_state]);
             }
         });
+
+
+        try {
+            debounce(act_client, searchQueryClient());
+            customerFilteredAdapter = new AdapterSaleCustomerFiltered(getContext(), android.R.layout.simple_dropdown_item_1line, customersRespList);
+            act_client.setAdapter(customerFilteredAdapter);
+
+            act_client.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus)
+                        act_client.showDropDown();
+
+                }
+            });
+        }catch (IllegalArgumentException e){
+            Log.d("TAG", "initComponent: "+e.getMessage());
+        }
+
     }
 
     private void displayFragment(State state) {
@@ -167,5 +214,67 @@ public class SurveyFragmentMenu extends Fragment {
     public void onAttach(@NonNull Activity activity) {
         myContext=(FragmentActivity) activity;
         super.onAttach(activity);
+    }
+
+    private DisposableObserver<TextViewTextChangeEvent> searchQueryClient() {
+        return new DisposableObserver<TextViewTextChangeEvent>() {
+            @Override
+            public void onNext(TextViewTextChangeEvent textViewTextChangeEvent) {
+                GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
+                Call<ResponseModel<List<CustomerResponseModel>>> call = service.getClientFilteredList(textViewTextChangeEvent.getText().toString());
+
+                call.enqueue(new Callback<ResponseModel<List<CustomerResponseModel>>>() {
+                    @Override
+                    public void onResponse(Call<ResponseModel<List<CustomerResponseModel>>> call, Response<ResponseModel<List<CustomerResponseModel>>> response) {
+                        customerFilteredAdapter.clear();
+
+                        if (response.isSuccessful()) {
+                            if (!response.body().getResponse().isEmpty() && response.body().getResponse() instanceof ArrayList) {
+                                for (CustomerResponseModel customerResponseModel:
+                                        response.body().getResponse()) {
+                                    customerFilteredAdapter.add(customerResponseModel);
+                                }
+                            }
+                        } else {
+                            Snackbar.make(getView(), getString(R.string.error_sale_fragment), Snackbar.LENGTH_LONG).show();
+                        }
+                        customerFilteredAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseModel<List<CustomerResponseModel>>> call, Throwable t) {
+                        customerFilteredAdapter.clear();
+//                        customerId = "";
+                        Snackbar.make(getView(), getString(R.string.error_sale_fragment_fail), Snackbar.LENGTH_LONG).show();
+                    }
+                });
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+            }
+        };
+    }
+
+    private void debounce(AutoCompleteTextView v, DisposableObserver<TextViewTextChangeEvent> searchQuery) {
+        disposable.add(
+                RxTextView.textChangeEvents(v)
+                        .skipInitialValue()
+                        .debounce(300, TimeUnit.MILLISECONDS)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeWith(searchQuery));
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        disposable.clear();
     }
 }

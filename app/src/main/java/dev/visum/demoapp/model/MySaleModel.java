@@ -2,139 +2,141 @@ package dev.visum.demoapp.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+
 public class MySaleModel {
     @SerializedName("id")
-    private double id;
+    private String id;
 
-    @SerializedName("total")
-    private double total;
+    @SerializedName("product_id")
+    private String product_id;
 
-    @SerializedName("remain")
-    private double remain;
+    @SerializedName("agent_id")
+    private String agent_id;
 
-    @SerializedName("image")
-    private String image;
-
-    @SerializedName("name")
-    private String name;
+    @SerializedName("customer_id")
+    private String customer_id;
 
     @SerializedName("quant")
-    private double quant;
+    private int quant;
 
-    @SerializedName("price")
-    private double price;
+    @SerializedName("missing")
+    private double missing;
 
-    @SerializedName("completed")
-    private double completed;
+    @SerializedName("totalPrice")
+    private double totalPrice;
 
-    @SerializedName("warehouse")
-    private String warehouse;
+    @SerializedName("done")
+    private int done;
 
-    @SerializedName("saleDate")
-    private String saleDate;
+    @SerializedName("created_at")
+    private String created_at;
 
-    @SerializedName("totalPrest")
-    private double totalPrest;
+    @SerializedName("prestation")
+    private ArrayList<MySalesPrestModel> prestation;
 
-    public MySaleModel(double id, double total, double remain, String image, String name, double quant, double price, double completed, String warehouse, String saleDate, double totalPrest) {
+    @SerializedName("product")
+    private ProductResponseModel product;
+
+    public MySaleModel(String id, String product_id, String agent_id, String customer_id, int quant, double missing, double totalPrice, int done, String created_at, ArrayList<MySalesPrestModel> prestation, ProductResponseModel product) {
         this.id = id;
-        this.total = total;
-        this.remain = remain;
-        this.image = image;
-        this.name = name;
+        this.product_id = product_id;
+        this.agent_id = agent_id;
+        this.customer_id = customer_id;
         this.quant = quant;
-        this.price = price;
-        this.completed = completed;
-        this.warehouse = warehouse;
-        this.saleDate = saleDate;
-        this.totalPrest = totalPrest;
+        this.missing = missing;
+        this.totalPrice = totalPrice;
+        this.done = done;
+        this.created_at = created_at;
+        this.prestation = prestation;
+        this.product = product;
     }
 
-    public double getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(double id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public double getTotal() {
-        return total;
+    public String getProduct_id() {
+        return product_id;
     }
 
-    public void setTotal(double total) {
-        this.total = total;
+    public void setProduct_id(String product_id) {
+        this.product_id = product_id;
     }
 
-    public double getRemain() {
-        return remain;
+    public String getAgent_id() {
+        return agent_id;
     }
 
-    public void setRemain(double remain) {
-        this.remain = remain;
+    public void setAgent_id(String agent_id) {
+        this.agent_id = agent_id;
     }
 
-    public String getImage() {
-        return image;
+    public String getCustomer_id() {
+        return customer_id;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setCustomer_id(String customer_id) {
+        this.customer_id = customer_id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public double getQuant() {
+    public int getQuant() {
         return quant;
     }
 
-    public void setQuant(double quant) {
+    public void setQuant(int quant) {
         this.quant = quant;
     }
 
-    public double getPrice() {
-        return price;
+    public double getMissing() {
+        return missing;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public void setMissing(double missing) {
+        this.missing = missing;
     }
 
-    public double getCompleted() {
-        return completed;
+    public double getTotalPrice() {
+        return totalPrice;
     }
 
-    public void setCompleted(double completed) {
-        this.completed = completed;
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
-    public String getWarehouse() {
-        return warehouse;
+    public int getDone() {
+        return done;
     }
 
-    public void setWarehouse(String warehouse) {
-        this.warehouse = warehouse;
+    public void setDone(int done) {
+        this.done = done;
     }
 
-    public String getSaleDate() {
-        return saleDate;
+    public String getCreated_at() {
+        return created_at;
     }
 
-    public void setSaleDate(String saleDate) {
-        this.saleDate = saleDate;
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
     }
 
-    public double getTotalPrest() {
-        return totalPrest;
+    public ArrayList<MySalesPrestModel> getPrestation() {
+        return prestation;
     }
 
-    public void setTotalPrest(double totalPrest) {
-        this.totalPrest = totalPrest;
+    public void setPrestation(ArrayList<MySalesPrestModel> prestation) {
+        this.prestation = prestation;
+    }
+
+    public ProductResponseModel getProduct() {
+        return product;
+    }
+
+    public void setProduct(ProductResponseModel product) {
+        this.product = product;
     }
 }
