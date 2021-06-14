@@ -75,5 +75,8 @@
     <string name="remain">Falta pagar</string>
     <string name="success_sale_next_prest_fragment">Adicionou a prestação com sucesso!</string>
     <string name="error_sale_next_prest_fragment_failed">Ocorreu um erro adicionar prestação!</string>
+    <string name="search_sale">Procurar Vendas</string>
+    <string name="empty_sales">Não encontrados vendas nessa pesquisa!</string>
+    <string name="failed_get_sales">Ocorreu um erro na pesquisa!</string>
 
 </resources>
