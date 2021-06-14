@@ -5,30 +5,42 @@ import com.google.gson.annotations.SerializedName;
 public class MySalesPrestModel {
 
     @SerializedName("id")
-    private int id;
+    private String id;
+
+    @SerializedName("sale_id")
+    private String sale_id;
 
     @SerializedName("value")
     private double value;
 
-    @SerializedName("date")
-    private String date;
+    @SerializedName("created_at")
+    private String created_at;
 
-    @SerializedName("payment_method")
-    private String payment_method;
+    @SerializedName("payment_method_id")
+    private String payment_method_id;
 
-    public MySalesPrestModel(int id, double value, String date, String payment_method) {
+    public MySalesPrestModel(String id, String sale_id, double value, String created_at, String payment_method_id) {
         this.id = id;
+        this.sale_id = sale_id;
         this.value = value;
-        this.date = date;
-        this.payment_method = payment_method;
+        this.created_at = created_at;
+        this.payment_method_id = payment_method_id;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
+    }
+
+    public String getSale_id() {
+        return sale_id;
+    }
+
+    public void setSale_id(String sale_id) {
+        this.sale_id = sale_id;
     }
 
     public double getValue() {
@@ -39,19 +51,19 @@ public class MySalesPrestModel {
         this.value = value;
     }
 
-    public String getDate() {
-        return date;
+    public String getCreated_at() {
+        return created_at;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
     }
 
-    public String getPayment_method() {
-        return payment_method;
+    public String getPayment_method_id() {
+        return payment_method_id;
     }
 
-    public void setPayment_method(String payment_method) {
-        this.payment_method = payment_method;
+    public void setPayment_method_id(String payment_method_id) {
+        this.payment_method_id = payment_method_id;
     }
 }
