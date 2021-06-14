@@ -8,5 +8,46 @@
     android:background="?attr/colorPrimary"
     app:contentInsetStartWithNavigation="0dp"
     android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+    <LinearLayout
+        android:id="@+id/ll_search_bar"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ProgressBar
+            android:visibility="gone"
+            android:layout_marginRight="10dp"
+            android:indeterminate="true"
+            android:id="@+id/progress_search"
+            android:layout_width="20dp"
+            android:layout_height="20dp" />
+
+        <AutoCompleteTextView
+            android:id="@+id/act_search"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:hint="Pesquisar"
+            android:textColorHint="@android:color/darker_gray"
+            android:imeOptions="actionSearch"
+            android:textColor="@android:color/black"
+            android:maxLines="1"
+            android:singleLine="true"/>
+
+        <ImageButton
+            android:id="@+id/bt_clear"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/ic_close"
+            android:tint="@color/grey_80"
+            android:visibility="visible" />
+
+    </LinearLayout>
+
+</androidx.appcompat.widget.Toolbar>
 
