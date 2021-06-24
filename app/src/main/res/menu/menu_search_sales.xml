@@ -5,4 +5,13 @@
         android:icon="@drawable/ic_search"
         app:showAsAction="ifRoom"
         android:title="@string/search_sale" />
+    <item android:id="@+id/menu_scan_qr_sales"
+        android:icon="@drawable/ic_qrcode"
+        app:showAsAction="ifRoom"
+        android:title="@string/scan_qr_sale" />
+    <item android:id="@+id/menu_clear_qr_code_sale"
+        android:visible="false"
+        android:icon="@drawable/ic_clear"
+        app:showAsAction="ifRoom"
+        android:title="@string/scan_qr_sale" />
 </menu>

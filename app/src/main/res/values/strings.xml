@@ -78,5 +78,15 @@
     <string name="search_sale">Procurar Vendas</string>
     <string name="empty_sales">Não encontrados vendas nessa pesquisa!</string>
     <string name="failed_get_sales">Ocorreu um erro na pesquisa!</string>
+    <string name="scan_qr_sale">Scan QR</string>
+    <string name="product_not_sold">O produto ainda não foi vendido!</string>
+    <string name="product_do_not_exists">Produto não existe no armazém!</string>
+    <string name="product_not_found">Produto não encontrado!</string>
+    <string name="error_get_qr_code_data">Error no código do qr!</string>
+    <string name="info_alert_title">Informações</string>
+    <string name="list_products">Lista de Produtos</string>
+    <string name="failed_get_products">Falha para listar produtos</string>
+    <string name="logout">Terminar sessão</string>
+    <string name="dashboard_title">Dashboard</string>
 
 </resources>

@@ -93,7 +93,7 @@ public class CustomerSignSaleFragment extends Fragment {
     }
 
     public interface OnCustomerSignSaleListener {
-        public void renderWebView(String saleId);
+        public void renderWebView(String invoiceUrl);
     }
 
     public CustomerSignSaleFragment() {
@@ -248,9 +248,10 @@ public class CustomerSignSaleFragment extends Fragment {
             public void onResponse(Call<SaleAddedResponseModel> call, Response<SaleAddedResponseModel> response) {
                 progressDialog.hide();
 
-                if (response.isSuccessful() && response.body() != null) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     Snackbar.make(parent_view, getString(R.string.success_sale_fragment), Snackbar.LENGTH_LONG).show();
-                    callback.renderWebView(response.body().getResponse().getId() + "");
+                    callback.renderWebView(response.body().getUrl());
+                    // callback.renderWebView(response.body().getResponse().getId() + "");
                 } else {
                     Snackbar.make(parent_view, getString(R.string.error_sale_fragment_failed), Snackbar.LENGTH_LONG).show();
                 }

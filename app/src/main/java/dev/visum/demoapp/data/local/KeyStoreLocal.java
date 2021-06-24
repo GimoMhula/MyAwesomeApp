@@ -5,7 +5,11 @@ import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
+
+import dev.visum.demoapp.model.AddSaleModel;
 import dev.visum.demoapp.utils.Constants;
+import dev.visum.demoapp.utils.Tools;
 
 public class KeyStoreLocal {
     private static final KeyStoreLocal ourInstance = new KeyStoreLocal();
@@ -59,5 +63,27 @@ public class KeyStoreLocal {
 
     public String getUserId() {
         return getString(Constants.getInstance().SP_USER_ID);
+    }
+
+    public void logout() {
+        sharedPreferences.edit().clear().apply();
+    }
+
+    public ArrayList<AddSaleModel> getOfflineSales() {
+        Object o = getModel(Constants.getInstance().SP_OFFLINE_SALES);
+
+        if (o == null || !Tools.isCollection(o)) {
+            return new ArrayList<>();
+        } else {
+            return (ArrayList<AddSaleModel>) Tools.convertObjectToList(o);
+        }
+    }
+
+    public void setOfflineSales(AddSaleModel addSaleModel) {
+        ArrayList<AddSaleModel> addSaleModelArrayList = getOfflineSales();
+
+        addSaleModelArrayList.add(addSaleModel);
+
+        setModel(Constants.getInstance().SP_OFFLINE_SALES, addSaleModelArrayList);
     }
 }

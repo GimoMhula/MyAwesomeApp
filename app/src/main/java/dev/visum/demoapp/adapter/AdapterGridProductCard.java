@@ -43,6 +43,7 @@ public class AdapterGridProductCard extends RecyclerView.Adapter<RecyclerView.Vi
     public class OriginalViewHolder extends RecyclerView.ViewHolder {
         public ImageView image;
         public TextView title;
+        public TextView category;
         public TextView price;
         public ImageButton more;
         public View lyt_parent;
@@ -51,6 +52,7 @@ public class AdapterGridProductCard extends RecyclerView.Adapter<RecyclerView.Vi
             super(v);
             image = (ImageView) v.findViewById(R.id.image);
             title = (TextView) v.findViewById(R.id.title);
+            category = (TextView) v.findViewById(R.id.category);
             price = (TextView) v.findViewById(R.id.price);
             more = (ImageButton) v.findViewById(R.id.more);
             lyt_parent = (View) v.findViewById(R.id.lyt_parent);
@@ -73,6 +75,7 @@ public class AdapterGridProductCard extends RecyclerView.Adapter<RecyclerView.Vi
 
             final ProductModel p = items.get(position);
             view.title.setText(p.title);
+            view.category.setText(p.category);
             view.price.setText(p.price);
             Tools.displayImageOriginal(ctx, view.image, p.image, p.url);
             view.lyt_parent.setOnClickListener(new View.OnClickListener() {

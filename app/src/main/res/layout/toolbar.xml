@@ -30,11 +30,11 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@android:color/transparent"
+            android:background="@color/transparent"
             android:hint="Pesquisar"
-            android:textColorHint="@android:color/darker_gray"
+            android:textColorHint="@color/mdtp_light_gray"
             android:imeOptions="actionSearch"
-            android:textColor="@android:color/black"
+            android:textColor="@color/mdtp_transparent_black"
             android:maxLines="1"
             android:singleLine="true"/>
 
@@ -42,7 +42,7 @@
             android:id="@+id/bt_clear"
             android:layout_width="?attr/actionBarSize"
             android:layout_height="?attr/actionBarSize"
-            android:background="@android:color/transparent"
+            android:background="@color/transparent"
             app:srcCompat="@drawable/ic_close"
             android:tint="@color/grey_80"
             android:visibility="visible" />
