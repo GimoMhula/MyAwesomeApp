@@ -103,13 +103,6 @@ public class MyInternetJobService extends JobService {
             // Do what you need to do here
             Log.d("Network ", "Something");
 
-            // wait 5s
-
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             sendNewSales();
         }
 
