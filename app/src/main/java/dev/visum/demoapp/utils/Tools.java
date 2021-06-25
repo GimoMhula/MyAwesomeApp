@@ -2,6 +2,9 @@ package dev.visum.demoapp.utils;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ActivityNotFoundException;
@@ -59,9 +62,33 @@ import java.util.List;
 import java.util.Map;
 
 import dev.visum.demoapp.R;
+import dev.visum.demoapp.activity.LoginActivity;
+import dev.visum.demoapp.model.NotificationType;
 import dev.visum.demoapp.services.MyInternetJobService;
 
 public class Tools {
+
+    public static void showNotification(Context context, NotificationType notificationType, String message) {
+        NotificationManager notificationManager = (NotificationManager)
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
+        // prepare intent which is triggered if the
+// notification is selected
+
+        Intent intent = new Intent(context, LoginActivity.class);
+// use System.currentTimeMillis() to have a unique ID for the pending intent
+        PendingIntent pIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, 0);
+
+// build notification
+// the addAction re-use the same intent to keep the example short
+        Notification n  = new Notification.Builder(context)
+                .setContentTitle(context.getString(R.string.sales_alert))
+                .setContentText(message)
+                .setSmallIcon(notificationType == NotificationType.ADD ? R.drawable.ic_add_task : R.drawable.ic_failed_task)
+                .setContentIntent(pIntent)
+                .setAutoCancel(true).build();
+
+        notificationManager.notify(0, n);
+    }
 
     public static void scheduleJob(Context context) {
         ComponentName serviceComponent = new ComponentName(context, MyInternetJobService.class);
