@@ -88,5 +88,6 @@
     <string name="failed_get_products">Falha para listar produtos</string>
     <string name="logout">Terminar sessão</string>
     <string name="dashboard_title">Dashboard</string>
+    <string name="sales_alert">Vendas</string>
 
 </resources>
