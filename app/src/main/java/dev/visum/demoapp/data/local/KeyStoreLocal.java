@@ -38,6 +38,10 @@ public class KeyStoreLocal {
         }
     }
 
+    private void removeString(String type) {
+        sharedPreferences.edit().remove(type);
+    }
+
     private void setString(String type, String value) {
         sharedPreferences.edit().putString(type, value).apply();
     }
@@ -85,5 +89,9 @@ public class KeyStoreLocal {
         addSaleModelArrayList.add(addSaleModel);
 
         setModel(Constants.getInstance().SP_OFFLINE_SALES, addSaleModelArrayList);
+    }
+
+    public void clearOfflineSales() {
+        removeString(Constants.getInstance().SP_OFFLINE_SALES);
     }
 }
