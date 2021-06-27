@@ -2,8 +2,7 @@ package dev.visum.demoapp.utils;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.Notification;
-import android.app.NotificationManager;
+import android.app.NotificationChannel;
 import android.app.PendingIntent;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
@@ -26,6 +25,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.print.PdfPrint;
+import android.print.PrintAttributes;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
@@ -35,15 +36,20 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.URLUtil;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 
@@ -51,8 +57,17 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,31 +78,110 @@ import java.util.Map;
 
 import dev.visum.demoapp.R;
 import dev.visum.demoapp.activity.LoginActivity;
+import dev.visum.demoapp.model.MyCallbackInterface;
 import dev.visum.demoapp.model.NotificationType;
 import dev.visum.demoapp.services.MyInternetJobService;
 
 public class Tools {
 
-    public static void showNotification(Context context, NotificationType notificationType, String message) {
-        NotificationManager notificationManager = (NotificationManager)
-                context.getSystemService(Context.NOTIFICATION_SERVICE);
-        // prepare intent which is triggered if the
-// notification is selected
 
-        Intent intent = new Intent(context, LoginActivity.class);
-// use System.currentTimeMillis() to have a unique ID for the pending intent
-        PendingIntent pIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, 0);
+    // download files
+    public static void downloadFile(String downloadLink, String fullFilePath) {
+        try {
+            int count;
+            URL url = new URL(downloadLink);
+            URLConnection connection = url.openConnection();
+            connection.connect();
 
-// build notification
-// the addAction re-use the same intent to keep the example short
-        Notification n  = new Notification.Builder(context)
+            // getting file length
+            int lenghtOfFile = connection.getContentLength();
+            // input stream to read file - with 8k buffer
+            InputStream input = new BufferedInputStream(url.openStream(), 8192);
+            // Output stream to write file
+            OutputStream output = new FileOutputStream(fullFilePath);
+            byte data[] = new byte[1024];
+            long total = 0;
+
+            while ((count = input.read(data)) != -1) {
+                total += count;
+
+                // writing data to file
+                output.write(data, 0, count);
+
+            }
+
+
+            // flushing output
+            output.flush();
+
+            // closing streams
+            output.close();
+            input.close();
+
+
+        } catch(FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void createPdf(Context context, String urlLink, String filePath, String clientName, String fileName) {
+        WebView mWebView = new WebView(context);
+
+        mWebView.getSettings().setAllowFileAccess(true);
+        mWebView.getSettings().setDomStorageEnabled(true);
+        mWebView.getSettings().setAppCacheEnabled(true);
+        mWebView.getSettings().setLoadsImagesAutomatically(true);
+        mWebView.setWebViewClient(new WebViewClient() {
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return false;
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                String jobName = context.getString(R.string.app_name).toLowerCase() + "-recibo-" + clientName;
+                PrintAttributes attributes = new PrintAttributes.Builder()
+                        .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
+                        .setResolution(new PrintAttributes.Resolution("pdf", "pdf", 600, 600))
+                        .setMinMargins(PrintAttributes.Margins.NO_MARGINS).build();
+                File path = new File(filePath);
+                PdfPrint pdfPrint = new PdfPrint(attributes);
+                pdfPrint.print(mWebView.createPrintDocumentAdapter(jobName), path, fileName + ".pdf");
+            }
+        });
+        mWebView.loadUrl(urlLink);
+    }
+
+    public static void showNotification(Context context, NotificationType notificationType, String message, @Nullable Intent... intent) {
+        Intent intentLogin = new Intent(context, LoginActivity.class);
+
+        PendingIntent pIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent != null && intent.length > 0 && intent[0] != null ? intent[0] : intentLogin, 0);
+
+        NotificationCompat.Builder n  = new NotificationCompat.Builder(context, Constants.getInstance().CHANNEL_ID)
                 .setContentTitle(context.getString(R.string.sales_alert))
                 .setContentText(message)
                 .setSmallIcon(notificationType == NotificationType.ADD ? R.drawable.ic_add_task : R.drawable.ic_failed_task)
                 .setContentIntent(pIntent)
-                .setAutoCancel(true).build();
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true);
 
-        notificationManager.notify(0, n);
+
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            NotificationChannel channel = new NotificationChannel(
+                    Constants.getInstance().CHANNEL_ID,
+                    context.getString(R.string.app_name),
+                    NotificationManagerCompat.IMPORTANCE_HIGH);
+            notificationManagerCompat.createNotificationChannel(channel);
+            n.setChannelId(Constants.getInstance().CHANNEL_ID);
+        }
+
+        notificationManagerCompat.notify(0, n.build());
     }
 
     public static void scheduleJob(Context context) {
@@ -138,9 +232,17 @@ public class Tools {
         return obj.getClass().isArray() || obj instanceof Collection;
     }
 
-    public static void alertDialogSimpleOk(AppCompatActivity appCompatActivity, String message) {
+    public static void alertDialogSimpleOk(AppCompatActivity appCompatActivity, String message, @Nullable MyCallbackInterface... callback) {
         AlertDialog.Builder builder = new AlertDialog.Builder(appCompatActivity);
         builder.setTitle(appCompatActivity.getString(R.string.info_alert_title));
+        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                if (callback != null && callback.length > 0 && callback[0] != null) {
+                    callback[0].callback(true);
+                }
+            }
+        });
         builder.setMessage(message)
                 .setPositiveButton(R.string.mdtp_ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
