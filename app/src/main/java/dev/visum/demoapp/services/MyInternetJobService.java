@@ -19,12 +19,27 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.security.KeyStore;
+import com.google.android.material.snackbar.Snackbar;
 
+import java.security.KeyStore;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import dev.visum.demoapp.R;
 import dev.visum.demoapp.broadcastreceivers.DoNotStopInternetService;
 import dev.visum.demoapp.broadcastreceivers.NetworkChangeReceiver;
+import dev.visum.demoapp.data.api.GetDataService;
+import dev.visum.demoapp.data.api.MozCarbonAPI;
 import dev.visum.demoapp.data.local.KeyStoreLocal;
+import dev.visum.demoapp.model.AddSaleModel;
+import dev.visum.demoapp.model.NotificationType;
+import dev.visum.demoapp.model.SaleAddedResponseModel;
+import dev.visum.demoapp.services.offlineSales.OfflineSalesTasks;
 import dev.visum.demoapp.utils.Tools;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.functions.Function;
+import retrofit2.Response;
 
 public class MyInternetJobService extends JobService {
     private NetworkChangeReceiver networkChangeReceiver;
@@ -35,9 +50,8 @@ public class MyInternetJobService extends JobService {
         if (networkChangeReceiver == null) {
             new ConnectionStateMonitor().enable(getApplicationContext());
             registerNetworkBroadcast();
-        } else {
-            sendNewSales();
         }
+
         return true;
     }
 
@@ -70,18 +84,10 @@ public class MyInternetJobService extends JobService {
         registerReceiver(networkChangeReceiver, intentFilter);
     }
 
-    private void sendNewSales() {
-        Toast.makeText(this, "Send", Toast.LENGTH_SHORT).show();
-        if (Tools.isConnected(this)) {
-            System.out.println("Sales: \n" + KeyStoreLocal.getInstance(this).getOfflineSales().toString());
-        } else {
-            System.out.println("Offline!");
-        }
-    }
-
     class ConnectionStateMonitor extends ConnectivityManager.NetworkCallback {
 
         final NetworkRequest networkRequest;
+        final MyInternetJobService myInternetJobService = new MyInternetJobService();
 
 
         public ConnectionStateMonitor() {
@@ -94,8 +100,6 @@ public class MyInternetJobService extends JobService {
         public void enable(Context context) {
             ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             connectivityManager.registerNetworkCallback(networkRequest, this);
-
-            sendNewSales();
         }
 
         @Override
@@ -103,15 +107,7 @@ public class MyInternetJobService extends JobService {
             // Do what you need to do here
             Log.d("Network ", "Something");
 
-            sendNewSales();
-        }
-
-        private void sendNewSales() {
-            if (Tools.isConnected(MyInternetJobService.this)) {
-                System.out.println("Sales: \n" + KeyStoreLocal.getInstance(MyInternetJobService.this).getOfflineSales().toString());
-            } else {
-                System.out.println("Offline!");
-            }
+            OfflineSalesTasks.getInstance().sendNewSales(MyInternetJobService.this);
         }
     }
 }
