@@ -102,7 +102,6 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void startApp() {
-        System.out.println("token: " + KeyStoreLocal.getInstance(this).getToken());
         if (KeyStoreLocal.getInstance(this).getToken() != null && KeyStoreLocal.getInstance(this).getUserId() != null) {
             startActivity(MainActivity.class, null, null);
         } else {
