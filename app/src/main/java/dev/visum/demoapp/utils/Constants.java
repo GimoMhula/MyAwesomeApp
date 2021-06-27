@@ -30,4 +30,5 @@ public class Constants {
 
     // Services
     public int MYJOBID = 1;
+    public String CHANNEL_ID = "moz_carbon_notify_channel_001";
 }
