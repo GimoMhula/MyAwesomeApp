@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -47,6 +48,7 @@ import dev.visum.demoapp.model.AddSalePrestModel;
 import dev.visum.demoapp.model.AddSalePrestResponseModel;
 import dev.visum.demoapp.model.AddSaleResponseModel;
 import dev.visum.demoapp.model.CustomerResponseModel;
+import dev.visum.demoapp.model.MyCallbackInterface;
 import dev.visum.demoapp.model.ProductResponseModel;
 import dev.visum.demoapp.model.ResponseAddClientModel;
 import dev.visum.demoapp.model.ResponseModel;
@@ -443,9 +445,13 @@ public class AddSaleFragment extends Fragment {
                         processSale(Tools.convertObjToMap(saleData));
                     }
                 } else {
-                    Log.d("submit", "nope");
-                    Log.d("submit", KeyStoreLocal.getInstance(getContext()).getOfflineSales().toString());
                     KeyStoreLocal.getInstance(getContext()).setOfflineSales(addSaleModel);
+
+                    Tools.alertDialogSimpleOk((AppCompatActivity) getActivity(), getContext().getString(R.string.info_alert_offline_sale_data), isDismissed -> {
+                        if (isDismissed != null && Boolean.parseBoolean(isDismissed.toString())) {
+                            getActivity().onBackPressed();
+                        }
+                    });
                 }
 
             } else {
