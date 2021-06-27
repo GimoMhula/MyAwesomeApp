@@ -3,8 +3,12 @@ package dev.visum.demoapp.data.local;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.google.gson.Gson;
+import androidx.annotation.Nullable;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import dev.visum.demoapp.model.AddSaleModel;
@@ -29,17 +33,17 @@ public class KeyStoreLocal {
         setString(type, jsonString);
     }
 
-    public Object getModel(String type) {
+    public Object getModel(String key, @Nullable Type type) {
         Gson gson = new Gson();
         try {
-            return gson.fromJson(sharedPreferences.getString(type, null) , Object.class);
+            return gson.fromJson(sharedPreferences.getString(key, null) , type == null ? Object.class : type);
         } catch (Exception e) {
             return null;
         }
     }
 
     private void removeString(String type) {
-        sharedPreferences.edit().remove(type);
+        sharedPreferences.edit().remove(type).apply();
     }
 
     private void setString(String type, String value) {
@@ -74,7 +78,9 @@ public class KeyStoreLocal {
     }
 
     public ArrayList<AddSaleModel> getOfflineSales() {
-        Object o = getModel(Constants.getInstance().SP_OFFLINE_SALES);
+        Type type = new TypeToken<ArrayList<AddSaleModel>>() {}.getType();
+
+        Object o = getModel(Constants.getInstance().SP_OFFLINE_SALES, type);
 
         if (o == null || !Tools.isCollection(o)) {
             return new ArrayList<>();
