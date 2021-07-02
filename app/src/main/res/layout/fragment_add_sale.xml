@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -29,19 +30,37 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-                <com.google.android.material.textfield.TextInputLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-
-                    <AutoCompleteTextView
-                        android:id="@+id/act_product"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/act_products"
-                        android:maxLines="1"
-                        android:singleLine="true"/>
+                        android:layout_height="wrap_content">
 
-                </com.google.android.material.textfield.TextInputLayout>
+                        <AutoCompleteTextView
+                            android:id="@+id/act_product"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/act_products"
+                            android:maxLines="1"
+                            android:singleLine="true"/>
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <ImageView
+                        android:id="@+id/iv_qrcode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentEnd="true"
+                        android:padding="5dp"
+                        android:paddingEnd="10dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:focusable="true"
+                        app:srcCompat="@drawable/ic_qrcode"
+                        tools:ignore="RtlSymmetry" />
+
+                </RelativeLayout>
 
                 <View
                     android:layout_width="0dp"
@@ -70,14 +89,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
-                        android:layout_alignParentRight="true"
                         android:layout_alignParentEnd="true"
                         android:padding="5dp"
-                        android:paddingRight="10dp"
                         android:paddingEnd="10dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        app:srcCompat="@drawable/ic_add"/>
+                        android:focusable="true"
+                        app:srcCompat="@drawable/ic_add"
+                        tools:ignore="RtlSymmetry" />
                 </RelativeLayout>
 
             </LinearLayout>
