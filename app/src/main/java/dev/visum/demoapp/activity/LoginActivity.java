@@ -1,8 +1,13 @@
 package dev.visum.demoapp.activity;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
@@ -15,17 +20,72 @@ import dev.visum.demoapp.R;
 import dev.visum.demoapp.data.local.KeyStoreLocal;
 import dev.visum.demoapp.fragment.LoginFragment;
 import dev.visum.demoapp.model.BaseActivity;
+import dev.visum.demoapp.services.MyInternetCheckAvailabilityService;
+import dev.visum.demoapp.services.MyInternetJobService;
+import dev.visum.demoapp.utils.Constants;
+import dev.visum.demoapp.utils.Tools;
 
 public class LoginActivity extends BaseActivity {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    Intent mServiceIntent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
          setContentView(R.layout.activity_login);
-
+         runJobService();
+         // runService();
         enableMyLocation();
+    }
+
+    private void runJobService() {
+        if (!Tools.isJobServiceOn(this)) {
+            ComponentName serviceComponent = new ComponentName(this, MyInternetJobService.class);
+            JobInfo.Builder builder = new JobInfo.Builder(Constants.getInstance().MYJOBID, serviceComponent);
+            builder.setRequiresDeviceIdle(false);
+            builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
+            //builder.setPeriodic(500);
+            builder.setMinimumLatency(10 * 1000); // Wait at least 30s
+            builder.setOverrideDeadline(40 * 1000); // Maximum delay 60s
+            builder.setPersisted(true);
+            JobScheduler jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
+            jobScheduler.schedule(builder.build());
+
+            /*
+            Job myJob = mDispatcher.newJobBuilder()
+                .setService(MyJobService.class)
+                .setTag(JOB_TAG)
+                .setRecurring(true)
+                .setTrigger(Trigger.executionWindow(600, 600))
+                .setLifetime(Lifetime.FOREVER)
+                .setReplaceCurrent(false)
+                .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
+                .build();
+
+    mDispatcher.schedule(myJob);
+            * */
+        }
+    }
+
+    private void runService() {
+        if (!isMyServiceRunning(MyInternetCheckAvailabilityService.class)) {
+            mServiceIntent = new Intent(LoginActivity.this, MyInternetCheckAvailabilityService.class);
+            startService(mServiceIntent);
+
+            // bindService(mServiceIntent, connection, Context.BIND_AUTO_CREATE);
+        }
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void enableMyLocation() {
@@ -73,4 +133,13 @@ public class LoginActivity extends BaseActivity {
             alertDialog.show();
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        if (mServiceIntent != null) {
+            stopService(mServiceIntent);
+        }
+        super.onDestroy();
+    }
+
 }

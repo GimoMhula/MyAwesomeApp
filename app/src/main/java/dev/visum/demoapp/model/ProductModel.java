@@ -7,6 +7,7 @@ public class ProductModel {
     public int image;
     public Drawable imageDrw;
     public String title;
+    public String category;
     public String price;
     public String url;
 
@@ -18,9 +19,10 @@ public class ProductModel {
         this.url = url;
     }
 
-    public ProductModel(String title, String price, String url) {
+    public ProductModel(String title, String category, String price, String url) {
         this.image = 0;
         this.title = title;
+        this.category = category;
         this.price = price;
         this.url = url;
         this.imageDrw = null;

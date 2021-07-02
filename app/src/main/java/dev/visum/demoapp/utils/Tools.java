@@ -2,10 +2,16 @@ package dev.visum.demoapp.utils;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.NotificationChannel;
+import android.app.PendingIntent;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -15,8 +21,12 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.print.PdfPrint;
+import android.print.PrintAttributes;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
@@ -26,13 +36,20 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.URLUtil;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 
@@ -40,15 +57,205 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import dev.visum.demoapp.R;
+import dev.visum.demoapp.activity.LoginActivity;
+import dev.visum.demoapp.model.MyCallbackInterface;
+import dev.visum.demoapp.model.NotificationType;
+import dev.visum.demoapp.services.MyInternetJobService;
 
 public class Tools {
+
+
+    // download files
+    public static void downloadFile(String downloadLink, String fullFilePath) {
+        try {
+            int count;
+            URL url = new URL(downloadLink);
+            URLConnection connection = url.openConnection();
+            connection.connect();
+
+            // getting file length
+            int lenghtOfFile = connection.getContentLength();
+            // input stream to read file - with 8k buffer
+            InputStream input = new BufferedInputStream(url.openStream(), 8192);
+            // Output stream to write file
+            OutputStream output = new FileOutputStream(fullFilePath);
+            byte data[] = new byte[1024];
+            long total = 0;
+
+            while ((count = input.read(data)) != -1) {
+                total += count;
+
+                // writing data to file
+                output.write(data, 0, count);
+
+            }
+
+
+            // flushing output
+            output.flush();
+
+            // closing streams
+            output.close();
+            input.close();
+
+
+        } catch(FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void createPdf(Context context, String urlLink, String filePath, String clientName, String fileName) {
+        WebView mWebView = new WebView(context);
+
+        mWebView.getSettings().setAllowFileAccess(true);
+        mWebView.getSettings().setDomStorageEnabled(true);
+        mWebView.getSettings().setAppCacheEnabled(true);
+        mWebView.getSettings().setLoadsImagesAutomatically(true);
+        mWebView.setWebViewClient(new WebViewClient() {
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return false;
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                String jobName = context.getString(R.string.app_name).toLowerCase() + "-recibo-" + clientName;
+                PrintAttributes attributes = new PrintAttributes.Builder()
+                        .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
+                        .setResolution(new PrintAttributes.Resolution("pdf", "pdf", 600, 600))
+                        .setMinMargins(PrintAttributes.Margins.NO_MARGINS).build();
+                File path = new File(filePath);
+                PdfPrint pdfPrint = new PdfPrint(attributes);
+                pdfPrint.print(mWebView.createPrintDocumentAdapter(jobName), path, fileName + ".pdf");
+            }
+        });
+        mWebView.loadUrl(urlLink);
+    }
+
+    public static void showNotification(Context context, NotificationType notificationType, String message, @Nullable Intent... intent) {
+        Intent intentLogin = new Intent(context, LoginActivity.class);
+
+        PendingIntent pIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent != null && intent.length > 0 && intent[0] != null ? intent[0] : intentLogin, 0);
+
+        NotificationCompat.Builder n  = new NotificationCompat.Builder(context, Constants.getInstance().CHANNEL_ID)
+                .setContentTitle(context.getString(R.string.sales_alert))
+                .setContentText(message)
+                .setSmallIcon(notificationType == NotificationType.ADD ? R.drawable.ic_add_task : R.drawable.ic_failed_task)
+                .setContentIntent(pIntent)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true);
+
+
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            NotificationChannel channel = new NotificationChannel(
+                    Constants.getInstance().CHANNEL_ID,
+                    context.getString(R.string.app_name),
+                    NotificationManagerCompat.IMPORTANCE_HIGH);
+            notificationManagerCompat.createNotificationChannel(channel);
+            n.setChannelId(Constants.getInstance().CHANNEL_ID);
+        }
+
+        notificationManagerCompat.notify(0, n.build());
+    }
+
+    public static void scheduleJob(Context context) {
+        ComponentName serviceComponent = new ComponentName(context, MyInternetJobService.class);
+        JobInfo.Builder builder = new JobInfo.Builder(0, serviceComponent);
+        builder.setMinimumLatency(30 * 1000); // Wait at least 30s
+        builder.setOverrideDeadline(60 * 1000); // Maximum delay 60s
+
+        JobScheduler jobScheduler = (JobScheduler)context.getSystemService(context.JOB_SCHEDULER_SERVICE);
+        jobScheduler.schedule(builder.build());
+    }
+
+    public static boolean isJobServiceOn(Context context) {
+        JobScheduler scheduler = (JobScheduler) context.getSystemService( Context.JOB_SCHEDULER_SERVICE ) ;
+
+        boolean hasBeenScheduled = false ;
+
+        for ( JobInfo jobInfo : scheduler.getAllPendingJobs() ) {
+            if ( jobInfo.getId() == Constants.getInstance().MYJOBID ) {
+                hasBeenScheduled = true ;
+                break ;
+            }
+        }
+
+        return hasBeenScheduled ;
+    }
+
+    public static boolean isConnected(Context context) {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null &&
+                activeNetwork.isConnected();
+    }
+
+    public static List<?> convertObjectToList(Object obj) {
+        List<?> list = new ArrayList<>();
+        if (obj.getClass().isArray()) {
+            list = Arrays.asList((Object[])obj);
+        } else if (obj instanceof Collection) {
+            list = new ArrayList<>((Collection<?>)obj);
+        }
+        return list;
+    }
+
+    public static boolean isCollection(Object obj) {
+        return obj.getClass().isArray() || obj instanceof Collection;
+    }
+
+    public static void alertDialogSimpleOk(AppCompatActivity appCompatActivity, String message, @Nullable MyCallbackInterface... callback) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(appCompatActivity);
+        builder.setTitle(appCompatActivity.getString(R.string.info_alert_title));
+        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                if (callback != null && callback.length > 0 && callback[0] != null) {
+                    callback[0].callback(true);
+                }
+            }
+        });
+        builder.setMessage(message)
+                .setPositiveButton(R.string.mdtp_ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // FIRE ZE MISSILES!
+                        dialog.dismiss();
+                    }
+                });
+        // Create the AlertDialog object and return it
+        builder.create();
+        builder.setCancelable(true);
+        builder.show();
+    }
+
     public static void displayImageOriginal(Context ctx, ImageView img, @DrawableRes int drawable, String url) {
         try {
             Glide.with(ctx).load(drawable == 0 ? url : R.drawable.ic_image_black_24dp)
@@ -355,11 +562,6 @@ public class Tools {
             return -1;
         }
     }
-
-
-
-
-
 
     public static String getDeviceID(Context context) {
         String deviceID = Build.SERIAL;

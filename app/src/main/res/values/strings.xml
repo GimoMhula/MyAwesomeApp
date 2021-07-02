@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DemoApp</string>
+    <string name="app_name">MozCarbon</string>
     <string name="title_activity_login">Sign in</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
@@ -78,5 +78,23 @@
     <string name="search_sale">Procurar Vendas</string>
     <string name="empty_sales">Não encontrados vendas nessa pesquisa!</string>
     <string name="failed_get_sales">Ocorreu um erro na pesquisa!</string>
+    <string name="scan_qr_sale">Scan QR</string>
+    <string name="product_not_sold">O produto ainda não foi vendido!</string>
+    <string name="product_do_not_exists">Produto não existe no armazém!</string>
+    <string name="product_not_found">Produto não encontrado!</string>
+    <string name="error_get_qr_code_data">Error no código do qr!</string>
+    <string name="info_alert_title">Informações</string>
+    <string name="list_products">Lista de Produtos</string>
+    <string name="failed_get_products">Falha para listar produtos</string>
+    <string name="logout">Terminar sessão</string>
+    <string name="dashboard_title">Dashboard</string>
+    <string name="sales_alert">Vendas</string>
+    <string name="failed_to_add_sale">Falha ao adicionar venda!</string>
+    <string name="add_sale_ok">Adicionou venda com sucesso!</string>
+    <string name="failed_to_add_sale_client_id">Erro no nome do cliente!</string>
+    <string name="failed_to_add_sale_product_id">Erro no nome do produto!</string>
+    <string name="failed_to_add_sale_processing">Erro ao processar a venda!</string>
+    <string name="info_alert_offline_sale_data">Esta venda só será enviada assim que estiver conectado a internet!</string>
+    <string name="open_invoices_folders">Abrir pasta dos recibos</string>
 
 </resources>

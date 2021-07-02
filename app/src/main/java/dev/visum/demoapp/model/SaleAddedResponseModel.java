@@ -7,10 +7,31 @@ public class SaleAddedResponseModel {
     @SerializedName("success")
     private boolean success;
 
-    @SerializedName("message")
-    private String message;
+    @SerializedName("url")
+    private String url;
 
-    @SerializedName("response")
+    public SaleAddedResponseModel(boolean success, String url) {
+        this.success = success;
+        this.url = url;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    /*@SerializedName("response")
     private SaleAddedModel response;
 
     public SaleAddedResponseModel(boolean success, String message, SaleAddedModel response) {
@@ -41,5 +62,5 @@ public class SaleAddedResponseModel {
 
     public void setResponse(SaleAddedModel response) {
         this.response = response;
-    }
+    }*/
 }

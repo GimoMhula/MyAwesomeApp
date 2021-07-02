@@ -2,6 +2,7 @@ package dev.visum.demoapp.fragment;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -26,6 +28,7 @@ import com.jakewharton.rxbinding4.widget.RxTextView;
 import com.jakewharton.rxbinding4.widget.TextViewTextChangeEvent;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -45,6 +48,7 @@ import dev.visum.demoapp.model.AddSalePrestModel;
 import dev.visum.demoapp.model.AddSalePrestResponseModel;
 import dev.visum.demoapp.model.AddSaleResponseModel;
 import dev.visum.demoapp.model.CustomerResponseModel;
+import dev.visum.demoapp.model.MyCallbackInterface;
 import dev.visum.demoapp.model.ProductResponseModel;
 import dev.visum.demoapp.model.ResponseAddClientModel;
 import dev.visum.demoapp.model.ResponseModel;
@@ -373,115 +377,132 @@ public class AddSaleFragment extends Fragment {
         bt_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                progressDialog.setMessage(getString(R.string.loading_sale_fragment));
-                progressDialog.show();
-                try {
-                    String pay_type = act_pay_type.getText().toString();
-                    String region = act_region.getText().toString();
-                    String neighborhood = act_area.getText().toString();
-                    String city_block = act_quart.getText().toString();
-                    String house_number = act_nr_house.getText().toString();
-                    String reference_point = act_ref_street.getText().toString();
-                    double first_prestation = Double.parseDouble(act_installments.getText().toString());
-                    double total = (saleType == SaleType.NEXT_PREST) ? 0 : Double.parseDouble(act_total.getText().toString());
-                    boolean check_for_first_pay = !productId.equals("") && first_prestation > 0 && first_prestation <= total && !customerId.equals("");
-                    boolean check_for_next_prest = saleType == SaleType.NEXT_PREST && first_prestation > 0 && first_prestation <= soldItem.getRemain();
-                    double lat = 0;
-                    double lng = 0;
+                validatingSale();
+            }
+        });
+    }
 
-                    if (Tools.getLatLng(getContext()) != null) {
-                        lat = Tools.getLatLng(getContext()).getLatitude();
-                        lng = Tools.getLatLng(getContext()).getLongitude();
-                    }
+    private void validatingSale() {
+        try {
+            String pay_type = act_pay_type.getText().toString();
+            String clientName = act_client.getText().toString();
+            String productName = act_product.getText().toString();
+            String region = act_region.getText().toString();
+            String neighborhood = act_area.getText().toString();
+            String city_block = act_quart.getText().toString();
+            String house_number = act_nr_house.getText().toString();
+            String reference_point = act_ref_street.getText().toString();
+            double first_prestation = Double.parseDouble(act_installments.getText().toString());
+            double total = (saleType == SaleType.NEXT_PREST || act_total.getText() == null || act_total.getText().toString().trim().isEmpty()) ? 0 : Double.parseDouble(act_total.getText().toString());
+            boolean check_for_first_pay = !productId.equals("") && first_prestation > 0 && first_prestation <= total && !customerId.equals("");
+            boolean check_for_next_prest = saleType == SaleType.NEXT_PREST && first_prestation > 0 && first_prestation <= soldItem.getRemain();
+            double lat = 0;
+            double lng = 0;
 
-                    System.out.println("first " + check_for_first_pay);
-                    System.out.println("next " + check_for_next_prest);
+            if (Tools.getLatLng(getContext()) != null) {
+                lat = Tools.getLatLng(getContext()).getLatitude();
+                lng = Tools.getLatLng(getContext()).getLongitude();
+            }
 
-                    if (!Tools.isStringNil(pay_type) && (check_for_first_pay || check_for_next_prest)) {
+            if (!Tools.isStringNil(pay_type) && (check_for_first_pay || check_for_next_prest || (!Tools.isConnected(getContext()) && !Tools.isStringNil(clientName) && !Tools.isStringNil(productName)))) {
+                AddSaleModel addSaleModel = new AddSaleModel(
+                        KeyStoreLocal.getInstance(getContext()).getUserId(),
+                        Tools.isConnected(getContext()) ? customerId : clientName,
+                        Tools.isConnected(getContext()) ? productId : productName,
+                        first_prestation,
+                        Tools.getMapKey(payTypeMap, pay_type) + "",
+                        lat,
+                        lng,
+                        region,
+                        neighborhood,
+                        city_block,
+                        house_number,
+                        reference_point
+                );
 
-                        Object saleData =  new AddSaleModel(
-                                KeyStoreLocal.getInstance(getContext()).getUserId(),
-                                customerId,
-                                productId,
-                                first_prestation,
-                                Tools.getMapKey(payTypeMap, pay_type) + "",
-                                lat,
-                                lng,
-                                region,
-                                neighborhood,
-                                city_block,
-                                house_number,
-                                reference_point
-                        );
+                Object saleData =  addSaleModel;
 
-                        if (saleType == SaleType.NEXT_PREST) {
-                            saleData = new AddSalePrestModel(
-                                    Integer.parseInt(soldItem.getId().replace(".0", "")),
-                                    first_prestation,
-                                    Tools.getMapKey(payTypeMap, pay_type)
-                            );
-                        }
+                if (saleType == SaleType.NEXT_PREST) {
+                    saleData = new AddSalePrestModel(
+                            Integer.parseInt(soldItem.getId().replace(".0", "")),
+                            first_prestation,
+                            Tools.getMapKey(payTypeMap, pay_type)
+                    );
+                }
 
-                        if (saleType != SaleType.NEXT_PREST) {
-                            if (!checkbox_sign.isChecked()) {
-                                progressDialog.hide();
-                                callback.navigateToCustomerSignSale(Tools.convertObjToMap(saleData), saleType);
-                            } else {
-                                processSale(Tools.convertObjToMap(saleData));
-                            }
+                if (Tools.isConnected(getContext())) {
+                    progressDialog.setMessage(getString(R.string.loading_sale_fragment));
+                    progressDialog.show();
+
+                    if (saleType != SaleType.NEXT_PREST) {
+                        if (!checkbox_sign.isChecked()) {
+                            progressDialog.hide();
+                            callback.navigateToCustomerSignSale(Tools.convertObjToMap(saleData), saleType);
                         } else {
                             processSale(Tools.convertObjToMap(saleData));
                         }
                     } else {
-                        progressDialog.hide();
-                        Snackbar.make(parent_view, getString(R.string.missing_data_sale_fragment), Snackbar.LENGTH_LONG).show();
+                        processSale(Tools.convertObjToMap(saleData));
                     }
-                } catch (Exception e) {
-                    progressDialog.hide();
-                    e.printStackTrace();
-                    if (!Tools.isGPS_ON(getContext())) {
-                        Snackbar.make(parent_view, getString(R.string.error_sale_fragment_fail_gps), Snackbar.LENGTH_LONG).show();
-                    } else {
-                        Snackbar.make(parent_view, getString(R.string.error_sale_fragment_fail), Snackbar.LENGTH_LONG).show();
-                    }
+                } else {
+                    KeyStoreLocal.getInstance(getContext()).setOfflineSales(addSaleModel);
+
+                    Tools.alertDialogSimpleOk((AppCompatActivity) getActivity(), getContext().getString(R.string.info_alert_offline_sale_data), isDismissed -> {
+                        if (isDismissed != null && Boolean.parseBoolean(isDismissed.toString())) {
+                            getActivity().onBackPressed();
+                        }
+                    });
                 }
+
+            } else {
+                progressDialog.hide();
+                Snackbar.make(parent_view, getString(R.string.missing_data_sale_fragment), Snackbar.LENGTH_LONG).show();
             }
-        });
+        } catch (Exception e) {
+            progressDialog.hide();
+            e.printStackTrace();
+            if (!Tools.isGPS_ON(getContext())) {
+                Snackbar.make(parent_view, getString(R.string.error_sale_fragment_fail_gps), Snackbar.LENGTH_LONG).show();
+            } else {
+                Snackbar.make(parent_view, getString(R.string.error_sale_fragment_fail), Snackbar.LENGTH_LONG).show();
+            }
+        }
     }
 
     private DisposableObserver<TextViewTextChangeEvent> searchQueryClient() {
         return new DisposableObserver<TextViewTextChangeEvent>() {
             @Override
             public void onNext(TextViewTextChangeEvent textViewTextChangeEvent) {
-                GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
-                Call<ResponseModel<List<CustomerResponseModel>>> call = service.getClientFilteredList(textViewTextChangeEvent.getText().toString());
+                if (Tools.isConnected(getContext())) {
+                    GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
+                    Call<ResponseModel<List<CustomerResponseModel>>> call = service.getClientFilteredList(textViewTextChangeEvent.getText().toString());
 
-                call.enqueue(new Callback<ResponseModel<List<CustomerResponseModel>>>() {
-                    @Override
-                    public void onResponse(Call<ResponseModel<List<CustomerResponseModel>>> call, Response<ResponseModel<List<CustomerResponseModel>>> response) {
-                        customerFilteredAdapter.clear();
+                    call.enqueue(new Callback<ResponseModel<List<CustomerResponseModel>>>() {
+                        @Override
+                        public void onResponse(Call<ResponseModel<List<CustomerResponseModel>>> call, Response<ResponseModel<List<CustomerResponseModel>>> response) {
+                            customerFilteredAdapter.clear();
 
-                        if (response.isSuccessful()) {
-                            if (!response.body().getResponse().isEmpty() && response.body().getResponse() instanceof ArrayList) {
-                                for (CustomerResponseModel customerResponseModel:
-                                        response.body().getResponse()) {
-                                    customerFilteredAdapter.add(customerResponseModel);
+                            if (response.isSuccessful()) {
+                                if (!response.body().getResponse().isEmpty() && response.body().getResponse() instanceof ArrayList) {
+                                    for (CustomerResponseModel customerResponseModel:
+                                            response.body().getResponse()) {
+                                        customerFilteredAdapter.add(customerResponseModel);
+                                    }
                                 }
+                            } else {
+                                Snackbar.make(parent_view, getString(R.string.error_sale_fragment), Snackbar.LENGTH_LONG).show();
                             }
-                        } else {
-                            Snackbar.make(parent_view, getString(R.string.error_sale_fragment), Snackbar.LENGTH_LONG).show();
+                            customerFilteredAdapter.notifyDataSetChanged();
                         }
-                        customerFilteredAdapter.notifyDataSetChanged();
-                    }
 
-                    @Override
-                    public void onFailure(Call<ResponseModel<List<CustomerResponseModel>>> call, Throwable t) {
-                        customerFilteredAdapter.clear();
-                        customerId = "";
-                        Snackbar.make(parent_view, getString(R.string.error_sale_fragment_fail), Snackbar.LENGTH_LONG).show();
-                    }
-                });
-
+                        @Override
+                        public void onFailure(Call<ResponseModel<List<CustomerResponseModel>>> call, Throwable t) {
+                            customerFilteredAdapter.clear();
+                            customerId = "";
+                            Snackbar.make(parent_view, getString(R.string.error_sale_fragment_fail), Snackbar.LENGTH_LONG).show();
+                        }
+                    });
+                }
             }
 
             @Override
@@ -499,34 +520,36 @@ public class AddSaleFragment extends Fragment {
         return new DisposableObserver<TextViewTextChangeEvent>() {
             @Override
             public void onNext(TextViewTextChangeEvent textViewTextChangeEvent) {
-                GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
-                Call<ResponseModel<List<ProductResponseModel>>> call = service.getProductFilteredList(textViewTextChangeEvent.getText().toString());
+                if (Tools.isConnected(getContext())) {
+                    GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
+                    Call<ResponseModel<List<ProductResponseModel>>> call = service.getProductFilteredList(textViewTextChangeEvent.getText().toString());
 
-                call.enqueue(new Callback<ResponseModel<List<ProductResponseModel>>>() {
-                    @Override
-                    public void onResponse(Call<ResponseModel<List<ProductResponseModel>>> call, Response<ResponseModel<List<ProductResponseModel>>> response) {
-                        productFilteredAdapter.clear();
+                    call.enqueue(new Callback<ResponseModel<List<ProductResponseModel>>>() {
+                        @Override
+                        public void onResponse(Call<ResponseModel<List<ProductResponseModel>>> call, Response<ResponseModel<List<ProductResponseModel>>> response) {
+                            productFilteredAdapter.clear();
 
-                        if (response.isSuccessful()) {
-                            if (!response.body().getResponse().isEmpty() && response.body().getResponse() instanceof ArrayList) {
-                                for (ProductResponseModel productResponseModel:
-                                     response.body().getResponse()) {
-                                    productFilteredAdapter.add(productResponseModel);
+                            if (response.isSuccessful()) {
+                                if (!response.body().getResponse().isEmpty() && response.body().getResponse() instanceof ArrayList) {
+                                    for (ProductResponseModel productResponseModel:
+                                            response.body().getResponse()) {
+                                        productFilteredAdapter.add(productResponseModel);
+                                    }
                                 }
+                            } else {
+                                Snackbar.make(parent_view, getString(R.string.error_sale_fragment), Snackbar.LENGTH_LONG).show();
                             }
-                        } else {
-                            Snackbar.make(parent_view, getString(R.string.error_sale_fragment), Snackbar.LENGTH_LONG).show();
+                            productFilteredAdapter.notifyDataSetChanged();
                         }
-                        productFilteredAdapter.notifyDataSetChanged();
-                    }
 
-                    @Override
-                    public void onFailure(Call<ResponseModel<List<ProductResponseModel>>> call, Throwable t) {
-                        productFilteredAdapter.clear();
-                        productId = "";
-                        Snackbar.make(parent_view, getString(R.string.error_sale_fragment_fail), Snackbar.LENGTH_LONG).show();
-                    }
-                });
+                        @Override
+                        public void onFailure(Call<ResponseModel<List<ProductResponseModel>>> call, Throwable t) {
+                            productFilteredAdapter.clear();
+                            productId = "";
+                            Snackbar.make(parent_view, getString(R.string.error_sale_fragment_fail), Snackbar.LENGTH_LONG).show();
+                        }
+                    });
+                }
             }
 
             @Override
@@ -562,9 +585,10 @@ public class AddSaleFragment extends Fragment {
                 public void onResponse(Call<SaleAddedResponseModel> call, Response<SaleAddedResponseModel> response) {
                     progressDialog.hide();
 
-                    if (response.isSuccessful() && response.body() != null) {
+                    if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                         Snackbar.make(parent_view, getString(R.string.success_sale_fragment), Snackbar.LENGTH_LONG).show();
-                        callback.renderWebView(response.body().getResponse().getId() + "");
+                        callback.renderWebView(response.body().getUrl());
+                        // callback.renderWebView(response.body().getResponse().getId() + "");
                     } else {
                         Snackbar.make(parent_view, getString(R.string.error_sale_fragment_failed), Snackbar.LENGTH_LONG).show();
                     }
