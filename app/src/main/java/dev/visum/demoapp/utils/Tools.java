@@ -161,7 +161,7 @@ public class Tools {
         PendingIntent pIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent != null && intent.length > 0 && intent[0] != null ? intent[0] : intentLogin, 0);
 
         NotificationCompat.Builder n  = new NotificationCompat.Builder(context, Constants.getInstance().CHANNEL_ID)
-                .setContentTitle(context.getString(R.string.sales_alert))
+                .setContentTitle(context.getString(R.string.app_name) + "\t"+ context.getString(R.string.sales_alert))
                 .setContentText(message)
                 .setSmallIcon(notificationType == NotificationType.ADD ? R.drawable.ic_add_task : R.drawable.ic_failed_task)
                 .setContentIntent(pIntent)
