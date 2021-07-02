@@ -44,6 +44,7 @@ import dev.visum.demoapp.data.api.MozCarbonAPI;
 import dev.visum.demoapp.data.local.KeyStoreLocal;
 import dev.visum.demoapp.fragment.AddSaleFragment;
 import dev.visum.demoapp.fragment.CustomerSignSaleFragment;
+import dev.visum.demoapp.fragment.ListClientsFragment;
 import dev.visum.demoapp.fragment.ListSoldItemsFragment;
 import dev.visum.demoapp.fragment.ProductGridFragment;
 import dev.visum.demoapp.fragment.SurveyFragmentMenu;
@@ -116,6 +117,13 @@ public class MainActivity extends BaseActivity implements AddSaleFragment.OnAddS
 
 
         List<ItemCategory> items = new ArrayList<>();
+        ItemCategory itemCategoryCliente = new ItemCategory();
+        itemCategoryCliente.image = R.drawable.ic_client;
+        itemCategoryCliente.title = "Clientes";
+        itemCategoryCliente.imageDrw = AppCompatResources.getDrawable(this, itemCategoryCliente.image);
+        items.add(itemCategoryCliente);
+
+
         ItemCategory itemCategory = new ItemCategory();
         itemCategory.image = R.drawable.ic_products_black;
         itemCategory.title = "Produtos";
@@ -145,6 +153,9 @@ public class MainActivity extends BaseActivity implements AddSaleFragment.OnAddS
                // Toast.makeText(MainActivity.this,  "Item " + obj.title + " clicked", Toast.LENGTH_SHORT).show();
 
                switch (obj.title) {
+                   case "Clientes":
+                       goToFragment(new ListClientsFragment());
+                       break;
                    case "Produtos":
                        goToFragment(new ProductGridFragment());
                        break;

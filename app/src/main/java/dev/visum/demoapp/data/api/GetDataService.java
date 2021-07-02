@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import dev.visum.demoapp.model.AddSalePrestResponseModel;
+import dev.visum.demoapp.model.ClientResponseModel;
 import dev.visum.demoapp.model.CustomerResponseModel;
 import dev.visum.demoapp.model.MySaleModel;
 import dev.visum.demoapp.model.ProductResponseModel;
@@ -57,6 +58,9 @@ public interface GetDataService {
 
     @GET("sales")
     Call<ResponseModel<ArrayList<MySaleModel>>> getMySales(@NotNull @Query("input") String input);
+
+    @GET("clients/index")
+    Call<ResponseModel<ArrayList<ClientResponseModel>>> getMyClients(@NotNull @Query("input") String input);
 
     @Multipart
     @POST("client/signature")

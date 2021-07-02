@@ -97,5 +97,7 @@
     <string name="info_alert_offline_sale_data">Esta venda só será enviada assim que estiver conectado a internet!</string>
     <string name="open_invoices_folders">Abrir pasta dos recibos</string>
     <string name="open_invoice_file_with">Abrir o recibo com</string>
+    <string name="list_clients_title">Lista de Clientes</string>
+    <string name="error_get_clients">Erro ao carregar Clientes</string>
 
 </resources>
