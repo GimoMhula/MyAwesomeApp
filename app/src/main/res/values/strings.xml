@@ -96,5 +96,6 @@
     <string name="failed_to_add_sale_processing">Erro ao processar a venda!</string>
     <string name="info_alert_offline_sale_data">Esta venda só será enviada assim que estiver conectado a internet!</string>
     <string name="open_invoices_folders">Abrir pasta dos recibos</string>
+    <string name="open_invoice_file_with">Abrir o recibo com</string>
 
 </resources>
