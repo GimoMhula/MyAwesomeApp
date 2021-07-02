@@ -66,9 +66,13 @@ public class OfflineSalesTasks {
                                         processSale(saleModel, urlPath -> {
                                             if (urlPath != null && !Tools.isStringNil(urlPath.toString())) {
                                                 if (file.isDirectory()) {
-                                                    Uri selectedUri = Uri.parse(PATH + "/");
-                                                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                                                    intent.setDataAndType(selectedUri, "file/pdf");
+                                                    String documentName = context.getString(R.string.app_name) + "-recibo-" + clientName + "-" + System.currentTimeMillis();
+                                                    File invoiceFil = new File(PATH + "/" + documentName + ".pdf");
+                                                    Uri path = Uri.fromFile(file);
+                                                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                    Intent chooser = Intent.createChooser(intent, context.getResources().getString(R.string.open_invoice_file_with));
+                                                    intent.setDataAndType(path, "application/pdf");
 
                                                     Tools.showNotification(context, NotificationType.ADD, context.getString(R.string.add_sale_ok), intent);
 
@@ -76,7 +80,7 @@ public class OfflineSalesTasks {
                                                             urlPath.toString(),
                                                             PATH + "/",
                                                             clientName,
-                                                            context.getString(R.string.app_name) + "-recibo-" + clientName + "-" + System.currentTimeMillis()
+                                                            documentName
                                                     };
 
                                                     Tools.createPdf(context, data[0], data[1], data[2], data[3]);
