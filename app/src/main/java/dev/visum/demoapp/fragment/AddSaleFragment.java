@@ -1,6 +1,7 @@
 package dev.visum.demoapp.fragment;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,9 +25,14 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.jakewharton.rxbinding4.widget.RxTextView;
 import com.jakewharton.rxbinding4.widget.TextViewTextChangeEvent;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.security.KeyStore;
 import java.util.ArrayList;
@@ -98,6 +104,9 @@ public class AddSaleFragment extends Fragment {
     private AdapterSaleProductFiltered productFilteredAdapter;
     private ArrayList<ProductResponseModel> productsRespList = new ArrayList<>();
     private String productId = "";
+    private IntentIntegrator qrScan;
+
+    private ImageView iv_qrcode;
 
     Map<Integer,String> payTypeMap = new HashMap<>();
     {
@@ -177,6 +186,8 @@ public class AddSaleFragment extends Fragment {
     }
 
     private void initComponent() {
+        qrScan = new IntentIntegrator(getActivity());
+        iv_qrcode = parent_view.findViewById(R.id.iv_qrcode);
         ll_sale_prest = parent_view.findViewById(R.id.ll_sale_prest);
         ll_total = parent_view.findViewById(R.id.ll_total);
         ll_product_client = parent_view.findViewById(R.id.ll_product_client);
@@ -210,6 +221,14 @@ public class AddSaleFragment extends Fragment {
             ll_product_client.setVisibility(View.GONE);
             ll_region_date.setVisibility(View.GONE);
         }
+
+        iv_qrcode.setColorFilter(getContext().getResources().getColor(R.color.mdtp_transparent_black));
+        iv_qrcode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                qrScan.initiateScan();
+            }
+        });
 
         iv_add_client.setColorFilter(getContext().getResources().getColor(R.color.mdtp_transparent_black));
         iv_add_client.setOnClickListener(new View.OnClickListener() {
@@ -622,6 +641,25 @@ public class AddSaleFragment extends Fragment {
                     Snackbar.make(parent_view, getString(R.string.error_sale_fragment_failed), Snackbar.LENGTH_LONG).show();
                 }
             });
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        System.out.println("AddSaleFragment");
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (result != null) {
+            if (result.getContents() == null) {
+                Snackbar.make(parent_view, getString(R.string.no_data_available), Snackbar.LENGTH_LONG).show();
+            } else {
+                try {
+                    JSONObject obj = new JSONObject(result.getContents());
+                    act_product.setText(obj.getString("serie"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Snackbar.make(parent_view, getString(R.string.error_get_qr_code_data), Snackbar.LENGTH_LONG).show();
+                }
+            }
         }
     }
 

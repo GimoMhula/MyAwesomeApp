@@ -3,9 +3,12 @@ package dev.visum.demoapp.services.offlineSales;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.os.StrictMode;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,17 +69,36 @@ public class OfflineSalesTasks {
                                         processSale(saleModel, urlPath -> {
                                             if (urlPath != null && !Tools.isStringNil(urlPath.toString())) {
                                                 if (file.isDirectory()) {
-                                                    Uri selectedUri = Uri.parse(PATH + "/");
-                                                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                                                    intent.setDataAndType(selectedUri, "file/pdf");
+                                                    String documentName = context.getString(R.string.app_name) + "-recibo-" + clientName + "-" + System.currentTimeMillis();
+                                                    try {
+                                                        File invoiceFil = new File(PATH + "/" + documentName + ".pdf");
+                                                        Uri selectedUri = Uri.parse(PATH + "/" + documentName + ".pdf");
 
-                                                    Tools.showNotification(context, NotificationType.ADD, context.getString(R.string.add_sale_ok), intent);
+                                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                                            try {
+                                                                Method m = StrictMode.class.getMethod("disableDeathOnFileUriExposure");
+                                                                selectedUri = Uri.fromFile(file);
+                                                                m.invoke(null);
+                                                            } catch(Exception e) {
+                                                                e.printStackTrace();
+                                                            }
+                                                        }
+                                                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                                                        intent.addCategory(Intent.CATEGORY_OPENABLE);
+                                                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                                        intent.setDataAndType(selectedUri, "application/pdf");
+                                                        Intent chooser = Intent.createChooser(intent, context.getResources().getString(R.string.open_invoice_file_with));
+
+                                                        Tools.showNotification(context, NotificationType.ADD, context.getString(R.string.add_sale_ok), chooser);
+                                                    } catch (Exception e) {
+                                                        e.printStackTrace();
+                                                    }
 
                                                     String[] data = {
                                                             urlPath.toString(),
                                                             PATH + "/",
                                                             clientName,
-                                                            context.getString(R.string.app_name) + "-recibo-" + clientName + "-" + System.currentTimeMillis()
+                                                            documentName
                                                     };
 
                                                     Tools.createPdf(context, data[0], data[1], data[2], data[3]);

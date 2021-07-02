@@ -117,19 +117,19 @@ public class MainActivity extends BaseActivity implements AddSaleFragment.OnAddS
 
         List<ItemCategory> items = new ArrayList<>();
         ItemCategory itemCategory = new ItemCategory();
-        itemCategory.image = R.drawable.ic_image_black_24dp;
+        itemCategory.image = R.drawable.ic_products_black;
         itemCategory.title = "Produtos";
         itemCategory.imageDrw = AppCompatResources.getDrawable(this, itemCategory.image);
         items.add(itemCategory);
 
         ItemCategory itemCategorySales = new ItemCategory();
-        itemCategorySales.image = R.drawable.ic_image_black_24dp;
+        itemCategorySales.image = R.drawable.ic_sales_black;
         itemCategorySales.title = "Vendas";
         itemCategorySales.imageDrw = AppCompatResources.getDrawable(this, itemCategorySales.image);
         items.add(itemCategorySales);
 
         ItemCategory itemCategorySurvey = new ItemCategory();
-        itemCategorySurvey.image = R.drawable.ic_image_black_24dp;
+        itemCategorySurvey.image = R.drawable.ic_inquiries_black;
         itemCategorySurvey.title = "Inqueritos";
         itemCategorySurvey.imageDrw = AppCompatResources.getDrawable(this, itemCategorySurvey.image);
         items.add(itemCategorySurvey);
@@ -291,21 +291,25 @@ public class MainActivity extends BaseActivity implements AddSaleFragment.OnAddS
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if (result != null) {
-            if (result.getContents() == null) {
-                Snackbar.make(parentLayout, getString(R.string.no_data_available), Snackbar.LENGTH_LONG).show();
-            } else {
-                try {
-                    JSONObject obj = new JSONObject(result.getContents());
-                    checkProductInStock(obj.getString("serie"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Snackbar.make(parentLayout, getString(R.string.error_get_qr_code_data), Snackbar.LENGTH_LONG).show();
+        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+            if (fragment instanceof ListSoldItemsFragment) {
+                IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+                if (result != null) {
+                    if (result.getContents() == null) {
+                        Snackbar.make(parentLayout, getString(R.string.no_data_available), Snackbar.LENGTH_LONG).show();
+                    } else {
+                        try {
+                            JSONObject obj = new JSONObject(result.getContents());
+                            checkProductInStock(obj.getString("serie"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Snackbar.make(parentLayout, getString(R.string.error_get_qr_code_data), Snackbar.LENGTH_LONG).show();
+                        }
+                    }
                 }
+            } else {
+                fragment.onActivityResult(requestCode, resultCode, data);
             }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
