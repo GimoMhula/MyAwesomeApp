@@ -41,6 +41,7 @@ import dev.visum.demoapp.data.api.MozCarbonAPI;
 import dev.visum.demoapp.model.AddClientModel;
 import dev.visum.demoapp.model.ClientModel;
 import dev.visum.demoapp.model.ClientResponseModel;
+import dev.visum.demoapp.model.CustomerResponseModel;
 import dev.visum.demoapp.model.DataUpdateActivityToFragment;
 import dev.visum.demoapp.model.MySaleModel;
 import dev.visum.demoapp.model.ResponseAddClientModel;
@@ -177,17 +178,17 @@ public class ListClientsFragment extends Fragment implements DataUpdateActivityT
 
        if (Tools.isConnected(getContext())) {
            GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
-           Call<ResponseModel<ArrayList<ClientResponseModel>>> call = service.getMyClients("");
+           Call<ResponseModel<List<CustomerResponseModel>>> call = service.getClientFilteredList("");
 
-           call.enqueue(new Callback<ResponseModel<ArrayList<ClientResponseModel>>>() {
+           call.enqueue(new Callback<ResponseModel<List<CustomerResponseModel>>>() {
                @Override
-               public void onResponse(Call<ResponseModel<ArrayList<ClientResponseModel>>> call, Response<ResponseModel<ArrayList<ClientResponseModel>>> response) {
+               public void onResponse(Call<ResponseModel<List<CustomerResponseModel>>> call, Response<ResponseModel<List<CustomerResponseModel>>> response) {
                    if (response.isSuccessful()) {
                        Log.d("TAG", "onResponse: "+response.body());
                        empty_view.setVisibility(View.GONE);
                        recyclerView.setVisibility(View.VISIBLE);
 
-                       for (ClientResponseModel clientsResponseModel : response.body().getResponse()) {
+                       for (CustomerResponseModel clientsResponseModel : response.body().getResponse()) {
 
                            ClientModel client = new ClientModel(clientsResponseModel.getId(),
                                     clientsResponseModel.getName(),
@@ -217,7 +218,7 @@ public class ListClientsFragment extends Fragment implements DataUpdateActivityT
                }
 
                @Override
-               public void onFailure(Call<ResponseModel<ArrayList<ClientResponseModel>>> call, Throwable t) {
+               public void onFailure(Call<ResponseModel<List<CustomerResponseModel>>> call, Throwable t) {
                    progressDialog.dismiss();
                    t.printStackTrace();
                    Snackbar.make(getView(), getString(R.string.error_get_clients), Snackbar.LENGTH_LONG).show();
@@ -372,18 +373,18 @@ public class ListClientsFragment extends Fragment implements DataUpdateActivityT
 
     private void fetchSales(String input) {
         GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
-        Call<ResponseModel<ArrayList<ClientResponseModel>>> call = service.getMyClients(input);
+        Call<ResponseModel<List<CustomerResponseModel>>> call = service.getClientFilteredList(input);
 
-        call.enqueue(new Callback<ResponseModel<ArrayList<ClientResponseModel>>>() {
+        call.enqueue(new Callback<ResponseModel<List<CustomerResponseModel>>>() {
             @Override
-            public void onResponse(Call<ResponseModel<ArrayList<ClientResponseModel>>> call, Response<ResponseModel<ArrayList<ClientResponseModel>>> response) {
+            public void onResponse(Call<ResponseModel<List<CustomerResponseModel>>> call, Response<ResponseModel<List<CustomerResponseModel>>> response) {
                 progress_search.setVisibility(View.GONE);
                 if (response.isSuccessful()) {
                     System.out.println("loading...." + response.body().getResponse());
                     if (response.body().getResponse() != null && response.body().getResponse().size() > 0) {
                         System.out.println("loading...." + response.body().getResponse().size());
                         clientItemList.clear();
-                        for (ClientResponseModel clientsResponseModel : response.body().getResponse()) {
+                        for (CustomerResponseModel clientsResponseModel : response.body().getResponse()) {
 
 
                             ClientModel client = new ClientModel(clientsResponseModel.getId(),
@@ -405,7 +406,7 @@ public class ListClientsFragment extends Fragment implements DataUpdateActivityT
             }
 
             @Override
-            public void onFailure(Call<ResponseModel<ArrayList<ClientResponseModel>>> call, Throwable t) {
+            public void onFailure(Call<ResponseModel<List<CustomerResponseModel>>> call, Throwable t) {
                 progress_search.setVisibility(View.GONE);
                 Snackbar.make(getView(), getString(R.string.failed_get_sales), Snackbar.LENGTH_LONG).show();
             }
