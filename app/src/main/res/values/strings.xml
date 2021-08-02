@@ -99,5 +99,6 @@
     <string name="open_invoice_file_with">Abrir o recibo com</string>
     <string name="list_clients_title">Lista de Clientes</string>
     <string name="error_get_clients">Erro ao carregar Clientes</string>
+    <string name="welcome_user">Bem-vindo Utilizador</string>
 
 </resources>
