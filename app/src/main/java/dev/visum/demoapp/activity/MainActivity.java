@@ -15,6 +15,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -33,6 +34,7 @@ import com.google.zxing.integration.android.IntentResult;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,12 +51,15 @@ import dev.visum.demoapp.fragment.ListSoldItemsFragment;
 import dev.visum.demoapp.fragment.ProductGridFragment;
 import dev.visum.demoapp.fragment.SurveyFragmentMenu;
 import dev.visum.demoapp.model.BaseActivity;
+import dev.visum.demoapp.model.ClientModel;
+import dev.visum.demoapp.model.CustomerResponseModel;
 import dev.visum.demoapp.model.DataUpdateActivityToFragment;
 import dev.visum.demoapp.model.ItemCategory;
 import dev.visum.demoapp.model.ProductResponseModel;
 import dev.visum.demoapp.model.ResponseModel;
 import dev.visum.demoapp.model.SaleType;
 import dev.visum.demoapp.model.SoldItem;
+import dev.visum.demoapp.model.UserAgentResponseModel;
 import dev.visum.demoapp.utils.Constants;
 import dev.visum.demoapp.utils.Tools;
 import dev.visum.demoapp.widget.SpacingItemDecoration;
@@ -75,6 +80,7 @@ public class MainActivity extends BaseActivity implements AddSaleFragment.OnAddS
     private Toolbar toolbar;
     private IntentIntegrator qrScan;
     private View parentLayout;
+    private TextView textview_welcome_user;
     DataUpdateActivityToFragment callback;
 
     public void setCallback(DataUpdateActivityToFragment callback) {
@@ -87,11 +93,13 @@ public class MainActivity extends BaseActivity implements AddSaleFragment.OnAddS
         setContentView(R.layout.activity_main);
         initToolbar();
         initComponent();
+        getClientListForOffline();
     }
 
     private void initComponent() {
         main_activity = this;
         parentLayout = findViewById(R.id.parent_view);
+        textview_welcome_user = findViewById(R.id.textview_welcome_user);
         qrScan = new IntentIntegrator(this);
         bt_clear = findViewById(R.id.bt_clear);
         ll_search_bar = findViewById(R.id.ll_search_bar);
@@ -170,6 +178,53 @@ public class MainActivity extends BaseActivity implements AddSaleFragment.OnAddS
                        startActivity(ContentActivity.class,bundle,null);
                        break;
                }
+            }
+        });
+
+        showUserName();
+    }
+
+    private void showUserName() {
+        UserAgentResponseModel userAgent = KeyStoreLocal.getInstance(this).getUser();
+
+        if (userAgent != null && userAgent.getName() != null && !userAgent.getName().isEmpty()) {
+            textview_welcome_user.setText(textview_welcome_user.getText().toString().replace("Utilizador", userAgent.getName()));
+        }
+    }
+
+    private void getClientListForOffline() {
+        GetDataService service = MozCarbonAPI.getRetrofit(this).create(GetDataService.class);
+        Call<ResponseModel<List<CustomerResponseModel>>> call = service.getClientListForOffline();
+
+        call.enqueue(new Callback<ResponseModel<List<CustomerResponseModel>>>() {
+            @Override
+            public void onResponse(Call<ResponseModel<List<CustomerResponseModel>>> call, Response<ResponseModel<List<CustomerResponseModel>>> response) {
+                if (response.isSuccessful()) {
+                    ArrayList<CustomerResponseModel> customerResponseModels = new ArrayList<>();
+                    for (CustomerResponseModel clientsResponseModel : response.body().getResponse()) {
+
+                        CustomerResponseModel client = new CustomerResponseModel(clientsResponseModel.getId(),
+                                clientsResponseModel.getName(),
+                                clientsResponseModel.getContact()
+                        );
+                        customerResponseModels.add(client);
+                    }
+
+                    if (!customerResponseModels.isEmpty()) {
+                        KeyStoreLocal.getInstance(getApplicationContext()).setOfflineClients(customerResponseModels);
+                    }
+                } else {
+                    try {
+                        System.out.println("error body: " + response.errorBody().string().toString());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseModel<List<CustomerResponseModel>>> call, Throwable t) {
+                t.printStackTrace();
             }
         });
     }
@@ -362,7 +417,6 @@ public class MainActivity extends BaseActivity implements AddSaleFragment.OnAddS
 
             @Override
             public void onPageFinished(WebView view, String url) {
-                System.out.println("page finished loading " + url);
                 createWebPrintJob(view);
             }
         });
