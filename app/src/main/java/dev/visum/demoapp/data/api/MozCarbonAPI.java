@@ -23,8 +23,9 @@ public class MozCarbonAPI {
             @Override
             public Response intercept(Chain chain) throws IOException {
                 Request.Builder requestBuilder = chain.request().newBuilder();
-                if (KeyStoreLocal.getInstance(context).getToken() != null) {
-                    requestBuilder.header("Authorization", KeyStoreLocal.getInstance(context).getToken());
+                // NOTE: Legacy support until production release
+                if (KeyStoreLocal.getInstance(context).getUser() != null || KeyStoreLocal.getInstance(context).getToken() != null) {
+                    requestBuilder.header("Authorization", KeyStoreLocal.getInstance(context).getUser() != null ? KeyStoreLocal.getInstance(context).getUser().getToken() : KeyStoreLocal.getInstance(context).getToken());
                 }
                 return chain.proceed(requestBuilder.build());
             }
