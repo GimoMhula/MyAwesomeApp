@@ -28,6 +28,12 @@ public class CustomerResponseModel {
     @SerializedName("updated_at")
     private String updated_at;
 
+    public CustomerResponseModel(String id, String name, String contact) {
+        this.id = id;
+        this.name = name;
+        this.contact = contact;
+    }
+
     public CustomerResponseModel(String id, String name, String contact, String signature) {
         this.id = id;
         this.name = name;
