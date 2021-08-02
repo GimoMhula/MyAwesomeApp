@@ -15,6 +15,11 @@ public class ClientModel implements Serializable {
     private String created_at;
     private String updated_at;
 
+    public ClientModel(String id, String name, String contact) {
+        this.id = id;
+        this.name = name;
+        this.contact = contact;
+    }
 
     public ClientModel(String id, String name, String address, String email, String contact, String signature, String created_at, String updated_at) {
         this.id = id;
