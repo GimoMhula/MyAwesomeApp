@@ -12,6 +12,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import dev.visum.demoapp.model.AddSaleModel;
+import dev.visum.demoapp.model.ClientModel;
+import dev.visum.demoapp.model.CustomerResponseModel;
+import dev.visum.demoapp.model.UserAgentResponseModel;
 import dev.visum.demoapp.utils.Constants;
 import dev.visum.demoapp.utils.Tools;
 
@@ -56,6 +59,7 @@ public class KeyStoreLocal {
 
 
     // Get user accessToken
+    // NOTE: Legacy support until production release
     public void setToken(String value) {
         setString(Constants.getInstance().SP_TOKEN, value);
     }
@@ -65,12 +69,24 @@ public class KeyStoreLocal {
     }
 
     // store user id
+    // NOTE: Legacy support until production release
     public void setUserId(String value) {
         setString(Constants.getInstance().SP_USER_ID, value);
     }
 
     public String getUserId() {
         return getString(Constants.getInstance().SP_USER_ID);
+    }
+
+    // store user
+    public void setUser(UserAgentResponseModel value) {
+        setModel(Constants.getInstance().SP_USER_MODEL, value);
+    }
+
+    @Nullable
+    public UserAgentResponseModel getUser() {
+        Type type = new TypeToken<UserAgentResponseModel>() {}.getType();
+        return (UserAgentResponseModel) getModel(Constants.getInstance().SP_USER_MODEL, type);
     }
 
     public void logout() {
@@ -100,4 +116,22 @@ public class KeyStoreLocal {
     public void clearOfflineSales() {
         removeString(Constants.getInstance().SP_OFFLINE_SALES);
     }
+
+
+    public ArrayList<CustomerResponseModel> getOfflineClients() {
+        Type type = new TypeToken<ArrayList<CustomerResponseModel>>() {}.getType();
+
+        Object o = getModel(Constants.getInstance().SP_OFFLINE_CLIENTS, type);
+
+        if (o == null || !Tools.isCollection(o)) {
+            return new ArrayList<>();
+        } else {
+            return (ArrayList<CustomerResponseModel>) Tools.convertObjectToList(o);
+        }
+    }
+
+    public void setOfflineClients(ArrayList<CustomerResponseModel> list) {
+        setModel(Constants.getInstance().SP_OFFLINE_CLIENTS, list);
+    }
+
 }
