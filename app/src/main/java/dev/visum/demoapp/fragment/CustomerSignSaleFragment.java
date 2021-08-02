@@ -144,7 +144,6 @@ public class CustomerSignSaleFragment extends Fragment {
     }
 
     private void init() {
-        System.out.println("Map: " + addSaleMap.size());
         progressDialog = new ProgressDialog(getActivity());
         progressBarSignature = parent_view.findViewById(R.id.progressBarSignature);
         mContent = parent_view.findViewById(R.id.linearLayout);
@@ -202,7 +201,6 @@ public class CustomerSignSaleFragment extends Fragment {
                 progressBarSignature.setVisibility(View.GONE);
             }
         });
-        System.out.println("Total " + fileBody.contentLength());
         MultipartBody.Part filePart = MultipartBody.Part.createFormData("signature", file.getName(), fileBody);
 
         GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
