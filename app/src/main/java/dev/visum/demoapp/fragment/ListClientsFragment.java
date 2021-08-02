@@ -380,9 +380,7 @@ public class ListClientsFragment extends Fragment implements DataUpdateActivityT
             public void onResponse(Call<ResponseModel<List<CustomerResponseModel>>> call, Response<ResponseModel<List<CustomerResponseModel>>> response) {
                 progress_search.setVisibility(View.GONE);
                 if (response.isSuccessful()) {
-                    System.out.println("loading...." + response.body().getResponse());
                     if (response.body().getResponse() != null && response.body().getResponse().size() > 0) {
-                        System.out.println("loading...." + response.body().getResponse().size());
                         clientItemList.clear();
                         for (CustomerResponseModel clientsResponseModel : response.body().getResponse()) {
 
