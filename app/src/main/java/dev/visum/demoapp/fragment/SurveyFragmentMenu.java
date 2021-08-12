@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -79,8 +80,15 @@ public class SurveyFragmentMenu extends Fragment {
 //                textView.setText(s);
 //            }
 //        });
+        initToolbar();
         initComponent(root);
         return root;
+    }
+
+    private void initToolbar() {
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.survey_title));
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setHasOptionsMenu(true);
     }
     private void initComponent(View v) {
         act_client = v.findViewById(R.id.act_client);

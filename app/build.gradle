@@ -76,4 +76,7 @@ dependencies {
     // QR code
     implementation 'com.journeyapps:zxing-android-embedded:3.4.0'
 
+//    /WebView
+    implementation 'com.asksira.android:webviewsuite:1.0.3'
+
 }

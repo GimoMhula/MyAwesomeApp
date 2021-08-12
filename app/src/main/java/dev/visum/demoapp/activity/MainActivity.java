@@ -46,6 +46,7 @@ import dev.visum.demoapp.data.api.MozCarbonAPI;
 import dev.visum.demoapp.data.local.KeyStoreLocal;
 import dev.visum.demoapp.fragment.AddSaleFragment;
 import dev.visum.demoapp.fragment.CustomerSignSaleFragment;
+import dev.visum.demoapp.fragment.FormFragment;
 import dev.visum.demoapp.fragment.ListClientsFragment;
 import dev.visum.demoapp.fragment.ListSoldItemsFragment;
 import dev.visum.demoapp.fragment.ProductGridFragment;
@@ -172,6 +173,7 @@ public class MainActivity extends BaseActivity implements AddSaleFragment.OnAddS
                        break;
                    case "Inqueritos":
                        goToFragment(new SurveyFragmentMenu());
+//                         goToFragment(new FormFragment());
                        break;
                    default:Bundle bundle = new Bundle();
                        bundle.putString("content",obj.title);
@@ -270,7 +272,9 @@ public class MainActivity extends BaseActivity implements AddSaleFragment.OnAddS
             case android.R.id.home:
                 String oldTitle = ((AppCompatActivity) getInstance()).getSupportActionBar().getTitle().toString();
                 if (oldTitle.equalsIgnoreCase(getString(R.string.list_sold_items_title))
-                        || oldTitle.equalsIgnoreCase(getString(R.string.list_products))) {
+                        || oldTitle.equalsIgnoreCase(getString(R.string.list_products))
+                        || oldTitle.equalsIgnoreCase(getString(R.string.survey_title))
+                        || oldTitle.equalsIgnoreCase(getString(R.string.list_clients_title))) {
                     dashboardHeader();
                 }
                 this.onBackPressed();
