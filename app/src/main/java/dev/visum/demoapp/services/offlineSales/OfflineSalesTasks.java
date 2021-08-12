@@ -50,71 +50,136 @@ public class OfflineSalesTasks {
                 boolean check = file.mkdirs();
 
                 ArrayList<AddSaleModel> addSaleModelsList = KeyStoreLocal.getInstance(context).getOfflineSales();
+                final ArrayList<CustomerResponseModel> customerResponseModelsList = KeyStoreLocal.getInstance(context).getOfflineClients();
 
                 for (AddSaleModel saleModel : addSaleModelsList) {
                     try {
                         final String clientName = saleModel.getCustomer_id().replace(" ", "").toLowerCase();
+                        boolean hasCustomerIdExist = false;
 
-                        getClientId(saleModel.getCustomer_id(), clientId -> {
-                            if (clientId != null && !Tools.isStringNil(clientId.toString())) {
-                                getProductId(saleModel.getProduct_id(), productId -> {
-                                    if (productId != null && !Tools.isStringNil(productId.toString())) {
-                                        saleModel.setCustomer_id(clientId.toString());
-                                        saleModel.setProduct_id(productId.toString());
-                                        if (Tools.getLatLng(context) != null) {
-                                            saleModel.setLat(Tools.getLatLng(context).getLatitude());
-                                            saleModel.setLng(Tools.getLatLng(context).getLongitude());
-                                        }
-
-                                        processSale(saleModel, urlPath -> {
-                                            if (urlPath != null && !Tools.isStringNil(urlPath.toString())) {
-                                                if (file.isDirectory()) {
-                                                    String documentName = context.getString(R.string.app_name) + "-recibo-" + clientName + "-" + System.currentTimeMillis();
-                                                    try {
-                                                        File invoiceFil = new File(PATH + "/" + documentName + ".pdf");
-                                                        Uri selectedUri = Uri.parse(PATH + "/" + documentName + ".pdf");
-
-                                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                                            try {
-                                                                Method m = StrictMode.class.getMethod("disableDeathOnFileUriExposure");
-                                                                selectedUri = Uri.fromFile(file);
-                                                                m.invoke(null);
-                                                            } catch(Exception e) {
-                                                                e.printStackTrace();
-                                                            }
-                                                        }
-                                                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                                                        intent.addCategory(Intent.CATEGORY_OPENABLE);
-                                                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                                                        intent.setDataAndType(selectedUri, "application/pdf");
-                                                        Intent chooser = Intent.createChooser(intent, context.getResources().getString(R.string.open_invoice_file_with));
-
-                                                        Tools.showNotification(context, NotificationType.ADD, context.getString(R.string.add_sale_ok), chooser);
-                                                    } catch (Exception e) {
-                                                        e.printStackTrace();
-                                                    }
-
-                                                    String[] data = {
-                                                            urlPath.toString(),
-                                                            PATH + "/",
-                                                            clientName,
-                                                            documentName
-                                                    };
-
-                                                    Tools.createPdf(context, data[0], data[1], data[2], data[3]);
-                                                }
-                                            } else {
-                                                Tools.showNotification(context, NotificationType.ERROR, context.getString(R.string.failed_to_add_sale_processing));
-                                            }
-                                        });
-                                    } else {
-                                        Tools.showNotification(context, NotificationType.ERROR, context.getString(R.string.failed_to_add_sale_product_id));
-                                    }
-                                });
-                            } else {
-                                Tools.showNotification(context, NotificationType.ERROR, context.getString(R.string.failed_to_add_sale_client_id));
+                        for (CustomerResponseModel c1 : customerResponseModelsList) {
+                            if (c1.getId().equalsIgnoreCase(saleModel.getCustomer_id())) {
+                                hasCustomerIdExist = true;
+                                break;
                             }
-                        });
+                        }
+
+                        if (hasCustomerIdExist) {
+                            getProductId(saleModel.getProduct_id(), productId -> {
+                                if (productId != null && !Tools.isStringNil(productId.toString())) {
+                                    saleModel.setProduct_id(productId.toString());
+                                    if (Tools.getLatLng(context) != null) {
+                                        saleModel.setLat(Tools.getLatLng(context).getLatitude());
+                                        saleModel.setLng(Tools.getLatLng(context).getLongitude());
+                                    }
+
+                                    processSale(saleModel, urlPath -> {
+                                        if (urlPath != null && !Tools.isStringNil(urlPath.toString())) {
+                                            if (file.isDirectory()) {
+                                                String documentName = context.getString(R.string.app_name) + "-recibo-" + clientName + "-" + System.currentTimeMillis();
+                                                try {
+                                                    File invoiceFil = new File(PATH + "/" + documentName + ".pdf");
+                                                    Uri selectedUri = Uri.parse(PATH + "/" + documentName + ".pdf");
+
+                                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                                        try {
+                                                            Method m = StrictMode.class.getMethod("disableDeathOnFileUriExposure");
+                                                            selectedUri = Uri.fromFile(file);
+                                                            m.invoke(null);
+                                                        } catch(Exception e) {
+                                                            e.printStackTrace();
+                                                        }
+                                                    }
+                                                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                                                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                                                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                                    intent.setDataAndType(selectedUri, "application/pdf");
+                                                    Intent chooser = Intent.createChooser(intent, context.getResources().getString(R.string.open_invoice_file_with));
+
+                                                    Tools.showNotification(context, NotificationType.ADD, context.getString(R.string.add_sale_ok), chooser);
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+
+                                                String[] data = {
+                                                        urlPath.toString(),
+                                                        PATH + "/",
+                                                        clientName,
+                                                        documentName
+                                                };
+
+                                                Tools.createPdf(context, data[0], data[1], data[2], data[3]);
+                                            }
+                                        } else {
+                                            Tools.showNotification(context, NotificationType.ERROR, context.getString(R.string.failed_to_add_sale_processing));
+                                        }
+                                    });
+                                } else {
+                                    Tools.showNotification(context, NotificationType.ERROR, context.getString(R.string.failed_to_add_sale_product_id));
+                                }
+                            });
+                        } else {
+                            getClientId(saleModel.getCustomer_id(), clientId -> {
+                                if (clientId != null && !Tools.isStringNil(clientId.toString())) {
+                                    getProductId(saleModel.getProduct_id(), productId -> {
+                                        if (productId != null && !Tools.isStringNil(productId.toString())) {
+                                            saleModel.setCustomer_id(clientId.toString());
+                                            saleModel.setProduct_id(productId.toString());
+                                            if (Tools.getLatLng(context) != null) {
+                                                saleModel.setLat(Tools.getLatLng(context).getLatitude());
+                                                saleModel.setLng(Tools.getLatLng(context).getLongitude());
+                                            }
+
+                                            processSale(saleModel, urlPath -> {
+                                                if (urlPath != null && !Tools.isStringNil(urlPath.toString())) {
+                                                    if (file.isDirectory()) {
+                                                        String documentName = context.getString(R.string.app_name) + "-recibo-" + clientName + "-" + System.currentTimeMillis();
+                                                        try {
+                                                            File invoiceFil = new File(PATH + "/" + documentName + ".pdf");
+                                                            Uri selectedUri = Uri.parse(PATH + "/" + documentName + ".pdf");
+
+                                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                                                try {
+                                                                    Method m = StrictMode.class.getMethod("disableDeathOnFileUriExposure");
+                                                                    selectedUri = Uri.fromFile(file);
+                                                                    m.invoke(null);
+                                                                } catch(Exception e) {
+                                                                    e.printStackTrace();
+                                                                }
+                                                            }
+                                                            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                                                            intent.addCategory(Intent.CATEGORY_OPENABLE);
+                                                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                                            intent.setDataAndType(selectedUri, "application/pdf");
+                                                            Intent chooser = Intent.createChooser(intent, context.getResources().getString(R.string.open_invoice_file_with));
+
+                                                            Tools.showNotification(context, NotificationType.ADD, context.getString(R.string.add_sale_ok), chooser);
+                                                        } catch (Exception e) {
+                                                            e.printStackTrace();
+                                                        }
+
+                                                        String[] data = {
+                                                                urlPath.toString(),
+                                                                PATH + "/",
+                                                                clientName,
+                                                                documentName
+                                                        };
+
+                                                        Tools.createPdf(context, data[0], data[1], data[2], data[3]);
+                                                    }
+                                                } else {
+                                                    Tools.showNotification(context, NotificationType.ERROR, context.getString(R.string.failed_to_add_sale_processing));
+                                                }
+                                            });
+                                        } else {
+                                            Tools.showNotification(context, NotificationType.ERROR, context.getString(R.string.failed_to_add_sale_product_id));
+                                        }
+                                    });
+                                } else {
+                                    Tools.showNotification(context, NotificationType.ERROR, context.getString(R.string.failed_to_add_sale_client_id));
+                                }
+                            });
+                        }
                     } catch (Exception e) {
                         Tools.showNotification(context, NotificationType.ERROR, context.getString(R.string.failed_to_add_sale));
                         e.printStackTrace();

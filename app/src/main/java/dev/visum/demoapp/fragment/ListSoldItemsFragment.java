@@ -291,9 +291,7 @@ public class ListSoldItemsFragment extends Fragment implements DataUpdateActivit
             public void onResponse(Call<ResponseModel<ArrayList<MySaleModel>>> call, Response<ResponseModel<ArrayList<MySaleModel>>> response) {
                 progress_search.setVisibility(View.GONE);
                 if (response.isSuccessful()) {
-                    System.out.println("loading...." + response.body().getResponse());
                     if (response.body().getResponse() != null && response.body().getResponse().size() > 0) {
-                        System.out.println("loading...." + response.body().getResponse().size());
                         soldItemList.clear();
                         for (MySaleModel saleResponseModel : response.body().getResponse()) {
                             String subtitle = ("Falta pagar " + Double.toString(saleResponseModel.getTotalPrice()).replace(".0", "") + "MT em prestações de " + Double.toString(saleResponseModel.getMissing()).replace(".0", "") + "MT");

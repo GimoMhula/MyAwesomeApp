@@ -399,6 +399,11 @@ public class AddSaleFragment extends Fragment {
                 validatingSale();
             }
         });
+
+        if (!Tools.isConnected(getContext()) && KeyStoreLocal.getInstance(getContext()).getOfflineClients() != null && !KeyStoreLocal.getInstance(getContext()).getOfflineClients().isEmpty()) {
+            customerFilteredAdapter.addAll(KeyStoreLocal.getInstance(getContext()).getOfflineClients());
+            customerFilteredAdapter.notifyDataSetChanged();
+        }
     }
 
     private void validatingSale() {
@@ -425,8 +430,9 @@ public class AddSaleFragment extends Fragment {
 
             if (!Tools.isStringNil(pay_type) && (check_for_first_pay || check_for_next_prest || (!Tools.isConnected(getContext()) && !Tools.isStringNil(clientName) && !Tools.isStringNil(productName)))) {
                 AddSaleModel addSaleModel = new AddSaleModel(
-                        KeyStoreLocal.getInstance(getContext()).getUserId(),
-                        Tools.isConnected(getContext()) ? customerId : clientName,
+                        KeyStoreLocal.getInstance(getContext()).getUser() != null
+                                && KeyStoreLocal.getInstance(getContext()).getUser().getId() != null ? KeyStoreLocal.getInstance(getContext()).getUser().getId() : KeyStoreLocal.getInstance(getContext()).getUserId(),
+                        (Tools.isConnected(getContext()) && !customerId.isEmpty()) || (KeyStoreLocal.getInstance(getContext()).getOfflineClients() != null && !KeyStoreLocal.getInstance(getContext()).getOfflineClients().isEmpty() && !customerId.isEmpty()) ? customerId : clientName,
                         Tools.isConnected(getContext()) ? productId : productName,
                         first_prestation,
                         Tools.getMapKey(payTypeMap, pay_type) + "",
@@ -646,7 +652,6 @@ public class AddSaleFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        System.out.println("AddSaleFragment");
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
             if (result.getContents() == null) {

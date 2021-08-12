@@ -68,4 +68,8 @@ public interface GetDataService {
 
     @POST("clients/store")
     Call<ResponseAddClientModel> postAddClient(@NotNull @QueryMap Map<String, String> addClientModel);
+
+    @GET("clients/index/offline")
+    Call<ResponseModel<List<CustomerResponseModel>>> getClientListForOffline();
+
 }

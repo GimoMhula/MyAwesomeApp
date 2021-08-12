@@ -102,7 +102,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void startApp() {
-        if (KeyStoreLocal.getInstance(this).getToken() != null && KeyStoreLocal.getInstance(this).getUserId() != null) {
+        if (KeyStoreLocal.getInstance(this).getUser() != null || (KeyStoreLocal.getInstance(this).getToken() != null && KeyStoreLocal.getInstance(this).getUserId() != null)) {
             startActivity(MainActivity.class, null, null);
         } else {
             FragmentTransaction fragmentTransaction = getInstance().getSupportFragmentManager().beginTransaction();

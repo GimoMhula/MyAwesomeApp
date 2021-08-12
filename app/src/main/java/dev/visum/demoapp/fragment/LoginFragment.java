@@ -131,8 +131,10 @@ public class LoginFragment extends Fragment {
 
                     if (response.code() > 100 && response.code() < 399 && response.body() != null && response.body().getResponse() != null && response.body().getResponse().getToken() != null) {
                         Snackbar.make(parent_view, getString(R.string.success_login_msg), Snackbar.LENGTH_SHORT).show();
-                        KeyStoreLocal.getInstance(getActivity()).setToken("Bearer " + response.body().getResponse().getToken());
-                        KeyStoreLocal.getInstance(getActivity()).setUserId(response.body().getResponse().getId());
+                        // Save user model
+                        UserAgentResponseModel userAgent = response.body().getResponse();
+                        userAgent.setToken("Bearer " + userAgent.getToken());
+                        KeyStoreLocal.getInstance(getActivity()).setUser(userAgent);
                         getActivity().startActivity(new Intent(getActivity(), MainActivity.class));
                     } else {
                         Snackbar.make(parent_view, getString(R.string.user_credentials_invalid_msg), Snackbar.LENGTH_SHORT).show();
