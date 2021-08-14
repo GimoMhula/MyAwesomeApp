@@ -95,7 +95,7 @@
                 android:layout_height="@dimen/spacing_medium" />
 
             <LinearLayout
-                android:id="@+id/lyt_radio_group"
+                android:id="@+id/lyt_radio_1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -106,7 +106,7 @@
                     android:layout_height="0dp" />
 
                 <RadioGroup
-
+                    android:id="@+id/radio_group_1"
                     style="@style/Yellow.Small.AppCompatRatingBar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -123,7 +123,9 @@
                        android:text="Sim"
                        android:textSize="14sp"
                        />
-
+                    <View
+                        android:layout_width="@dimen/spacing_middle"
+                        android:layout_height="5dp" />
                     <RadioButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -152,9 +154,8 @@
                     android:layout_height="0dp" />
 
             </LinearLayout>
-
             <LinearLayout
-                android:id="@+id/lyt_spinner"
+                android:id="@+id/lyt_radio_2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -164,26 +165,78 @@
                     android:layout_width="@dimen/spacing_middle"
                     android:layout_height="0dp" />
 
-                <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                    android:id="@+id/autoComplete"
-                    android:layout_width="match_parent"
+                <RadioGroup
+                    android:id="@+id/radio_group_2"
+                    style="@style/Yellow.Small.AppCompatRatingBar"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#000"
-                    android:textCursorDrawable="@null"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginStart="15dp"
-                    android:textSize="12sp"
-                    android:backgroundTint="#FAFAFA"
-                    android:imeOptions="actionNext"
-                    android:inputType="none"
-                    android:background="@drawable/edit_bg"
-                    android:layout_marginBottom="15dp"/>
+                    android:clickable="false"
+                    android:numStars="5"
+                    android:rating="3.5"
+                    android:stepSize="1"
+                    android:orientation="vertical"
+                    android:theme="@style/Yellow.Small.AppCompatRatingBar" >
 
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pessimo(a)"
+                        android:textSize="14sp"
+                        />
+                    <View
+                        android:layout_width="@dimen/spacing_middle"
+                        android:layout_height="5dp" />
 
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mau(a)"
+                        android:textSize="14sp"
+                        />
 
+                    <View
+                        android:layout_width="@dimen/spacing_middle"
+                        android:layout_height="5dp" />
 
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Bom(a)"
+                        android:textSize="14sp"
+                        />
+                    <View
+                        android:layout_width="@dimen/spacing_middle"
+                        android:layout_height="5dp" />
+
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Excelente"
+                        android:textSize="14sp"
+                        />
+                </RadioGroup>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/price2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$ 80.00"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                    android:textColor="@color/colorPrimary"
+                    android:textStyle="bold" />
+
+                <View
+                    android:layout_width="@dimen/spacing_middle"
+                    android:layout_height="0dp" />
 
             </LinearLayout>
+
 
             <View
                 android:layout_width="0dp"

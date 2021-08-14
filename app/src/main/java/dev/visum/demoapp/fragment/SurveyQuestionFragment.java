@@ -1,7 +1,10 @@
 package dev.visum.demoapp.fragment;
 
+import static dev.visum.demoapp.model.BaseActivity.getInstance;
+
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +18,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +28,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,13 +39,20 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 import dev.visum.demoapp.R;
 import dev.visum.demoapp.adapter.AdapterListSurveyCard;
 import dev.visum.demoapp.adapter.AdapterListSurveyQuestions;
 import dev.visum.demoapp.data.api.GetDataService;
 import dev.visum.demoapp.data.api.MozCarbonAPI;
+import dev.visum.demoapp.model.AddSalePrestResponseModel;
 import dev.visum.demoapp.model.ResponseModel;
+import dev.visum.demoapp.model.SaleAddedResponseModel;
+import dev.visum.demoapp.model.SaleType;
+import dev.visum.demoapp.model.SoldItem;
+import dev.visum.demoapp.model.SurveyAnswerModel;
 import dev.visum.demoapp.model.SurveyModel;
 import dev.visum.demoapp.model.SurveyQuestionResponseModel;
 import dev.visum.demoapp.model.SurveyQuestionResponseModel;
@@ -56,7 +68,7 @@ import retrofit2.Response;
  * Use the {@link SurveyQuestionFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SurveyQuestionFragment extends Fragment {
+public class SurveyQuestionFragment extends Fragment implements AdapterListSurveyQuestions.OnListener{
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -76,7 +88,12 @@ public class SurveyQuestionFragment extends Fragment {
     private AppCompatActivity activity;
     private TextView empty_view;
     private List<SurveyQuestionsModel> items = new ArrayList<>();
+    private Vector<SurveyAnswerModel> surveyAnswerModels;
+
     private AutoCompleteTextView classification;
+    private Button submit_survey_answer;
+
+
 
     public SurveyQuestionFragment() {
         // Required empty public constructor
@@ -106,6 +123,9 @@ public class SurveyQuestionFragment extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+
+            Log.d("TAG", "passVal"+mParam1);
+
         }
     }
 
@@ -114,7 +134,7 @@ public class SurveyQuestionFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         activity = ((AppCompatActivity)getActivity());
-        parent_view = inflater.inflate(R.layout.fragment_product_grid, container, false);
+        parent_view = inflater.inflate(R.layout.fragment_survey_question, container, false);
 
         // initToolbar();
         initComponent();
@@ -133,13 +153,14 @@ public class SurveyQuestionFragment extends Fragment {
 
     private void initComponent() {
         empty_view = parent_view.findViewById(R.id.empty_view);
+        submit_survey_answer = parent_view.findViewById(R.id.submit_survey_answer);
         progressDialog = new ProgressDialog(activity);
         progressDialog.setMessage(getString(R.string.loading_data));
         progressDialog.show();
 
 
         GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
-        Call<ResponseModel<List<SurveyQuestionResponseModel>>> call = service.getSurveyQuestionsList("1");
+        Call<ResponseModel<List<SurveyQuestionResponseModel>>> call = service.getSurveyQuestionsList(mParam1);
 
         call.enqueue(new Callback<ResponseModel<List<SurveyQuestionResponseModel>>>() {
             @Override
@@ -155,6 +176,10 @@ public class SurveyQuestionFragment extends Fragment {
                     for (SurveyQuestionResponseModel SurveyQuestionResponseModel : response.body().getResponse()) {
                         items.add(new SurveyQuestionsModel(SurveyQuestionResponseModel.getId(),SurveyQuestionResponseModel.getTitle(),SurveyQuestionResponseModel.getDescription(),SurveyQuestionResponseModel.getType()));
                     }
+                    if(!items.isEmpty()){
+                        surveyAnswerModels= new Vector<>(items.size()); // new
+                    }
+
 
                     recyclerView.getAdapter().notifyDataSetChanged();
                 } else {
@@ -182,6 +207,8 @@ public class SurveyQuestionFragment extends Fragment {
 
         //set data and list adapter
         mAdapter = new AdapterListSurveyQuestions(getContext(), items);
+
+        mAdapter.setCallback(this);
         recyclerView.setAdapter(mAdapter);
 
         // on item list clicked
@@ -199,7 +226,56 @@ public class SurveyQuestionFragment extends Fragment {
             }
         });
 
+        submit_survey_answer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                for(int i=0; i<mAdapter.getItemCount(); i++){
+                    Toast.makeText(getContext(), "Resposta submetida! "+i, Toast.LENGTH_SHORT).show();
+                }
+
+
+//                FragmentTransaction fragmentTransaction = getInstance().getSupportFragmentManager().beginTransaction();
+//                fragmentTransaction.replace(R.id.parent_view, new FragmentConfirmation());
+//                fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+//                fragmentTransaction.addToBackStack(null);
+//                fragmentTransaction.commitAllowingStateLoss();
+            }
+        });
+
         // TODO: missing refresh list and load more items
+    }
+
+    public void processAnswer(int question_id, int customer_id, String answer,int agent_id) {
+        SurveyAnswerModel answerModel=new SurveyAnswerModel(question_id,customer_id,answer,agent_id);
+
+    }
+
+    private void submitAnswer(Map<String, String> map) {
+        GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
+
+            Call<SurveyAnswerModel> call = service.postAnswer(map);
+
+            call.enqueue(new Callback<SurveyAnswerModel>() {
+                @Override
+                public void onResponse(Call<SurveyAnswerModel> call, Response<SurveyAnswerModel> response) {
+//                    progressDialog.hide();
+
+                    if (response.isSuccessful() && response.body() != null) {
+//                        Snackbar.make(parent_view, getString(R.string.success_sale_next_prest_fragment), Snackbar.LENGTH_LONG).show();
+//                        getActivity().onBackPressed();
+                    } else {
+                        Snackbar.make(parent_view, getString(R.string.error_answer_fragment_failed), Snackbar.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<SurveyAnswerModel> call, Throwable t) {
+//                    progressDialog.hide();
+                    Snackbar.make(parent_view, getString(R.string.error_answer_fragment_failed), Snackbar.LENGTH_LONG).show();
+                }
+            });
+
     }
 
 
@@ -244,5 +320,15 @@ public class SurveyQuestionFragment extends Fragment {
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         activity.getMenuInflater().inflate(R.menu.menu_cart_setting, menu);
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+
+
+
+    @Override
+    public void setAnswer(String value, int position, int question_id) {
+        surveyAnswerModels.add(position,new SurveyAnswerModel(question_id,1,value,3));
+
+        Log.d("TAG", "vector"+surveyAnswerModels.toString());
     }
 }

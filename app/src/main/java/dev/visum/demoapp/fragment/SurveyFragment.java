@@ -24,6 +24,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import dev.visum.demoapp.R;
@@ -32,6 +35,7 @@ import dev.visum.demoapp.adapter.AdapterSaleCustomerFiltered;
 import dev.visum.demoapp.adapter.AdapterSaleProductFiltered;
 import dev.visum.demoapp.data.api.GetDataService;
 import dev.visum.demoapp.data.api.MozCarbonAPI;
+import dev.visum.demoapp.model.BaseActivity;
 import dev.visum.demoapp.model.CustomerResponseModel;
 import dev.visum.demoapp.model.SurveyModel;
 import dev.visum.demoapp.model.SurveyResponseModel;
@@ -71,6 +75,7 @@ public class SurveyFragment extends Fragment {
     private AppCompatActivity activity;
     private TextView empty_view;
     private List<SurveyModel> items = new ArrayList<>();
+    private FragmentActivity myContext;
 
 
     public SurveyFragment() {
@@ -147,7 +152,7 @@ public class SurveyFragment extends Fragment {
                     recyclerView.setVisibility(View.VISIBLE);
 
                     for (SurveyResponseModel surveyResponseModel : response.body().getResponse()) {
-                        items.add(new SurveyModel(surveyResponseModel.getTitle(),surveyResponseModel.getDescription(),surveyResponseModel.getStatus()+""));
+                        items.add(new SurveyModel(surveyResponseModel.getId(),surveyResponseModel.getTitle(),surveyResponseModel.getDescription(),surveyResponseModel.getStatus()+""));
                     }
 
                     recyclerView.getAdapter().notifyDataSetChanged();
@@ -186,6 +191,10 @@ public class SurveyFragment extends Fragment {
             public void onItemClick(View view, SurveyModel obj, int position) {
                 Snackbar.make(parent_view, "Item " + obj.title + " clicked", Snackbar.LENGTH_SHORT).show();
 
+                SurveyQuestionFragment fragment=new SurveyQuestionFragment();
+                Log.d("TAG", "passVal"+obj.id+"");
+                goToFragment(fragment.newInstance(obj.id+"",""));
+
             }
         });
 
@@ -198,7 +207,23 @@ public class SurveyFragment extends Fragment {
 
         // TODO: missing refresh list and load more items
     }
-
+    private void goToFragment(Fragment f) {
+//        ll_search_bar.setVisibility(View.GONE);
+//
+//        if (toolbar.getMenu().findItem(R.id.action_logout) != null) {
+//            toolbar.getMenu().findItem(R.id.action_logout).setVisible(false);
+//        }
+//
+//        if (menu_search != null) {
+//            menu_search.setVisible(true);
+//            toolbar.setBackgroundColor(getColor(R.color.colorPrimary));
+//        }
+        FragmentTransaction fragmentTransaction = BaseActivity.getInstance().getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.parent_view, f);
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commitAllowingStateLoss();
+    }
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         activity.getMenuInflater().inflate(R.menu.menu_cart_setting, menu);

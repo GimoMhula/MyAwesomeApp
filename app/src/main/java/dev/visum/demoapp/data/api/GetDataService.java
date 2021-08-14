@@ -17,6 +17,7 @@ import dev.visum.demoapp.model.ResponseAddClientModel;
 import dev.visum.demoapp.model.ResponseModel;
 import dev.visum.demoapp.model.SaleAddedResponseModel;
 
+import dev.visum.demoapp.model.SurveyAnswerModel;
 import dev.visum.demoapp.model.SurveyQuestionResponseModel;
 import dev.visum.demoapp.model.SurveyResponseModel;
 
@@ -52,6 +53,9 @@ public interface GetDataService {
 
     @POST("store_sale")
     Call<SaleAddedResponseModel> postSale(@NotNull @QueryMap Map<String, String> saleCreatedModel);
+
+    @POST("answer")
+    Call<SurveyAnswerModel> postAnswer(@NotNull @QueryMap Map<String, String> saleCreatedModel);
 
     @POST("store_prestation")
     Call<AddSalePrestResponseModel> postNextPrestSale(@NotNull @QueryMap Map<String, String> nextPrestSaleCreatedModel);

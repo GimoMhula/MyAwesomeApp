@@ -12,6 +12,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,6 +52,7 @@ public class SurveyFragmentMenu extends Fragment {
     private FragmentActivity myContext;
     private SurveyViewModel galleryViewModel;
     private TextView next_text;
+    private LinearLayout footer;
 
     private enum State {
         SHIPPING,
@@ -58,7 +60,7 @@ public class SurveyFragmentMenu extends Fragment {
         CONFIRMATION
     }
 
-    State[] array_state = new State[]{State.SHIPPING, State.PAYMENT, State.CONFIRMATION};
+    State[] array_state = new State[]{State.PAYMENT, State.CONFIRMATION};
     private View line_first, line_second;
     private ImageView image_shipping, image_payment, image_confirm;
     private TextView tv_shipping, tv_payment, tv_confirm;
@@ -102,7 +104,10 @@ public class SurveyFragmentMenu extends Fragment {
         tv_payment = (TextView) v.findViewById(R.id.tv_payment);
         tv_confirm = (TextView) v.findViewById(R.id.tv_confirm);
         next_text=(TextView) v.findViewById(R.id.lyt_next_text);
-        displayFragment(array_state[idx_state]);
+
+        footer=(LinearLayout)v.findViewById(R.id.footer);
+//        displayFragment(array_state[idx_state]);
+        displayFragment(State.SHIPPING);
 
         image_payment.setColorFilter(getResources().getColor(R.color.grey_10), PorterDuff.Mode.SRC_ATOP);
         image_confirm.setColorFilter(getResources().getColor(R.color.grey_10), PorterDuff.Mode.SRC_ATOP);
@@ -169,12 +174,15 @@ public class SurveyFragmentMenu extends Fragment {
             fragment = new SurveyFragment();
             tv_shipping.setTextColor(getResources().getColor(R.color.grey_90));
             image_shipping.clearColorFilter();
+            footer.setVisibility(View.GONE);
+
         } else if (state.name().equalsIgnoreCase(State.PAYMENT.name())) {
             fragment = new SurveyQuestionFragment();
             line_first.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
             image_shipping.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
             image_payment.clearColorFilter();
             tv_payment.setTextColor(getResources().getColor(R.color.grey_90));
+            footer.setVisibility(View.VISIBLE);
             //TODO
 
         } else if (state.name().equalsIgnoreCase(State.CONFIRMATION.name())) {
@@ -183,6 +191,7 @@ public class SurveyFragmentMenu extends Fragment {
             image_payment.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
             image_confirm.clearColorFilter();
             tv_confirm.setTextColor(getResources().getColor(R.color.grey_90));
+            footer.setVisibility(View.VISIBLE);
         }
 
         if (fragment == null) return;

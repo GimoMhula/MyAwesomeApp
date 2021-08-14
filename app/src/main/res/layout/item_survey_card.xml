@@ -53,6 +53,7 @@
                     />
 
                 <RadioButton
+                    android:visibility="gone"
                     android:id="@+id/survey_check"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/spacing_xlarge"

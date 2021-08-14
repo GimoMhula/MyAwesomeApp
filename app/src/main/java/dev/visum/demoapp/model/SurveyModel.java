@@ -18,6 +18,13 @@ public class SurveyModel {
         this.updated_at = updated_at;
     }
 
+    public SurveyModel(int id, String title, String description, String status) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.status = status;
+    }
+
     public SurveyModel(String title, String description, String status) {
         this.title = title;
         this.description = description;

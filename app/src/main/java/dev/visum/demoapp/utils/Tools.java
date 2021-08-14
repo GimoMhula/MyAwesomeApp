@@ -340,6 +340,8 @@ public class Tools {
         }
     }
 
+
+
     public static void setSystemBarLight(Activity act) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             View view = act.findViewById(android.R.id.content);

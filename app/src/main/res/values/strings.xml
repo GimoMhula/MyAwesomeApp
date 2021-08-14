@@ -101,5 +101,6 @@
     <string name="error_get_clients">Erro ao carregar Clientes</string>
     <string name="welcome_user">Bem-vindo Utilizador</string>
     <string name="survey_title">Gestão de Inquéritos</string>
+    <string name="error_answer_fragment_failed">Erro ao submeter as respostas!</string>
 
 </resources>
