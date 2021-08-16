@@ -178,7 +178,7 @@ public class ProductGridFragment extends Fragment {
         mAdapter.setOnItemClickListener(new AdapterGridProductCard.OnItemClickListener() {
             @Override
             public void onItemClick(View view, ProductModel obj, int position) {
-                Snackbar.make(parent_view, "Item " + obj.title + " clicked", Snackbar.LENGTH_SHORT).show();
+//                Snackbar.make(parent_view, "Item " + obj.title + " clicked", Snackbar.LENGTH_SHORT).show();
             }
         });
 
