@@ -13,6 +13,8 @@
         <entry key="app/src/main/res/layout/fragment_survey_question.xml" value="0.30978260869565216" />
         <entry key="app/src/main/res/layout/item_survey_card.xml" value="0.30978260869565216" />
         <entry key="app/src/main/res/layout/item_survey_question_card.xml" value="0.30978260869565216" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.2140625" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.2140625" />
       </map>
     </option>
   </component>

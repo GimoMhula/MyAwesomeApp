@@ -231,6 +231,7 @@ public class SurveyQuestionFragment extends Fragment implements AdapterListSurve
             public void onClick(View view) {
 
                 for(int i=0; i<mAdapter.getItemCount(); i++){
+
                     Toast.makeText(getContext(), "Resposta submetida! "+i, Toast.LENGTH_SHORT).show();
                 }
 
