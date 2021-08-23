@@ -229,11 +229,9 @@ public class SurveyQuestionFragment extends Fragment implements AdapterListSurve
         submit_survey_answer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                for(int i=0; i<mAdapter.getItemCount(); i++){
-
-                    Toast.makeText(getContext(), "Resposta submetida! "+i, Toast.LENGTH_SHORT).show();
-                }
+                Log.d("TAG", "onClick: Submiting info");
+                showCustomDialog();
+                Toast.makeText(getActivity(), "Resposta submetida! ", Toast.LENGTH_LONG).show();
 
 
 //                FragmentTransaction fragmentTransaction = getInstance().getSupportFragmentManager().beginTransaction();
@@ -315,6 +313,30 @@ public class SurveyQuestionFragment extends Fragment implements AdapterListSurve
 
 */
         super.onViewCreated(view, savedInstanceState);
+    }
+
+    private void showCustomDialog() {
+        final Dialog dialog = new Dialog(getContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); // before
+        dialog.setContentView(R.layout.dialog_info);
+        dialog.setCancelable(true);
+
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(dialog.getWindow().getAttributes());
+        lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
+
+        ((AppCompatButton) dialog.findViewById(R.id.bt_close)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(), ((AppCompatButton) v).getText().toString() + " Clicked", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+        dialog.getWindow().setAttributes(lp);
     }
 
     @Override
