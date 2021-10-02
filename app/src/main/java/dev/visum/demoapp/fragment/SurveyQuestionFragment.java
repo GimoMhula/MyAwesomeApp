@@ -229,16 +229,16 @@ public class SurveyQuestionFragment extends Fragment implements AdapterListSurve
         submit_survey_answer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("TAG", "onClick: Submiting info");
-                showCustomDialog();
-                Toast.makeText(getActivity(), "Resposta submetida! ", Toast.LENGTH_LONG).show();
+
+                if(!surveyAnswerModels.isEmpty()){
+                    progressDialog.show();
+                    submitAnswer(Tools.convertObjToMap(surveyAnswerModels)); //TODO submit object
+                    showCustomDialog();
+                }else {
+                    Toast.makeText(getActivity(), "Por favor preencha todos os campos", Toast.LENGTH_SHORT).show();
+                }
 
 
-//                FragmentTransaction fragmentTransaction = getInstance().getSupportFragmentManager().beginTransaction();
-//                fragmentTransaction.replace(R.id.parent_view, new FragmentConfirmation());
-//                fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-//                fragmentTransaction.addToBackStack(null);
-//                fragmentTransaction.commitAllowingStateLoss();
             }
         });
 
@@ -258,9 +258,10 @@ public class SurveyQuestionFragment extends Fragment implements AdapterListSurve
             call.enqueue(new Callback<SurveyAnswerModel>() {
                 @Override
                 public void onResponse(Call<SurveyAnswerModel> call, Response<SurveyAnswerModel> response) {
-//                    progressDialog.hide();
+                    progressDialog.hide();
 
                     if (response.isSuccessful() && response.body() != null) {
+                        Log.d("TAG", "onResponse: "+response.message());
 //                        Snackbar.make(parent_view, getString(R.string.success_sale_next_prest_fragment), Snackbar.LENGTH_LONG).show();
 //                        getActivity().onBackPressed();
                     } else {
@@ -270,7 +271,7 @@ public class SurveyQuestionFragment extends Fragment implements AdapterListSurve
 
                 @Override
                 public void onFailure(Call<SurveyAnswerModel> call, Throwable t) {
-//                    progressDialog.hide();
+                    progressDialog.hide();
                     Snackbar.make(parent_view, getString(R.string.error_answer_fragment_failed), Snackbar.LENGTH_LONG).show();
                 }
             });

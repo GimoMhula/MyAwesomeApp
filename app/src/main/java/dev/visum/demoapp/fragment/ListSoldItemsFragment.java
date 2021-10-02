@@ -3,6 +3,7 @@ package dev.visum.demoapp.fragment;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,11 +36,13 @@ import dev.visum.demoapp.activity.MainActivity;
 import dev.visum.demoapp.adapter.AdapterListSoldItems;
 import dev.visum.demoapp.data.api.GetDataService;
 import dev.visum.demoapp.data.api.MozCarbonAPI;
+import dev.visum.demoapp.data.local.KeyStoreLocal;
 import dev.visum.demoapp.model.DataUpdateActivityToFragment;
 import dev.visum.demoapp.model.MySaleModel;
 import dev.visum.demoapp.model.ResponseModel;
 import dev.visum.demoapp.model.SaleType;
 import dev.visum.demoapp.model.SoldItem;
+import dev.visum.demoapp.model.UserAgentResponseModel;
 import dev.visum.demoapp.utils.Constants;
 import dev.visum.demoapp.utils.Tools;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -79,6 +82,7 @@ public class ListSoldItemsFragment extends Fragment implements DataUpdateActivit
     private CompositeDisposable disposable = new CompositeDisposable();
 
     ListSoldItemsFragment.OnListSoldItemsSelectedListener callback;
+    private UserAgentResponseModel userAgent;
 
     public void setCallback(ListSoldItemsFragment.OnListSoldItemsSelectedListener callback) {
         this.callback = callback;
@@ -158,6 +162,10 @@ public class ListSoldItemsFragment extends Fragment implements DataUpdateActivit
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
 
+        userAgent = KeyStoreLocal.getInstance(getActivity()).getUser();
+
+
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -165,6 +173,7 @@ public class ListSoldItemsFragment extends Fragment implements DataUpdateActivit
                 fab_add_sale.shrink();
             }
         }, 1200);
+
 
         mAdapter = new AdapterListSoldItems(getContext(), soldItemList, R.layout.item_sold_item_horizontal);
         recyclerView.setAdapter(mAdapter);
@@ -179,25 +188,35 @@ public class ListSoldItemsFragment extends Fragment implements DataUpdateActivit
                    if (response.isSuccessful()) {
                        empty_view.setVisibility(View.GONE);
                        recyclerView.setVisibility(View.VISIBLE);
-
+                       SoldItem soldItem=null;
                        for (MySaleModel saleResponseModel : response.body().getResponse()) {
                            String subtitle = ("Falta pagar " + Double.toString(saleResponseModel.getTotalPrice()).replace(".0", "") + "MT em prestações de " + Double.toString(saleResponseModel.getMissing()).replace(".0", "") + "MT");
                            boolean containsPrest = true;
+                           Log.d("agent_id", "onResponse: "+ saleResponseModel.getAgent_id());
 
                            if (saleResponseModel.getMissing() == 0) {
                                subtitle = "Pagou um total de " + saleResponseModel.getTotalPrice() + "MT";
                                containsPrest = false;
                            }
+                           if (userAgent != null && userAgent.getName() != null && !userAgent.getName().isEmpty()) {
+                               Log.d("agent_id", "onResponse F: "+ userAgent.getId()+ "Name: "+userAgent.getName());
 
-                           SoldItem soldItem = new SoldItem(saleResponseModel.getId(),
-                                   "Venda para " + saleResponseModel.getProduct().getName(),
-                                   subtitle,
-                                   saleResponseModel.getCreated_at(),
-                                   Constants.getInstance().API + saleResponseModel.getProduct().getImage(),
-                                   saleResponseModel.getMissing(),
-                                   containsPrest
-                           );
-                           soldItemList.add(soldItem);
+                               if(saleResponseModel.getAgent_id().equals(userAgent.getId())){
+                                    soldItem = new SoldItem(saleResponseModel.getId(),
+                                           "Venda para " + saleResponseModel.getProduct().getName(),
+                                           subtitle,
+                                           saleResponseModel.getCreated_at(),
+                                           Constants.getInstance().API + saleResponseModel.getProduct().getImage(),
+                                           saleResponseModel.getMissing(),
+                                           containsPrest
+                                   );
+                                   soldItemList.add(soldItem);
+                               }
+
+                           }
+
+
+
                        }
 
                        recyclerView.getAdapter().notifyDataSetChanged();
