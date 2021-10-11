@@ -190,7 +190,7 @@ public class ListSoldItemsFragment extends Fragment implements DataUpdateActivit
                        recyclerView.setVisibility(View.VISIBLE);
                        SoldItem soldItem=null;
                        for (MySaleModel saleResponseModel : response.body().getResponse()) {
-                           String subtitle = ("Falta pagar " + Double.toString(saleResponseModel.getTotalPrice()).replace(".0", "") + "MT em prestações de " + Double.toString(saleResponseModel.getMissing()).replace(".0", "") + "MT");
+                           String subtitle = ("Falta pagar " + Double.toString(saleResponseModel.getMissing()).replace(".0", "") + "MT Preco total do produto " + Double.toString(saleResponseModel.getTotalPrice()).replace(".0", "") + "MT");
                            boolean containsPrest = true;
                            Log.d("agent_id", "onResponse: "+ saleResponseModel.getAgent_id());
 

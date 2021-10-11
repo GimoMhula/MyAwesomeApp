@@ -12,6 +12,9 @@ public class AddSaleModel {
     @SerializedName("product_id")
     private String product_id;
 
+    @SerializedName("total_price")
+    private Double total_price;
+
     @SerializedName("first_prestation")
     private double first_prestation;
 
@@ -39,10 +42,11 @@ public class AddSaleModel {
     @SerializedName("reference_point")
     private String reference_point;
 
-    public AddSaleModel(String agent_id, String customer_id, String product_id, double first_prestation, String payment_method_id, double lat, double lng, String region, String neighborhood, String city_block, String house_number, String reference_point) {
+    public AddSaleModel(String agent_id, String customer_id, String product_id, Double total_price, double first_prestation, String payment_method_id, double lat, double lng, String region, String neighborhood, String city_block, String house_number, String reference_point) {
         this.agent_id = agent_id;
         this.customer_id = customer_id;
         this.product_id = product_id;
+        this.total_price = total_price;
         this.first_prestation = first_prestation;
         this.payment_method_id = payment_method_id;
         this.lat = lat;
@@ -76,6 +80,14 @@ public class AddSaleModel {
 
     public void setProduct_id(String product_id) {
         this.product_id = product_id;
+    }
+
+    public Double getTotal_price() {
+        return total_price;
+    }
+
+    public void setTotal_price(Double total_price) {
+        this.total_price = total_price;
     }
 
     public double getFirst_prestation() {

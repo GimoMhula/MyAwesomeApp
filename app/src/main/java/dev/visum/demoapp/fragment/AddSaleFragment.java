@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -109,6 +110,8 @@ public class AddSaleFragment extends Fragment {
     private ImageView iv_qrcode;
 
     Map<Integer,String> payTypeMap = new HashMap<>();
+    private double productPriceToVerify;
+
     {
         payTypeMap.put(1, "A mão");
         payTypeMap.put(2, "M-Pesa");
@@ -360,6 +363,7 @@ public class AddSaleFragment extends Fragment {
                 if (productsRespList.get(i) != null) {
                     productId = productsRespList.get(i).getId() + "";
                     act_total.setText(productsRespList.get(i).getPrice() + "");
+                    productPriceToVerify=productsRespList.get(i).getPrice();
                 }
             }
         });
@@ -422,18 +426,27 @@ public class AddSaleFragment extends Fragment {
             boolean check_for_next_prest = saleType == SaleType.NEXT_PREST && first_prestation > 0 && first_prestation <= soldItem.getRemain();
             double lat = 0;
             double lng = 0;
-
+            boolean pass_verification=false;
+            if(first_prestation > total){
+                Toast.makeText(getContext(), "Valor maior que o valor em divida", Toast.LENGTH_SHORT).show();
+                act_installments.setError("Valor deve ser menor que a prestacao em falta");
+                pass_verification=false;
+            }else {
+                pass_verification=true;
+            }
             if (Tools.getLatLng(getContext()) != null) {
                 lat = Tools.getLatLng(getContext()).getLatitude();
                 lng = Tools.getLatLng(getContext()).getLongitude();
             }
 
-            if (!Tools.isStringNil(pay_type) && (check_for_first_pay || check_for_next_prest || (!Tools.isConnected(getContext()) && !Tools.isStringNil(clientName) && !Tools.isStringNil(productName)))) {
+            if (!Tools.isStringNil(pay_type) && pass_verification &&(check_for_first_pay || check_for_next_prest || (!Tools.isConnected(getContext()) && !Tools.isStringNil(clientName) && !Tools.isStringNil(productName)))) {
+
+
                 AddSaleModel addSaleModel = new AddSaleModel(
                         KeyStoreLocal.getInstance(getContext()).getUser() != null
                                 && KeyStoreLocal.getInstance(getContext()).getUser().getId() != null ? KeyStoreLocal.getInstance(getContext()).getUser().getId() : KeyStoreLocal.getInstance(getContext()).getUserId(),
                         (Tools.isConnected(getContext()) && !customerId.isEmpty()) || (KeyStoreLocal.getInstance(getContext()).getOfflineClients() != null && !KeyStoreLocal.getInstance(getContext()).getOfflineClients().isEmpty() && !customerId.isEmpty()) ? customerId : clientName,
-                        Tools.isConnected(getContext()) ? productId : productName,
+                        Tools.isConnected(getContext()) ? productId : productName,total,
                         first_prestation,
                         Tools.getMapKey(payTypeMap, pay_type) + "",
                         lat,

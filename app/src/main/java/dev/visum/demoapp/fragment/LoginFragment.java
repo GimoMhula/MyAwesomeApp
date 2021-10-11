@@ -118,8 +118,8 @@ public class LoginFragment extends Fragment {
         progressDialog.setMessage(getString(R.string.sign_in_msg));
         progressDialog.show();
         loginBtn.setAlpha(0f);
-        UserAgentResponseModel userAgent=new UserAgentResponseModel("5","Gimo","gimo.mhula@gmail.com","sdfsdfsdf");
-        KeyStoreLocal.getInstance(getActivity()).setUser(userAgent);
+//        UserAgentResponseModel userAgent=new UserAgentResponseModel("5","Gimo","gimo.mhula@gmail.com","sdfsdfsdf");
+//        KeyStoreLocal.getInstance(getActivity()).setUser(userAgent);
 
         if (passwordEditText.getText().toString() != null && !passwordEditText.getText().toString().trim().isEmpty() && isValid(emailEditText.getText(), sPatternEmail)) { // isValid(passwordEditText.getText(), sPatternPassword)
             GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);

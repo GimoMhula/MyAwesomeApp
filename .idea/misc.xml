@@ -10,6 +10,7 @@
       <map>
         <entry key="app/src/main/res/layout/activity_survey_step.xml" value="0.3161231884057971" />
         <entry key="app/src/main/res/layout/dialog_info.xml" value="0.19947916666666668" />
+        <entry key="app/src/main/res/layout/fragment_add_sale.xml" value="0.21422101449275363" />
         <entry key="app/src/main/res/layout/fragment_product_grid.xml" value="0.3161231884057971" />
         <entry key="app/src/main/res/layout/fragment_survey_question.xml" value="0.30978260869565216" />
         <entry key="app/src/main/res/layout/item_sold_item_horizontal.xml" value="0.21422101449275363" />
