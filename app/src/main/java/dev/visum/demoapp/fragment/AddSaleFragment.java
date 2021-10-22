@@ -269,13 +269,16 @@ public class AddSaleFragment extends Fragment {
                         try {
                             String name = act_name.getText().toString();
                             String address = act_address.getText().toString();
-                            String email = act_email.getText().toString();
+                            //String email = act_email.getText().toString();
+                            String email = "nomail@mail.com";
                             String contact = act_contact.getText().toString();
 
                             if (!Tools.isStringNil(name)
                                     && !Tools.isStringNil(address)
-                                    && !Tools.isStringNil(email)
+//                                    && !Tools.isStringNil(email)   TODO do not verify email
                                     && !Tools.isStringNil(contact)) {
+
+
 
                                 GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
                                 Call<ResponseAddClientModel> call = service.postAddClient(Tools.convertObjToMap(new AddClientModel(name, email, address, contact)));
