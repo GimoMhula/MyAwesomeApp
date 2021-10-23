@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -111,6 +112,10 @@ public class AddSaleFragment extends Fragment {
 
     Map<Integer,String> payTypeMap = new HashMap<>();
     private double productPriceToVerify;
+    private LinearLayout act_pay_mpesa_code_lyt;
+    private AutoCompleteTextView act_pay_mpesa_code;
+    private Spinner spinner;
+    private String paymentSelected;
 
     {
         payTypeMap.put(1, "A mão");
@@ -211,6 +216,36 @@ public class AddSaleFragment extends Fragment {
         act_client = parent_view.findViewById(R.id.act_client);
         act_pay_type = parent_view.findViewById(R.id.act_pay_type);
         act_product = parent_view.findViewById(R.id.act_product);
+        act_pay_mpesa_code_lyt = parent_view.findViewById(R.id.act_pay_mpesa_code_lyt);
+        act_pay_mpesa_code = parent_view.findViewById(R.id.act_pay_mpesa_code);
+        spinner = parent_view.findViewById(R.id.act_pay_type_spinner);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view,
+                                       int position, long id) {
+                Object item = adapterView.getItemAtPosition(position);
+                if (item != null) {
+                        paymentSelected=item.toString();
+                    if(!item.equals("A mão")){
+                        act_pay_mpesa_code_lyt.setVisibility(View.VISIBLE);
+                    }else {
+                        act_pay_mpesa_code_lyt.setVisibility(View.GONE);
+                    }
+
+                }
+
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                // TODO Auto-generated method stub
+
+            }
+        });
+
         bt_submit = parent_view.findViewById(R.id.bt_submit);
         // bt_sale_date = parent_view.findViewById(R.id.bt_sale_date);
         checkbox_sign = parent_view.findViewById(R.id.checkbox_sign);
@@ -250,6 +285,7 @@ public class AddSaleFragment extends Fragment {
                 AutoCompleteTextView act_email = dialogView.findViewById(R.id.act_email);
                 AutoCompleteTextView act_contact = dialogView.findViewById(R.id.act_contact);
 
+
                 Button bt_cancel = dialogView.findViewById(R.id.bt_cancel);
                 Button bt_create_client = dialogView.findViewById(R.id.bt_create_client);
 
@@ -275,7 +311,7 @@ public class AddSaleFragment extends Fragment {
 
                             if (!Tools.isStringNil(name)
                                     && !Tools.isStringNil(address)
-//                                    && !Tools.isStringNil(email)   TODO do not verify email
+                                       //TODO do not verify email
                                     && !Tools.isStringNil(contact)) {
 
 
@@ -291,9 +327,11 @@ public class AddSaleFragment extends Fragment {
                                             customerFilteredAdapter.clear();
                                             customerFilteredAdapter.add(response.body().getData());
                                             customerFilteredAdapter.notifyDataSetChanged();
+                                            Log.d("TAG", "onResponse Successful: "+response.message());
                                             act_client.showDropDown();
                                         } else {
                                             bt_create_client.setEnabled(true);
+                                            Log.d("TAG", "onResponse Fail: "+response.message());
                                             System.out.println(response.message());
                                             Snackbar.make(getView(), getString(R.string.failed_client), Snackbar.LENGTH_LONG).show();
                                         }
@@ -329,6 +367,9 @@ public class AddSaleFragment extends Fragment {
         List<String> list = new ArrayList(payTypeMap.values());
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
                 android.R.layout.simple_dropdown_item_1line,list);
+
+        spinner.setAdapter(adapter);
+
         act_pay_type.setAdapter(adapter);
         act_pay_type.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
@@ -415,7 +456,7 @@ public class AddSaleFragment extends Fragment {
 
     private void validatingSale() {
         try {
-            String pay_type = act_pay_type.getText().toString();
+            String pay_type = paymentSelected;
             String clientName = act_client.getText().toString();
             String productName = act_product.getText().toString();
             String region = act_region.getText().toString();
@@ -423,6 +464,7 @@ public class AddSaleFragment extends Fragment {
             String city_block = act_quart.getText().toString();
             String house_number = act_nr_house.getText().toString();
             String reference_point = act_ref_street.getText().toString();
+            String act_pay_mpesa_code_value=act_pay_mpesa_code.getText().toString();
             double first_prestation = Double.parseDouble(act_installments.getText().toString());
             double total = (saleType == SaleType.NEXT_PREST || act_total.getText() == null || act_total.getText().toString().trim().isEmpty()) ? 0 : Double.parseDouble(act_total.getText().toString());
             boolean check_for_first_pay = !productId.equals("") && first_prestation > 0 && first_prestation <= total && !customerId.equals("");
@@ -430,6 +472,12 @@ public class AddSaleFragment extends Fragment {
             double lat = 0;
             double lng = 0;
             boolean pass_verification=false;
+            if(pay_type.equals("M-Pesa")){
+                act_pay_mpesa_code_lyt.setVisibility(View.VISIBLE);
+            }else {
+                act_pay_mpesa_code_lyt.setVisibility(View.GONE);
+            }
+
             if(first_prestation > total){
                 Toast.makeText(getContext(), "Valor maior que o valor em divida", Toast.LENGTH_SHORT).show();
                 act_installments.setError("Valor deve ser menor que a prestacao em falta");
@@ -458,7 +506,8 @@ public class AddSaleFragment extends Fragment {
                         neighborhood,
                         city_block,
                         house_number,
-                        reference_point
+                        reference_point,
+                        act_pay_mpesa_code_value
                 );
 
                 Object saleData =  addSaleModel;

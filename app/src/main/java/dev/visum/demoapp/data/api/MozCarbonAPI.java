@@ -16,8 +16,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MozCarbonAPI {
     private static Retrofit retrofit;
-    private static final String BASE_URL = "http://34.237.238.49/api/v1/";
-//    private static final String BASE_URL = "http://192.168.43.216:8000/api/v1/";
+//    private static final String BASE_URL = "http://34.237.238.49/api/v1/";
+    private static final String BASE_URL = "http://192.168.43.200:8000/api/v1/";
 
     public static Retrofit getRetrofit(@NotNull Context context) {
         OkHttpClient httpClient = new OkHttpClient().newBuilder().addNetworkInterceptor(new Interceptor() {

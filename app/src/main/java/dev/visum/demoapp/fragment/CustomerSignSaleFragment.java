@@ -25,6 +25,7 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -302,6 +303,7 @@ public class CustomerSignSaleFragment extends Fragment {
                 return profileImageFile;
             } catch (Exception e) {
                 e.printStackTrace();
+                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 return null;
             }
         }

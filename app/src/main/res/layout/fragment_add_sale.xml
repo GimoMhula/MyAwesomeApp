@@ -197,6 +197,7 @@
                 android:layout_height="@dimen/spacing_mlarge" />
 
             <LinearLayout
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -211,6 +212,49 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/act_pay_method"
+                        android:maxLines="1"
+                        android:singleLine="true"
+                        android:inputType="text" />
+
+
+
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dip"
+                android:text="Metodos de pagamento:"
+                android:layout_marginBottom="5dp"/>
+            <Spinner
+                android:id="@+id/act_pay_type_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="@dimen/spacing_mlarge" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:id="@+id/act_pay_mpesa_code_lyt"
+                android:visibility="gone"
+                >
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/act_pay_mpesa_code"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/act_pay_mpesa"
                         android:maxLines="1"
                         android:singleLine="true"
                         android:inputType="text" />

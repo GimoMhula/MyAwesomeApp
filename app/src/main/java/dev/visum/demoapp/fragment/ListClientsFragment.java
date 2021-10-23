@@ -282,6 +282,8 @@ public class ListClientsFragment extends Fragment implements DataUpdateActivityT
                                 String name = act_name.getText().toString();
                                 String address = act_address.getText().toString();
                                 String email = act_email.getText().toString();
+                                if(email.isEmpty())
+                                    email="nomail@mail.com";
                                 String contact = act_contact.getText().toString();
 
                                 if (!Tools.isStringNil(name)

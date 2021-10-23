@@ -78,8 +78,10 @@
                 android:layout_height="@dimen/spacing_mlarge" />
 
             <LinearLayout
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+
                 android:orientation="horizontal">
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -88,6 +90,7 @@
                     android:layout_weight="2">
 
                     <AutoCompleteTextView
+
                         android:id="@+id/act_email"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -162,6 +165,7 @@
                     android:layout_height="0dp" />
 
                 <Button
+
                     android:id="@+id/bt_create_client"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="match_parent"

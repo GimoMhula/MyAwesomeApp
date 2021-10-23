@@ -51,7 +51,7 @@
     <string name="btn_create_client">Criar</string>
     <string name="btn_cancel">Cancelar</string>
     <string name="act_contact">Contacto</string>
-    <string name="act_email">E-mail</string>
+    <string name="act_email">E-mail( Opcional)</string>
     <string name="act_address">Morada</string>
     <string name="act_name">Nome</string>
     <string name="dialog_title_add_client">Adicionar Cliente</string>
@@ -102,5 +102,6 @@
     <string name="welcome_user">Bem-vindo Utilizador</string>
     <string name="survey_title">Gestão de Inquéritos</string>
     <string name="error_answer_fragment_failed">Erro ao submeter as respostas!</string>
+    <string name="act_pay_mpesa">Codigo do pagamento MPESA</string>
 
 </resources>

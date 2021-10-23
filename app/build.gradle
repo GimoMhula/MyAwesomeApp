@@ -11,8 +11,8 @@ android {
         applicationId "dev.visum.demoapp"
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 3
-        versionName "0.6.1-b"
+        versionCode 4
+        versionName "0.6.2-b"
 
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true

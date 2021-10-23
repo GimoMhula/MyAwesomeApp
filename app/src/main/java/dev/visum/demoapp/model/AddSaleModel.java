@@ -42,7 +42,10 @@ public class AddSaleModel {
     @SerializedName("reference_point")
     private String reference_point;
 
-    public AddSaleModel(String agent_id, String customer_id, String product_id, Double total_price, double first_prestation, String payment_method_id, double lat, double lng, String region, String neighborhood, String city_block, String house_number, String reference_point) {
+    @SerializedName("payment_ref")
+    private String payment_ref;
+
+    public AddSaleModel(String agent_id, String customer_id, String product_id, Double total_price, double first_prestation, String payment_method_id, double lat, double lng, String region, String neighborhood, String city_block, String house_number, String reference_point, String payment_ref) {
         this.agent_id = agent_id;
         this.customer_id = customer_id;
         this.product_id = product_id;
@@ -56,6 +59,7 @@ public class AddSaleModel {
         this.city_block = city_block;
         this.house_number = house_number;
         this.reference_point = reference_point;
+        this.payment_ref = payment_ref;
     }
 
     public String getAgent_id() {
@@ -160,5 +164,13 @@ public class AddSaleModel {
 
     public void setReference_point(String reference_point) {
         this.reference_point = reference_point;
+    }
+
+    public String getPayment_ref() {
+        return payment_ref;
+    }
+
+    public void setPayment_ref(String payment_ref) {
+        this.payment_ref = payment_ref;
     }
 }
