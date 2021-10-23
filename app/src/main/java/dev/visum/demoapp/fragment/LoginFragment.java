@@ -121,10 +121,10 @@ public class LoginFragment extends Fragment {
 //        UserAgentResponseModel userAgent=new UserAgentResponseModel("5","Gimo","gimo.mhula@gmail.com","sdfsdfsdf");
 //        KeyStoreLocal.getInstance(getActivity()).setUser(userAgent);
 
-        if (passwordEditText.getText().toString() != null && !passwordEditText.getText().toString().trim().isEmpty() && isValid(emailEditText.getText(), sPatternEmail)) { // isValid(passwordEditText.getText(), sPatternPassword)
+        if (passwordEditText.getText().toString().trim() != null && !passwordEditText.getText().toString().trim().isEmpty() && isValid(emailEditText.getText().toString().trim(), sPatternEmail)) { // isValid(passwordEditText.getText(), sPatternPassword)
             GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
 
-            Call<ResponseModel<UserAgentResponseModel>> call = service.loginUser(Tools.convertObjToMap(new UserAgentBodyModel(emailEditText.getText().toString(), passwordEditText.getText().toString())));
+            Call<ResponseModel<UserAgentResponseModel>> call = service.loginUser(Tools.convertObjToMap(new UserAgentBodyModel(emailEditText.getText().toString().trim(), passwordEditText.getText().toString())));
             call.enqueue(new Callback<ResponseModel<UserAgentResponseModel>>() {
                 @Override
                 public void onResponse(Call<ResponseModel<UserAgentResponseModel>> call, Response<ResponseModel<UserAgentResponseModel>> response) {
