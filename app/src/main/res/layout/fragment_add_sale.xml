@@ -254,7 +254,7 @@
                         android:id="@+id/act_pay_mpesa_code"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/act_pay_mpesa"
+                        android:hint="@string/act_pay"
                         android:maxLines="1"
                         android:singleLine="true"
                         android:inputType="text" />

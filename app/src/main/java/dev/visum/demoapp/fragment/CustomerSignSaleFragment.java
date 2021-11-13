@@ -81,7 +81,8 @@ public class CustomerSignSaleFragment extends Fragment {
     Bitmap bitmap;
 
     // Creating Separate Directory for saving Generated Images
-    String DIRECTORY = Environment.getExternalStorageDirectory().getPath() + "/DigitSign/";
+//    String DIRECTORY = Environment.getExternalStorageDirectory().getPath() + "/DigitSign/";
+    File DIRECTORY = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
     String pic_name = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
     String StoredPath = DIRECTORY + pic_name + ".png";
 
@@ -168,14 +169,14 @@ public class CustomerSignSaleFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                File directory = new File(DIRECTORY);
-                if (!directory.exists()){
-                    directory.mkdir();
+               // File directory = new File(DIRECTORY);
+                //if (!directory.exists()){
+                    //directory.mkdir();
                     // If you require it to make the entire directory path including parents,
                     // use directory.mkdirs(); here instead.
-                }
+                //}
 
-                File signFile = mSignature.save(mContent, StoredPath);
+                File signFile = mSignature.save(mContent, DIRECTORY+"/"+pic_name);
 
                 if (signFile != null) {
                     upload(signFile);

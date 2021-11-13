@@ -228,6 +228,16 @@ public class AddSaleFragment extends Fragment {
                 Object item = adapterView.getItemAtPosition(position);
                 if (item != null) {
                         paymentSelected=item.toString();
+                    if(item.equals("M-Pesa")){
+                        act_pay_mpesa_code.setHint(getResources().getString(R.string.act_pay_mpesa));
+                    }
+                    if(item.equals("Conta Móvel")){
+                        act_pay_mpesa_code.setHint(getResources().getString(R.string.act_pay_contaMovel));
+                    }
+                    if(item.equals("Transferência")){
+                        act_pay_mpesa_code.setHint(getResources().getString(R.string.act_pay_transferencia));
+                    }
+
                     if(!item.equals("A mão")){
                         act_pay_mpesa_code_lyt.setVisibility(View.VISIBLE);
                     }else {
@@ -478,7 +488,11 @@ public class AddSaleFragment extends Fragment {
                 act_pay_mpesa_code_lyt.setVisibility(View.GONE);
             }
 
+            double aux=Double.parseDouble(act_total.getText().toString());
+
             if(first_prestation > total){
+                Log.d("check", "first_prestation: "+first_prestation);
+//                Log.d("check", "total: "+aux);
                 Toast.makeText(getContext(), "Valor maior que o valor em divida", Toast.LENGTH_SHORT).show();
                 act_installments.setError("Valor deve ser menor que a prestacao em falta");
                 pass_verification=false;

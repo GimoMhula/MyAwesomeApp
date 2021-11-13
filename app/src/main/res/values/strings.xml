@@ -102,6 +102,9 @@
     <string name="welcome_user">Bem-vindo Utilizador</string>
     <string name="survey_title">Gestão de Inquéritos</string>
     <string name="error_answer_fragment_failed">Erro ao submeter as respostas!</string>
+    <string name="act_pay">Codigo do pagamento</string>
     <string name="act_pay_mpesa">Codigo do pagamento MPESA</string>
+    <string name="act_pay_contaMovel">Codigo do pagamento Conta Móvel</string>
+    <string name="act_pay_transferencia">Número de conta</string>
 
 </resources>
