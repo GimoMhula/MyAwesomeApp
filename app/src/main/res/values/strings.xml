@@ -63,7 +63,7 @@
     <string name="NEXT">Proximo</string>
     <string name="survey_submited">Inquerito submetido com sucesso!</string>
 
-    <string name="error_get_products">Erro ao carregar produtos</string>
+    <string name="error_get_products">Erro ao carregar produtos </string>
     <string name="error_get_sales">Erro ao carregar vendas</string>
     <string name="act_ref_street">Perto/Rua/Beco</string>
     <string name="act_nr_house">Nº da Casa</string>

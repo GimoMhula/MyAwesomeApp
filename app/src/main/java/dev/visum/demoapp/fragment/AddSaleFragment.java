@@ -736,7 +736,7 @@ public class AddSaleFragment extends Fragment {
             if (result.getContents() == null) {
                 Snackbar.make(parent_view, getString(R.string.no_data_available), Snackbar.LENGTH_LONG).show();
             } else {
-                Log.d("QR", "onActivityResult GetContents: "+result.getContents());
+                Log.d("QR", "onActivityResult GetContents vvv: "+result.getContents());
 //                try {
                     act_product.setText(result.getContents());
                     Snackbar.make(parent_view, "Scaneado com Sucesso!", Snackbar.LENGTH_LONG).show();
