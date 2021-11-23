@@ -72,6 +72,8 @@ dependencies {
     implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
     implementation 'io.reactivex.rxjava3:rxjava:3.0.0'
 
+    //Toasty
+    implementation 'com.github.GrenderG:Toasty:1.5.2'
 
     // QR code
     implementation 'com.journeyapps:zxing-android-embedded:3.4.0'

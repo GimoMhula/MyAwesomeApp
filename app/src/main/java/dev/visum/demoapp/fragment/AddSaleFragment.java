@@ -65,6 +65,7 @@ import dev.visum.demoapp.model.SaleCreatedModel;
 import dev.visum.demoapp.model.SaleType;
 import dev.visum.demoapp.model.SoldItem;
 import dev.visum.demoapp.utils.Tools;
+import es.dmoral.toasty.Toasty;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.observers.DisposableObserver;
@@ -265,7 +266,7 @@ public class AddSaleFragment extends Fragment {
         } else if (saleType == SaleType.NEXT_PREST) {
             ll_sale_prest.setVisibility(View.VISIBLE);
             text_input_total.setHint(getString(R.string.remain));
-            act_total.setText(soldItem.getRemain() + "MT");
+            act_total.setText(soldItem.getRemain()+"");
             ll_product_client.setVisibility(View.GONE);
             ll_region_date.setVisibility(View.GONE);
         }
@@ -493,7 +494,6 @@ public class AddSaleFragment extends Fragment {
             if(first_prestation > total){
                 Log.d("check", "first_prestation: "+first_prestation);
 //                Log.d("check", "total: "+aux);
-                Toast.makeText(getContext(), "Valor maior que o valor em divida", Toast.LENGTH_SHORT).show();
                 act_installments.setError("Valor deve ser menor que a prestacao em falta");
                 pass_verification=false;
             }else {
@@ -504,7 +504,7 @@ public class AddSaleFragment extends Fragment {
                 lng = Tools.getLatLng(getContext()).getLongitude();
             }
 
-            if (!Tools.isStringNil(pay_type) && pass_verification &&(check_for_first_pay || check_for_next_prest || (!Tools.isConnected(getContext()) && !Tools.isStringNil(clientName) && !Tools.isStringNil(productName)))) {
+            if (!Tools.isStringNil(pay_type) && (pass_verification || check_for_first_pay || check_for_next_prest || (!Tools.isConnected(getContext()) && !Tools.isStringNil(clientName) && !Tools.isStringNil(productName)))) {
 
 
                 AddSaleModel addSaleModel = new AddSaleModel(
@@ -565,10 +565,12 @@ public class AddSaleFragment extends Fragment {
         } catch (Exception e) {
             progressDialog.hide();
             e.printStackTrace();
+            Log.d("TAG", "validatingSale: "+e.getMessage());
+            Log.d("TAG", "validatingSale: "+e.getStackTrace());
             if (!Tools.isGPS_ON(getContext())) {
                 Snackbar.make(parent_view, getString(R.string.error_sale_fragment_fail_gps), Snackbar.LENGTH_LONG).show();
             } else {
-                Snackbar.make(parent_view, getString(R.string.error_sale_fragment_fail), Snackbar.LENGTH_LONG).show();
+                Toasty.error(getActivity(), getString(R.string.error_sale_fragment_fail), Toast.LENGTH_SHORT, true).show();
             }
         }
     }
@@ -679,6 +681,9 @@ public class AddSaleFragment extends Fragment {
 
 
     private void processSale(Map<String, String> map) {
+        progressDialog.setMessage(getString(R.string.loading_sale_fragment));
+        progressDialog.show();
+
         GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
 
         if (saleType == SaleType.FIRST_PAY) {
@@ -690,7 +695,7 @@ public class AddSaleFragment extends Fragment {
                     progressDialog.hide();
 
                     if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                        Snackbar.make(parent_view, getString(R.string.success_sale_fragment), Snackbar.LENGTH_LONG).show();
+                        Toasty.success(getActivity(), getString(R.string.success_sale_fragment), Toast.LENGTH_SHORT, true).show();
                         callback.renderWebView(response.body().getUrl());
                         // callback.renderWebView(response.body().getResponse().getId() + "");
                     } else {
@@ -713,7 +718,9 @@ public class AddSaleFragment extends Fragment {
                     progressDialog.hide();
 
                     if (response.isSuccessful() && response.body() != null) {
-                        Snackbar.make(parent_view, getString(R.string.success_sale_next_prest_fragment), Snackbar.LENGTH_LONG).show();
+//                        Snackbar.make(parent_view, getString(R.string.success_sale_next_prest_fragment), Snackbar.LENGTH_LONG).show();
+                        Toasty.success(getContext(), getString(R.string.success_sale_next_prest_fragment), Toast.LENGTH_LONG).show();
+
                         getActivity().onBackPressed();
                     } else {
                         Snackbar.make(parent_view, getString(R.string.error_sale_next_prest_fragment_failed), Snackbar.LENGTH_LONG).show();
