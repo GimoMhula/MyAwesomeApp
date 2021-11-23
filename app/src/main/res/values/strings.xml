@@ -63,7 +63,7 @@
     <string name="NEXT">Proximo</string>
     <string name="survey_submited">Inquerito submetido com sucesso!</string>
 
-    <string name="error_get_products">Erro ao carregar produtos</string>
+    <string name="error_get_products">Erro ao carregar produtos </string>
     <string name="error_get_sales">Erro ao carregar vendas</string>
     <string name="act_ref_street">Perto/Rua/Beco</string>
     <string name="act_nr_house">Nº da Casa</string>
@@ -82,7 +82,7 @@
     <string name="product_not_sold">O produto ainda não foi vendido!</string>
     <string name="product_do_not_exists">Produto não existe no armazém!</string>
     <string name="product_not_found">Produto não encontrado!</string>
-    <string name="error_get_qr_code_data">Error no código do qr!</string>
+    <string name="error_get_qr_code_data">Error on QRCode!</string>
     <string name="info_alert_title">Informações</string>
     <string name="list_products">Lista de Produtos</string>
     <string name="failed_get_products">Falha para listar produtos</string>
@@ -102,6 +102,9 @@
     <string name="welcome_user">Bem-vindo Utilizador</string>
     <string name="survey_title">Gestão de Inquéritos</string>
     <string name="error_answer_fragment_failed">Erro ao submeter as respostas!</string>
+    <string name="act_pay">Codigo do pagamento</string>
     <string name="act_pay_mpesa">Codigo do pagamento MPESA</string>
+    <string name="act_pay_contaMovel">Codigo do pagamento Conta Móvel</string>
+    <string name="act_pay_transferencia">Número de conta</string>
 
 </resources>
