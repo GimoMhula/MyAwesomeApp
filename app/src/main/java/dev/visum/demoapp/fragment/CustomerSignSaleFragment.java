@@ -82,7 +82,7 @@ public class CustomerSignSaleFragment extends Fragment {
 
     // Creating Separate Directory for saving Generated Images
 //    String DIRECTORY = Environment.getExternalStorageDirectory().getPath() + "/DigitSign/";
-    File DIRECTORY = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+    File DIRECTORY = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
     String pic_name = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
     String StoredPath = DIRECTORY + pic_name + ".png";
 

@@ -696,7 +696,9 @@ public class AddSaleFragment extends Fragment {
 
                     if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                         Toasty.success(getActivity(), getString(R.string.success_sale_fragment), Toast.LENGTH_SHORT, true).show();
+                        Log.d("PDF", "onResponse: "+response.body().getUrl());
                         callback.renderWebView(response.body().getUrl());
+
                         // callback.renderWebView(response.body().getResponse().getId() + "");
                     } else {
                         Snackbar.make(parent_view, getString(R.string.error_sale_fragment_failed), Snackbar.LENGTH_LONG).show();

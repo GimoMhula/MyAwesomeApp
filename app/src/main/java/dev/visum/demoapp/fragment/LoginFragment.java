@@ -3,6 +3,7 @@ package dev.visum.demoapp.fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -114,11 +115,11 @@ public class LoginFragment extends Fragment {
 
     // login action
     private void loginUser() {
-       // getActivity().startActivity(new Intent(getActivity(), MainActivity.class));
+      //  getActivity().startActivity(new Intent(getActivity(), MainActivity.class));
         progressDialog.setMessage(getString(R.string.sign_in_msg));
         progressDialog.show();
         loginBtn.setAlpha(0f);
-//        UserAgentResponseModel userAgent=new UserAgentResponseModel("5","Gimo","gimo.mhula@gmail.com","sdfsdfsdf");
+       // UserAgentResponseModel userAgent=new UserAgentResponseModel("5","Gimo","gimo.mhula@gmail.com","sdfsdfsdf");
 //        KeyStoreLocal.getInstance(getActivity()).setUser(userAgent);
 
         if (passwordEditText.getText().toString().trim() != null && !passwordEditText.getText().toString().trim().isEmpty() && isValid(emailEditText.getText().toString().trim(), sPatternEmail)) { // isValid(passwordEditText.getText(), sPatternPassword)
@@ -130,7 +131,7 @@ public class LoginFragment extends Fragment {
                 public void onResponse(Call<ResponseModel<UserAgentResponseModel>> call, Response<ResponseModel<UserAgentResponseModel>> response) {
                     progressDialog.dismiss();
                     loginBtn.setAlpha(1f);
-
+                    Log.d("Login", "response.isSuccessful: "+response.isSuccessful());
                     if (response.code() > 100 && response.code() < 399 && response.body() != null && response.body().getResponse() != null && response.body().getResponse().getToken() != null) {
                         Snackbar.make(parent_view, getString(R.string.success_login_msg), Snackbar.LENGTH_SHORT).show();
                         // Save user model
@@ -145,6 +146,9 @@ public class LoginFragment extends Fragment {
 
                 @Override
                 public void onFailure(Call<ResponseModel<UserAgentResponseModel>> call, Throwable t) {
+                    Log.d("Login", "onFailure: "+t.getMessage());
+                    Log.d("Login", "onFailure: "+t.toString());
+                    Log.d("Login", "onFailure: "+call.toString());
                     progressDialog.dismiss();
                     loginBtn.setAlpha(1f);
                     Snackbar.make(parent_view, getString(R.string.failed_sign_in_msg), Snackbar.LENGTH_LONG).show();
