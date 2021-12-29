@@ -73,6 +73,121 @@
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Data de Nasmento"
+                    />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/act_age_day"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Dia"
+                            android:maxLength="2"
+                            android:inputType="number"
+                            android:maxLines="1"
+                            android:singleLine="true" />
+
+
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/act_age_motn"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="mes"
+                            android:maxLength="2"
+                            android:inputType="number"
+                            android:maxLines="1"
+                            android:singleLine="true" />
+
+
+
+                    </com.google.android.material.textfield.TextInputLayout>   <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/act_age_year"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="ano"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:maxLength="4"
+                        android:singleLine="true" />
+
+
+
+                </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Genero"
+                    android:textSize="19sp"
+                    android:padding="10dp"
+                    />
+
+               <RadioGroup
+                   android:id="@+id/rg_gender"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:orientation="horizontal"
+
+                   >
+
+                   <RadioButton
+
+                       android:id="@+id/rd_male"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:text="Masculino"
+                       android:checked="true"
+
+                       /> <RadioButton
+                       android:id="@+id/rd_female"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:text="Feminino"
+                       />
+
+               </RadioGroup>
+
+
+            </LinearLayout>
+
             <View
                 android:layout_width="0dp"
                 android:layout_height="@dimen/spacing_mlarge" />
@@ -81,7 +196,7 @@
 
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
+                android:visibility="gone"
                 android:orientation="horizontal">
 
                 <com.google.android.material.textfield.TextInputLayout

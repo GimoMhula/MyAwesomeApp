@@ -18,6 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/HiddenTitleTheme"
         android:usesCleartextTraffic="true">
+        android:requestLegacyExternalStorage="true"
         <activity android:name=".activity.ContentActivity"/>
         <activity android:name=".activity.LoginActivity">
             <intent-filter>

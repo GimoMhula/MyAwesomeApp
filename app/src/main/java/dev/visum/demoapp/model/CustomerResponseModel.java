@@ -10,14 +10,18 @@ public class CustomerResponseModel {
     @SerializedName("name")
     private String name;
 
-    @SerializedName("email")
-    private String email;
-
     @SerializedName("address")
     private String address;
 
+
     @SerializedName("contact")
     private String contact;
+
+    @SerializedName("gender")
+    private String gender;
+
+    @SerializedName("birthday")
+    private String birthday;
 
     @SerializedName("signature")
     private String signature;
@@ -41,12 +45,13 @@ public class CustomerResponseModel {
         this.signature = signature;
     }
 
-    public CustomerResponseModel(String id, String name, String email, String address, String contact, String signature, String created_at, String updated_at) {
+    public CustomerResponseModel( String id,String name, String address, String contact, String gender, String birthday, String signature, String created_at, String updated_at) {
         this.id = id;
         this.name = name;
-        this.email = email;
         this.address = address;
         this.contact = contact;
+        this.gender = gender;
+        this.birthday = birthday;
         this.signature = signature;
         this.created_at = created_at;
         this.updated_at = updated_at;
@@ -68,6 +73,14 @@ public class CustomerResponseModel {
         this.name = name;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     public String getContact() {
         return contact;
     }
@@ -76,28 +89,28 @@ public class CustomerResponseModel {
         this.contact = contact;
     }
 
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+
     public String getSignature() {
         return signature;
     }
 
     public void setSignature(String signature) {
         this.signature = signature;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 
     public String getCreated_at() {
@@ -121,7 +134,13 @@ public class CustomerResponseModel {
         return "CustomerResponseModel{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
                 ", contact='" + contact + '\'' +
+                ", gender='" + gender + '\'' +
+                ", birthday='" + birthday + '\'' +
+                ", signature='" + signature + '\'' +
+                ", created_at='" + created_at + '\'' +
+                ", updated_at='" + updated_at + '\'' +
                 '}';
     }
 }

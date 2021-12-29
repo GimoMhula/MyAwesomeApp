@@ -1,7 +1,10 @@
 package dev.visum.demoapp.fragment;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -16,6 +19,7 @@ import android.print.PrintDocumentAdapter;
 import android.print.PrintJob;
 import android.print.PrintManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -28,6 +32,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -71,6 +76,14 @@ public class CustomerSignSaleFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private Map<String, String> addSaleMap;
 
+
+    // Storage Permissions
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
     //
     private View parent_view;
     private ProgressDialog progressDialog;
@@ -81,10 +94,10 @@ public class CustomerSignSaleFragment extends Fragment {
     Bitmap bitmap;
 
     // Creating Separate Directory for saving Generated Images
-//    String DIRECTORY = Environment.getExternalStorageDirectory().getPath() + "/DigitSign/";
-    File DIRECTORY = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+    String DIRECTORY = Environment.getExternalStorageDirectory().getPath() + "/DigitSign/";
+    //File DIRECTORY = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
     String pic_name = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-    String StoredPath = DIRECTORY + pic_name + ".png";
+    String StoredPath = DIRECTORY +"/"+ pic_name + ".png";
 
     private SaleType saleType;
 
@@ -169,25 +182,28 @@ public class CustomerSignSaleFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-               // File directory = new File(DIRECTORY);
-                //if (!directory.exists()){
-                    //directory.mkdir();
-                    // If you require it to make the entire directory path including parents,
-                    // use directory.mkdirs(); here instead.
-                //}
+                File directory = new File(DIRECTORY);
+                if (!directory.exists()){
+                    directory.mkdir();
+//                     If you require it to make the entire directory path including parents,
+//                     use directory.mkdirs(); here instead.
+                }
 
-                File signFile = mSignature.save(mContent, DIRECTORY+"/"+pic_name);
+                File signFile = mSignature.save(mContent, StoredPath);
 
                 if (signFile != null) {
                     upload(signFile);
+                }else{
+                    signFile=null;
                 }
             }
         });
     }
 
     private void upload(File file) {
+        Log.d("Venda", "upload: "+file.toString());
         progressBarSignature.setVisibility(View.VISIBLE);
-        ProgressRequestBody fileBody = new ProgressRequestBody(file, "image", new ProgressRequestBody.UploadCallbacks() {
+        ProgressRequestBody fileBody = new ProgressRequestBody(file, "Image", new ProgressRequestBody.UploadCallbacks() {
             @Override
             public void onProgressUpdate(int percentage) {
                 progressBarSignature.setProgress(percentage);
@@ -195,11 +211,13 @@ public class CustomerSignSaleFragment extends Fragment {
 
             @Override
             public void onError() {
+                Log.d("Venda", "onError: "+"Error");
                 progressBarSignature.setVisibility(View.GONE);
             }
 
             @Override
             public void onFinish() {
+                Log.d("Venda", "onFinish: "+"Finished");
                 progressBarSignature.setVisibility(View.GONE);
             }
         });
@@ -212,11 +230,14 @@ public class CustomerSignSaleFragment extends Fragment {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
+                    Log.d("Venda", "response.isSuccessful(): "+response);
                     processSale();
                 } else {
                     System.out.println("Failed " + response.message());
+                    Log.d("Venda", "Failed: "+response.message());
                     try {
                         System.out.println("Failed " + response.errorBody().string().toString());
+                        Log.d("Venda", "Failed: "+response.errorBody().string());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -226,6 +247,7 @@ public class CustomerSignSaleFragment extends Fragment {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("Venda", "onFailure: "+t.getMessage());
                 t.printStackTrace();
                 progressBarSignature.setVisibility(View.GONE);
             }
@@ -251,8 +273,12 @@ public class CustomerSignSaleFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     Snackbar.make(parent_view, getString(R.string.success_sale_fragment), Snackbar.LENGTH_LONG).show();
                     callback.renderWebView(response.body().getUrl());
+                    Log.d("Sale", "onResponse: "+response.body());
+                    Log.d("Sale", "onResponse: "+response.message());
                     // callback.renderWebView(response.body().getResponse().getId() + "");
                 } else {
+                    Log.d("Sale", "onResponse: "+response.body());
+                    Log.d("Sale", "onResponse: "+response.message());
                     Snackbar.make(parent_view, getString(R.string.error_sale_fragment_failed), Snackbar.LENGTH_LONG).show();
                 }
             }
@@ -260,6 +286,7 @@ public class CustomerSignSaleFragment extends Fragment {
             @Override
             public void onFailure(Call<SaleAddedResponseModel> call, Throwable t) {
                 progressDialog.hide();
+
                 Snackbar.make(parent_view, getString(R.string.error_sale_fragment_failed), Snackbar.LENGTH_LONG).show();
             }
         });
@@ -283,11 +310,37 @@ public class CustomerSignSaleFragment extends Fragment {
             paint.setStrokeJoin(Paint.Join.ROUND);
             paint.setStrokeWidth(STROKE_WIDTH);
         }
+/**
+        * Checks if the app has permission to write to device storage
+ *
+         * If the app does not has permission then the user will be prompted to grant permissions
+ *
+         * @param activity
+ */
+        public  void verifyStoragePermissions(Activity activity) {
+            // Check if we have write permission
+            int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
+            if (permission != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(getContext(), "Sem permissao ", Toast.LENGTH_SHORT).show();
+                // We don't have permission so prompt the user
+                ActivityCompat.requestPermissions(
+                        activity,
+                        PERMISSIONS_STORAGE,
+                        REQUEST_EXTERNAL_STORAGE
+                );
+            }else {
+                Toast.makeText(getContext(), "Com permissao ", Toast.LENGTH_SHORT).show();
+            }
+        }
         public File save(View v, String StoredPath) {
+
+            Log.d("Venda", "save: "+StoredPath);
             if (bitmap == null) {
                 bitmap = Bitmap.createBitmap(mContent.getWidth(), mContent.getHeight(), Bitmap.Config.RGB_565);
             }
+
+            verifyStoragePermissions((AppCompatActivity) getActivity());
             Canvas canvas = new Canvas(bitmap);
             try {
                 // Output the file
@@ -301,6 +354,7 @@ public class CustomerSignSaleFragment extends Fragment {
                 mFileOutStream.close();
 
                 Uri fileUri = Uri.fromFile(profileImageFile);
+                Log.d("Venda", "ProfileImage: "+profileImageFile.getName());
                 return profileImageFile;
             } catch (Exception e) {
                 e.printStackTrace();

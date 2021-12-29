@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
@@ -28,6 +29,7 @@ import dev.visum.demoapp.model.UserAgentBodyModel;
 import dev.visum.demoapp.model.UserAgentResponseModel;
 import dev.visum.demoapp.utils.Constants;
 import dev.visum.demoapp.utils.Tools;
+import es.dmoral.toasty.Toasty;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -147,11 +149,14 @@ public class LoginFragment extends Fragment {
                 @Override
                 public void onFailure(Call<ResponseModel<UserAgentResponseModel>> call, Throwable t) {
                     Log.d("Login", "onFailure: "+t.getMessage());
-                    Log.d("Login", "onFailure: "+t.toString());
-                    Log.d("Login", "onFailure: "+call.toString());
                     progressDialog.dismiss();
                     loginBtn.setAlpha(1f);
-                    Snackbar.make(parent_view, getString(R.string.failed_sign_in_msg), Snackbar.LENGTH_LONG).show();
+                    if(t.getMessage().contains("Failed to connect to")){
+                        Toasty.error(getContext(), "Erro de conexao, verifique a ligacao a internet!", Toast.LENGTH_SHORT).show();
+                    }else {
+                        Toasty.warning(getContext(), "Por favor verifique as credencias de Login!", Toast.LENGTH_SHORT).show();
+                    }
+
                 }
             });
         } else {

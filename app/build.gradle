@@ -4,15 +4,15 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics' // report de crashs
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "29.0.2"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.2"
 
     defaultConfig {
         applicationId "dev.visum.demoapp"
         minSdkVersion 19
-        targetSdkVersion 30
-        versionCode 7
-        versionName "0.7.0-b"
+        targetSdkVersion 28
+        versionCode 8
+        versionName "0.8.0-b"
 
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true

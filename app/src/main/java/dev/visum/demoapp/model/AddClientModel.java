@@ -6,20 +6,25 @@ public class AddClientModel {
     @SerializedName("name")
     private String name;
 
-    @SerializedName("email")
-    private String email;
-
     @SerializedName("address")
     private String address;
 
     @SerializedName("contact")
     private String contact;
 
-    public AddClientModel(String name, String email, String address, String contact) {
+    @SerializedName("gender")
+    private String gender;
+
+    @SerializedName("birthday")
+    private String birthday;
+
+
+    public AddClientModel(String name, String address, String contact, String gender, String birthday) {
         this.name = name;
-        this.email = email;
         this.address = address;
         this.contact = contact;
+        this.gender = gender;
+        this.birthday = birthday;
     }
 
     public String getName() {
@@ -28,14 +33,6 @@ public class AddClientModel {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getAddress() {
@@ -52,5 +49,21 @@ public class AddClientModel {
 
     public void setContact(String contact) {
         this.contact = contact;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
     }
 }

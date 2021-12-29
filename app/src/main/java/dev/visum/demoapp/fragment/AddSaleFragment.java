@@ -12,10 +12,13 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -117,6 +120,8 @@ public class AddSaleFragment extends Fragment {
     private AutoCompleteTextView act_pay_mpesa_code;
     private Spinner spinner;
     private String paymentSelected;
+    private RadioButton act_gender_selected;
+    private boolean auxVerify=true;
 
     {
         payTypeMap.put(1, "A mão");
@@ -126,6 +131,11 @@ public class AddSaleFragment extends Fragment {
     }
 
     MaterialCheckBox checkbox_sign;
+
+    Calendar calendar = Calendar.getInstance();
+    int year = calendar.get(Calendar.YEAR);
+    int month = calendar.get(Calendar.MONTH);
+    int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
 
     OnAddSaleSelectedListener callback;
     private SoldItem soldItem;
@@ -295,6 +305,11 @@ public class AddSaleFragment extends Fragment {
                 AutoCompleteTextView act_address = dialogView.findViewById(R.id.act_address);
                 AutoCompleteTextView act_email = dialogView.findViewById(R.id.act_email);
                 AutoCompleteTextView act_contact = dialogView.findViewById(R.id.act_contact);
+                RadioGroup act_gender = dialogView.findViewById(R.id.rg_gender);
+                //RadioButton act_gender_selected = dialogView.findViewById(R.id.rd_male);
+                AutoCompleteTextView act_age_day = dialogView.findViewById(R.id.act_age_day);
+                AutoCompleteTextView act_age_moth = dialogView.findViewById(R.id.act_age_motn);
+                AutoCompleteTextView act_age_year = dialogView.findViewById(R.id.act_age_year);
 
 
                 Button bt_cancel = dialogView.findViewById(R.id.bt_cancel);
@@ -307,28 +322,63 @@ public class AddSaleFragment extends Fragment {
                     }
                 });
 
+
                 bt_create_client.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         bt_create_client.setEnabled(false);
                         pb_loading.setVisibility(View.VISIBLE);
-                        dialog.dismiss();
+
                         try {
                             String name = act_name.getText().toString();
                             String address = act_address.getText().toString();
                             //String email = act_email.getText().toString();
                             String email = "nomail@mail.com";
                             String contact = act_contact.getText().toString();
+                            String age=null;
+                            if(!act_age_day.getText().toString().isEmpty()&&!act_age_moth.getText().toString().isEmpty()&&!act_age_year.getText().toString().isEmpty()){
+                                if(Integer.parseInt(act_age_day.getText().toString())>32 || Integer.parseInt(act_age_day.getText().toString())<1){
+                                    act_age_day.setError("Preencha a data de nascimento correctamente!");
+                                    auxVerify=false;
+                                }else {
+                                    auxVerify=true;
+                                }
+                                if(Integer.parseInt(act_age_moth.getText().toString())>13 || Integer.parseInt(act_age_moth.getText().toString())<1){
+                                    act_age_moth.setError("Preencha a mes de nascimento correctamente!");
+                                    auxVerify=false;
+                                } else {
+                                    auxVerify=true;
+                                }
+
+                                    if(Integer.parseInt(act_age_year.getText().toString())<1880 || Integer.parseInt(act_age_year.getText().toString())>2050){
+                                        act_age_year.setError("Preencha o ano de nascimento correctamente!");
+                                        auxVerify=false;
+                                     }else {
+                                        auxVerify=true;
+                                    }
+                                age =act_age_year.getText().toString()+"-"+act_age_day.getText().toString()+"-"+act_age_moth.getText().toString();
+                            }else {
+                                act_age_day.setError("Preencha a data de nascimento!");
+                                age="1997-01-01";
+                                auxVerify=true;
+                            }
+
+                            int selectedId = act_gender.getCheckedRadioButtonId();
+                            act_gender_selected = (RadioButton) dialogView.findViewById(selectedId);
+
+                            String gender=act_gender_selected.getText().toString();
+
+                            Toast.makeText(getContext(), age+" "+act_gender_selected.getText(), Toast.LENGTH_LONG).show();
 
                             if (!Tools.isStringNil(name)
                                     && !Tools.isStringNil(address)
                                        //TODO do not verify email
-                                    && !Tools.isStringNil(contact)) {
+                                    && !Tools.isStringNil(contact) && auxVerify) {
 
 
 
                                 GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
-                                Call<ResponseAddClientModel> call = service.postAddClient(Tools.convertObjToMap(new AddClientModel(name, email, address, contact)));
+                                Call<ResponseAddClientModel> call = service.postAddClient(Tools.convertObjToMap(new AddClientModel(name, address, contact,gender,age)));
 
                                 call.enqueue(new Callback<ResponseAddClientModel>() {
                                     @Override
@@ -340,6 +390,7 @@ public class AddSaleFragment extends Fragment {
                                             customerFilteredAdapter.notifyDataSetChanged();
                                             Log.d("TAG", "onResponse Successful: "+response.message());
                                             act_client.showDropDown();
+                                            dialog.dismiss();
                                         } else {
                                             bt_create_client.setEnabled(true);
                                             Log.d("TAG", "onResponse Fail: "+response.message());
@@ -355,7 +406,7 @@ public class AddSaleFragment extends Fragment {
                                         System.out.println(t.getMessage());
                                         bt_create_client.setEnabled(true);
                                         pb_loading.setVisibility(View.GONE);
-                                        Snackbar.make(getView(), getString(R.string.error_client), Snackbar.LENGTH_LONG).show();
+                                        Snackbar.make(getView(), getString(R.string.error_client)+" "+t.getMessage(), Snackbar.LENGTH_LONG).show();
                                     }
                                 });
                             } else {
@@ -367,7 +418,7 @@ public class AddSaleFragment extends Fragment {
                             e.printStackTrace();
                             bt_create_client.setEnabled(true);
                             pb_loading.setVisibility(View.GONE);
-                            Snackbar.make(getView(), getString(R.string.error_client), Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(getView(), getString(R.string.error_client)+" "+e.getMessage(), Snackbar.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -570,7 +621,7 @@ public class AddSaleFragment extends Fragment {
             if (!Tools.isGPS_ON(getContext())) {
                 Snackbar.make(parent_view, getString(R.string.error_sale_fragment_fail_gps), Snackbar.LENGTH_LONG).show();
             } else {
-                Toasty.error(getActivity(), getString(R.string.error_sale_fragment_fail), Toast.LENGTH_SHORT, true).show();
+                Toasty.error(getActivity(), getString(R.string.error_sale_fragment_fail)+" "+e.getMessage(), Toast.LENGTH_SHORT, true).show();
             }
         }
     }
@@ -596,7 +647,7 @@ public class AddSaleFragment extends Fragment {
                                     }
                                 }
                             } else {
-                                Snackbar.make(parent_view, getString(R.string.error_sale_fragment), Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(parent_view, getString(R.string.error_sale_fragment) +" "+ response.message(), Snackbar.LENGTH_LONG).show();
                             }
                             customerFilteredAdapter.notifyDataSetChanged();
                         }
@@ -605,7 +656,7 @@ public class AddSaleFragment extends Fragment {
                         public void onFailure(Call<ResponseModel<List<CustomerResponseModel>>> call, Throwable t) {
                             customerFilteredAdapter.clear();
                             customerId = "";
-                            Snackbar.make(parent_view, getString(R.string.error_sale_fragment_fail), Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(parent_view, getString(R.string.error_sale_fragment_fail)+" "+t.getMessage(), Snackbar.LENGTH_LONG).show();
                         }
                     });
                 }
@@ -652,7 +703,7 @@ public class AddSaleFragment extends Fragment {
                         public void onFailure(Call<ResponseModel<List<ProductResponseModel>>> call, Throwable t) {
                             productFilteredAdapter.clear();
                             productId = "";
-                            Snackbar.make(parent_view, getString(R.string.error_sale_fragment_fail), Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(parent_view, getString(R.string.error_sale_fragment_fail)+" "+t.getMessage(), Snackbar.LENGTH_LONG).show();
                         }
                     });
                 }
@@ -701,14 +752,17 @@ public class AddSaleFragment extends Fragment {
 
                         // callback.renderWebView(response.body().getResponse().getId() + "");
                     } else {
-                        Snackbar.make(parent_view, getString(R.string.error_sale_fragment_failed), Snackbar.LENGTH_LONG).show();
+                        Log.d("Sale", "onResponse: "+response.body());
+                        Log.d("Sale", "onResponse: "+response.message());
+
+                        Snackbar.make(parent_view, getString(R.string.error_sale_fragment_failed)+" "+response.body(), Snackbar.LENGTH_LONG).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<SaleAddedResponseModel> call, Throwable t) {
                     progressDialog.hide();
-                    Snackbar.make(parent_view, getString(R.string.error_sale_fragment_failed), Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(parent_view, getString(R.string.error_sale_fragment_failed)+" "+t.getMessage(), Snackbar.LENGTH_LONG).show();
                 }
             });
         } else {
@@ -732,7 +786,7 @@ public class AddSaleFragment extends Fragment {
                 @Override
                 public void onFailure(Call<AddSalePrestResponseModel> call, Throwable t) {
                     progressDialog.hide();
-                    Snackbar.make(parent_view, getString(R.string.error_sale_fragment_failed), Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(parent_view, getString(R.string.error_sale_fragment_failed)+" "+t.getMessage(), Snackbar.LENGTH_LONG).show();
                 }
             });
         }
@@ -761,6 +815,8 @@ public class AddSaleFragment extends Fragment {
             }
         }
     }
+
+
 
     @Override
     public void onDestroy() {

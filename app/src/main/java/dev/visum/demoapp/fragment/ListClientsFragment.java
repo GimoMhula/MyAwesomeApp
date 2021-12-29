@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -87,6 +89,8 @@ public class ListClientsFragment extends Fragment implements DataUpdateActivityT
     private CompositeDisposable disposable = new CompositeDisposable();
 
     ListClientsFragment.OnListSoldItemsSelectedListener callback;
+    private RadioButton act_gender_selected;
+    private boolean auxVerify=true;
 
     public void setCallback(ListClientsFragment.OnListSoldItemsSelectedListener callback) {
         this.callback = callback;
@@ -193,8 +197,9 @@ public class ListClientsFragment extends Fragment implements DataUpdateActivityT
                            ClientModel client = new ClientModel(clientsResponseModel.getId(),
                                     clientsResponseModel.getName(),
                                    clientsResponseModel.getAddress(),
-                                   clientsResponseModel.getEmail(),
                                    clientsResponseModel.getContact(),
+                                   clientsResponseModel.getGender(),
+                                   clientsResponseModel.getBirthday(),
                                    clientsResponseModel.getSignature(),
                                    clientsResponseModel.getCreated_at(),
                                    clientsResponseModel.getUpdated_at()
@@ -262,6 +267,12 @@ public class ListClientsFragment extends Fragment implements DataUpdateActivityT
                     AutoCompleteTextView act_email = dialogView.findViewById(R.id.act_email);
                     AutoCompleteTextView act_contact = dialogView.findViewById(R.id.act_contact);
 
+                RadioGroup act_gender = dialogView.findViewById(R.id.rg_gender);
+                //RadioButton act_gender_selected = dialogView.findViewById(R.id.rd_male);
+                AutoCompleteTextView act_age_day = dialogView.findViewById(R.id.act_age_day);
+                AutoCompleteTextView act_age_moth = dialogView.findViewById(R.id.act_age_motn);
+                AutoCompleteTextView act_age_year = dialogView.findViewById(R.id.act_age_year);
+
                     Button bt_cancel = dialogView.findViewById(R.id.bt_cancel);
                     Button bt_create_client = dialogView.findViewById(R.id.bt_create_client);
 
@@ -277,11 +288,44 @@ public class ListClientsFragment extends Fragment implements DataUpdateActivityT
                         public void onClick(View view) {
                             bt_create_client.setEnabled(false);
 //                            pb_loading.setVisibility(View.VISIBLE);
-                            dialog.dismiss();
+
                             try {
                                 String name = act_name.getText().toString();
                                 String address = act_address.getText().toString();
                                 String email = act_email.getText().toString();
+
+                                String age=null;
+                                if(!act_age_day.getText().toString().isEmpty()&&!act_age_moth.getText().toString().isEmpty()&&!act_age_year.getText().toString().isEmpty()){
+                                    if(Integer.parseInt(act_age_day.getText().toString())>32 || Integer.parseInt(act_age_day.getText().toString())<1){
+                                        act_age_day.setError("Preencha a data de nascimento correctamente!");
+                                        auxVerify=false;
+                                    }else {
+                                        auxVerify=true;
+                                    }
+                                    if(Integer.parseInt(act_age_moth.getText().toString())>13 || Integer.parseInt(act_age_moth.getText().toString())<1){
+                                        act_age_moth.setError("Preencha a mes de nascimento correctamente!");
+                                        auxVerify=false;
+                                    } else {
+                                    auxVerify=true;
+                                     }
+
+                                    if(Integer.parseInt(act_age_year.getText().toString())<1880 || Integer.parseInt(act_age_year.getText().toString())>2050){
+                                        act_age_year.setError("Preencha o ano de nascimento correctamente!");
+                                        auxVerify=false;
+                                     }else {
+                                        auxVerify=true;
+                                    }
+                                    age =act_age_year.getText().toString()+"-"+act_age_day.getText().toString()+"-"+act_age_moth.getText().toString();
+                                }else {
+                                    act_age_day.setError("Preencha a data de nascimento!");
+                                    age="1997-01-01";
+                                    auxVerify=true;
+                                }
+
+                                int selectedId = act_gender.getCheckedRadioButtonId();
+                                act_gender_selected = (RadioButton) dialogView.findViewById(selectedId);
+
+                                String gender=act_gender_selected.getText().toString();
                                 if(email.isEmpty())
                                     email="nomail@mail.com";
                                 String contact = act_contact.getText().toString();
@@ -289,20 +333,23 @@ public class ListClientsFragment extends Fragment implements DataUpdateActivityT
                                 if (!Tools.isStringNil(name)
                                         && !Tools.isStringNil(address)
                                         && !Tools.isStringNil(email)
-                                        && !Tools.isStringNil(contact)) {
+                                        && !Tools.isStringNil(contact) && auxVerify) {
+
 
                                     GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
-                                    Call<ResponseAddClientModel> call = service.postAddClient(Tools.convertObjToMap(new AddClientModel(name, email, address, contact)));
+                                    Call<ResponseAddClientModel> call = service.postAddClient(Tools.convertObjToMap(new AddClientModel(name, address, contact,gender,age)));
 
                                     call.enqueue(new Callback<ResponseAddClientModel>() {
                                         @Override
                                         public void onResponse(Call<ResponseAddClientModel> call, Response<ResponseAddClientModel> response) {
+                                            Log.d("Client", "OnResponse: "+response.body());
                                             if (response.isSuccessful()) {
                                                 Snackbar.make(getView(), getString(R.string.create_client_ok), Snackbar.LENGTH_LONG).show();
 //                                                customerFilteredAdapter.clear();
 //                                                customerFilteredAdapter.add(response.body().getData());
 //                                                customerFilteredAdapter.notifyDataSetChanged();
 //                                                act_client.showDropDown();
+                                                dialog.dismiss();
                                             } else {
                                                 bt_create_client.setEnabled(true);
                                                 System.out.println(response.message());
@@ -317,7 +364,11 @@ public class ListClientsFragment extends Fragment implements DataUpdateActivityT
                                             System.out.println(t.getMessage());
                                             bt_create_client.setEnabled(true);
                                           //  pb_loading.setVisibility(View.GONE);
-                                            Snackbar.make(getView(), getString(R.string.error_client), Snackbar.LENGTH_LONG).show();
+                                            Log.d("Client", "onFailure: "+t.getMessage());
+                                            Log.d("Client", "onFailure: "+t.toString());
+                                            Log.d("Client", "onFailure: "+t.getCause());
+                                            Log.d("Client", "onFailure: "+t.getLocalizedMessage());
+                                            Snackbar.make(getView(), getString(R.string.error_client)+" "+t.getMessage(), Snackbar.LENGTH_LONG).show();
                                         }
                                     });
                                 } else {
@@ -329,7 +380,7 @@ public class ListClientsFragment extends Fragment implements DataUpdateActivityT
                                 e.printStackTrace();
                                 bt_create_client.setEnabled(true);
                                 //pb_loading.setVisibility(View.GONE);
-                                Snackbar.make(getView(), getString(R.string.error_client), Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(getView(), getString(R.string.error_client)+" "+e.getMessage(), Snackbar.LENGTH_LONG).show();
                             }
                         }
                     });
@@ -390,8 +441,9 @@ public class ListClientsFragment extends Fragment implements DataUpdateActivityT
                             ClientModel client = new ClientModel(clientsResponseModel.getId(),
                                     clientsResponseModel.getName(),
                                     clientsResponseModel.getAddress(),
-                                    clientsResponseModel.getEmail(),
                                     clientsResponseModel.getContact(),
+                                    clientsResponseModel.getGender(),
+                                    clientsResponseModel.getBirthday(),
                                     clientsResponseModel.getSignature(),
                                     clientsResponseModel.getCreated_at(),
                                     clientsResponseModel.getUpdated_at()

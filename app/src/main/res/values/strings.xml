@@ -106,5 +106,7 @@
     <string name="act_pay_mpesa">Codigo do pagamento MPESA</string>
     <string name="act_pay_contaMovel">Codigo do pagamento Conta Móvel</string>
     <string name="act_pay_transferencia">Número de conta</string>
+    <string name="act_age">Idade</string>
+    <string name="act_gender">Genero</string>
 
 </resources>
