@@ -645,6 +645,9 @@ public class AddSaleFragment extends Fragment {
                                             response.body().getResponse()) {
                                         customerFilteredAdapter.add(customerResponseModel);
                                     }
+                                }else {
+                                    Toasty.error(getContext(), "Selecione o cliente sugerido!", Toast.LENGTH_SHORT).show();
+                                    act_client.setError("Por favor adicione o novo cliente (+)");
                                 }
                             } else {
                                 Snackbar.make(parent_view, getString(R.string.error_sale_fragment) +" "+ response.message(), Snackbar.LENGTH_LONG).show();
@@ -692,6 +695,9 @@ public class AddSaleFragment extends Fragment {
                                             response.body().getResponse()) {
                                         productFilteredAdapter.add(productResponseModel);
                                     }
+                                }else {
+                                    Toasty.error(getContext(), "Produto nao disponivel no stock!", Toast.LENGTH_LONG).show();
+                                    act_product.setError("Solicite a adicao do produto ao stock!");
                                 }
                             } else {
                                 Snackbar.make(parent_view, getString(R.string.error_sale_fragment), Snackbar.LENGTH_LONG).show();

@@ -330,7 +330,7 @@ public class CustomerSignSaleFragment extends Fragment {
                         REQUEST_EXTERNAL_STORAGE
                 );
             }else {
-                Toast.makeText(getContext(), "Com permissao ", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(getContext(), "Com permissao ", Toast.LENGTH_SHORT).show();
             }
         }
         public File save(View v, String StoredPath) {
