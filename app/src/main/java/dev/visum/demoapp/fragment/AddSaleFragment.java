@@ -761,7 +761,7 @@ public class AddSaleFragment extends Fragment {
                         Log.d("Sale", "onResponse: "+response.body());
                         Log.d("Sale", "onResponse: "+response.message());
 
-                        Snackbar.make(parent_view, getString(R.string.error_sale_fragment_failed)+" "+response.body(), Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(parent_view, getString(R.string.error_sale_fragment_failed)+" "+response.message(), Snackbar.LENGTH_LONG).show();
                     }
                 }
 

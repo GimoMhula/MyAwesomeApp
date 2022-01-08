@@ -172,8 +172,8 @@ public class MainActivity extends BaseActivity implements AddSaleFragment.OnAddS
                        goToFragment(new ListSoldItemsFragment()); // goToFragment(new AddSaleFragment());
                        break;
                    case "Inqueritos":
-                       goToFragment(new SurveyFragmentMenu());
-//                         goToFragment(new FormFragment());
+//                       goToFragment(new SurveyFragmentMenu());
+                         goToFragment(new FormFragment());
                        break;
                    default:Bundle bundle = new Bundle();
                        bundle.putString("content",obj.title);
