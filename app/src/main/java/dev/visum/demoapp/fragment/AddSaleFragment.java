@@ -1,5 +1,6 @@
 package dev.visum.demoapp.fragment;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -50,6 +51,7 @@ import java.util.concurrent.TimeUnit;
 import dev.visum.demoapp.R;
 import dev.visum.demoapp.adapter.AdapterSaleCustomerFiltered;
 import dev.visum.demoapp.adapter.AdapterSaleProductFiltered;
+import dev.visum.demoapp.adapter.ProvinceSpinnerAdapter;
 import dev.visum.demoapp.data.api.GetDataService;
 import dev.visum.demoapp.data.api.MozCarbonAPI;
 import dev.visum.demoapp.data.local.KeyStoreLocal;
@@ -61,12 +63,15 @@ import dev.visum.demoapp.model.AddSaleResponseModel;
 import dev.visum.demoapp.model.CustomerResponseModel;
 import dev.visum.demoapp.model.MyCallbackInterface;
 import dev.visum.demoapp.model.ProductResponseModel;
+import dev.visum.demoapp.model.Province;
+import dev.visum.demoapp.model.Provinces;
 import dev.visum.demoapp.model.ResponseAddClientModel;
 import dev.visum.demoapp.model.ResponseModel;
 import dev.visum.demoapp.model.SaleAddedResponseModel;
 import dev.visum.demoapp.model.SaleCreatedModel;
 import dev.visum.demoapp.model.SaleType;
 import dev.visum.demoapp.model.SoldItem;
+import dev.visum.demoapp.utils.Constants;
 import dev.visum.demoapp.utils.Tools;
 import es.dmoral.toasty.Toasty;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -76,6 +81,8 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -122,6 +129,11 @@ public class AddSaleFragment extends Fragment {
     private String paymentSelected;
     private RadioButton act_gender_selected;
     private boolean auxVerify=true;
+
+    private Spinner mProvince;
+    private Province selectedProvince;
+    private ArrayList<Province> provinces=null;
+    private ProvinceSpinnerAdapter adapterProvince;
 
     {
         payTypeMap.put(1, "A mão");
@@ -443,6 +455,23 @@ public class AddSaleFragment extends Fragment {
             }
         });
 
+        provinces = new ArrayList<>();
+        getProvinces();
+        //adapterProvince = new ProvinceSpinnerAdapter(getContext(), provinces);
+        //mProvince.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
+//        mProvince.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                selectedProvince = (Province) parent.getItemAtPosition(position);
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//
+//            }
+//        });
+
+
         checkbox_sign.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -735,7 +764,49 @@ public class AddSaleFragment extends Fragment {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeWith(searchQuery));
     }
+    private void getProvinces() {
 
+
+        GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
+        Call<Province> call = service.getProvince();
+        call.enqueue(new Callback<Province>() {
+            @Override
+            public void onResponse(Call<Province> call, retrofit2.Response<Province> response) {
+                //loginBtn.setEnabled(true);
+                Log.d("Province", "onResponse: " + response.toString());
+
+//                spotsDialog.dismiss();
+                if (!response.isSuccessful()) {
+                    //Utils.displayToast(StartDay.this, "Login Failed");
+                    return;
+                }
+
+                Province provi = response.body();
+                Log.d("Province", "onResponse: " +provi);
+
+                // List<Province> data = response.body();
+                if (provi != null) {
+
+//                    for (Province p : provi
+//                    ) {
+//                        Log.d("Province", "onResponse: " +p);
+//                        provinces.add(p);
+//                    }
+                    //adapterProvince.notifyDataSetChanged();
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Province> call, Throwable t) {
+                // loginBtn.setEnabled(true);
+                //Utils.displayToast(StartDay.this, "Login Failed");
+                Log.e("Province", "onFailure: " + t.getMessage(), t);
+            }
+        });
+
+    }
 
     private void processSale(Map<String, String> map) {
         progressDialog.setMessage(getString(R.string.loading_sale_fragment));

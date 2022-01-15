@@ -13,6 +13,8 @@ import dev.visum.demoapp.model.ClientResponseModel;
 import dev.visum.demoapp.model.CustomerResponseModel;
 import dev.visum.demoapp.model.MySaleModel;
 import dev.visum.demoapp.model.ProductResponseModel;
+import dev.visum.demoapp.model.Province;
+import dev.visum.demoapp.model.Provinces;
 import dev.visum.demoapp.model.ResponseAddClientModel;
 import dev.visum.demoapp.model.ResponseModel;
 import dev.visum.demoapp.model.SaleAddedResponseModel;
@@ -62,6 +64,9 @@ public interface GetDataService {
 
     @GET("sales")
     Call<ResponseModel<ArrayList<MySaleModel>>> getMySales(@NotNull @Query("input") String input);
+
+    @GET("regions")
+    Call<Province> getProvince();
 
     @GET("clients/index")
     Call<ResponseModel<ArrayList<ClientResponseModel>>> getMyClients(@NotNull @Query("input") String input);
