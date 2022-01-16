@@ -28,16 +28,16 @@ public class OfflineSalesUnitTest {
                 "Gimo",
                 "Produto X",
                 500.0,
-                2,
-                "",
+                "2",
                 0,
-                7,
+                0,
+                "dfdf",
                 "neighborhood",
                 "city_block",
                 "house_number",
                 "reference_point",
                 "asdasd",
-                "asdasd"
+                2.0
         );
 
         AddSaleModel addSaleModel2 = new AddSaleModel(
@@ -45,7 +45,6 @@ public class OfflineSalesUnitTest {
                 "Elton",
                 "Produto X",
                 200.0,
-                2,
                 "",
                 0,
                 1,
@@ -54,7 +53,8 @@ public class OfflineSalesUnitTest {
                 "house_number",
                 "reference_point",
                 "dsfsdf",
-                "asdad"
+                "asdad",
+                2.0
         );
 
         KeyStoreLocal.getInstance(appContext).setOfflineSales(addSaleModel1);

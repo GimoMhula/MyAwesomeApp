@@ -24,7 +24,7 @@ public class Provinces implements Parcelable {
     };
     @SerializedName("success")
     private boolean success;
-    @SerializedName("data")
+    @SerializedName("response")
     private List<Province> provinces = new ArrayList<>();
 
     public Provinces() {

@@ -12,6 +12,7 @@ import dev.visum.demoapp.model.AddSalePrestResponseModel;
 import dev.visum.demoapp.model.ClientResponseModel;
 import dev.visum.demoapp.model.CustomerResponseModel;
 import dev.visum.demoapp.model.MySaleModel;
+import dev.visum.demoapp.model.ProductPrice;
 import dev.visum.demoapp.model.ProductResponseModel;
 import dev.visum.demoapp.model.Province;
 import dev.visum.demoapp.model.Provinces;
@@ -66,7 +67,10 @@ public interface GetDataService {
     Call<ResponseModel<ArrayList<MySaleModel>>> getMySales(@NotNull @Query("input") String input);
 
     @GET("regions")
-    Call<Province> getProvince();
+    Call<Provinces> getProvince();
+
+    @GET("price")
+    Call<ResponseModel> getProducttPrice(@NotNull @Query("type") String type, @Query("region_id") String id);
 
     @GET("clients/index")
     Call<ResponseModel<ArrayList<ClientResponseModel>>> getMyClients(@NotNull @Query("input") String input);

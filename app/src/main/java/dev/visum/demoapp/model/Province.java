@@ -25,12 +25,13 @@ public class Province implements Parcelable {
     private int category_id;
     private String created_at;
     private String updated_at;
+    private Category category;
 
 
     public Province() {
     }
 
-    public Province(int id, String name, double total_price, double promo_price, double free_price, int category_id, String created_at, String updated_at) {
+    public Province(int id, String name, double total_price, double promo_price, double free_price, int category_id, String created_at, String updated_at, Category category) {
         this.id = id;
         this.name = name;
         this.total_price = total_price;
@@ -39,6 +40,7 @@ public class Province implements Parcelable {
         this.category_id = category_id;
         this.created_at = created_at;
         this.updated_at = updated_at;
+        this.category = category;
     }
 
     protected Province(Parcel in) {
@@ -50,6 +52,8 @@ public class Province implements Parcelable {
         category_id = in.readInt();
         created_at = in.readString();
         updated_at = in.readString();
+
+
     }
 
     @Override
@@ -119,5 +123,13 @@ public class Province implements Parcelable {
 
     public void setCategory_id(int category_id) {
         this.category_id = category_id;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 }

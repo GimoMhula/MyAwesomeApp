@@ -53,7 +53,7 @@ public class ProvinceSpinnerAdapter extends BaseAdapter implements SpinnerAdapte
         View view;
         view = View.inflate(context, R.layout.item_province, null);
         final TextView textView = view.findViewById(R.id.province_desc);
-        textView.setText(routes.get(position).getName());
+        textView.setText(routes.get(position).getName()+"("+routes.get(position).getCategory().getName()+")");
 
         return view;
     }

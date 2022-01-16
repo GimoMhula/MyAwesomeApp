@@ -12,8 +12,6 @@ public class AddSaleModel {
     @SerializedName("product_id")
     private String product_id;
 
-    @SerializedName("total_price")
-    private Double total_price;
 
     @SerializedName("first_prestation")
     private double first_prestation;
@@ -45,11 +43,13 @@ public class AddSaleModel {
     @SerializedName("payment_ref")
     private String payment_ref;
 
-    public AddSaleModel(String agent_id, String customer_id, String product_id, Double total_price, double first_prestation, String payment_method_id, double lat, double lng, String region, String neighborhood, String city_block, String house_number, String reference_point, String payment_ref) {
+    @SerializedName("totalPrice")
+    private double totalPrice;
+
+    public AddSaleModel(String agent_id, String customer_id, String product_id, double first_prestation, String payment_method_id, double lat, double lng, String region, String neighborhood, String city_block, String house_number, String reference_point, String payment_ref, Double totalPrice) {
         this.agent_id = agent_id;
         this.customer_id = customer_id;
         this.product_id = product_id;
-        this.total_price = total_price;
         this.first_prestation = first_prestation;
         this.payment_method_id = payment_method_id;
         this.lat = lat;
@@ -60,6 +60,7 @@ public class AddSaleModel {
         this.house_number = house_number;
         this.reference_point = reference_point;
         this.payment_ref = payment_ref;
+        this.totalPrice = totalPrice;
     }
 
     public String getAgent_id() {
@@ -86,13 +87,6 @@ public class AddSaleModel {
         this.product_id = product_id;
     }
 
-    public Double getTotal_price() {
-        return total_price;
-    }
-
-    public void setTotal_price(Double total_price) {
-        this.total_price = total_price;
-    }
 
     public double getFirst_prestation() {
         return first_prestation;
@@ -164,6 +158,14 @@ public class AddSaleModel {
 
     public void setReference_point(String reference_point) {
         this.reference_point = reference_point;
+    }
+
+    public Double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(Double totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
     public String getPayment_ref() {

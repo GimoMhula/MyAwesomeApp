@@ -1,6 +1,5 @@
 package dev.visum.demoapp.fragment;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,8 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -35,12 +32,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.jakewharton.rxbinding4.widget.RxTextView;
 import com.jakewharton.rxbinding4.widget.TextViewTextChangeEvent;
-import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -59,21 +51,17 @@ import dev.visum.demoapp.model.AddClientModel;
 import dev.visum.demoapp.model.AddSaleModel;
 import dev.visum.demoapp.model.AddSalePrestModel;
 import dev.visum.demoapp.model.AddSalePrestResponseModel;
-import dev.visum.demoapp.model.AddSaleResponseModel;
 import dev.visum.demoapp.model.CustomerResponseModel;
-import dev.visum.demoapp.model.MyCallbackInterface;
 import dev.visum.demoapp.model.ProductResponseModel;
 import dev.visum.demoapp.model.Province;
 import dev.visum.demoapp.model.Provinces;
 import dev.visum.demoapp.model.ResponseAddClientModel;
 import dev.visum.demoapp.model.ResponseModel;
 import dev.visum.demoapp.model.SaleAddedResponseModel;
-import dev.visum.demoapp.model.SaleCreatedModel;
 import dev.visum.demoapp.model.SaleType;
 import dev.visum.demoapp.model.SoldItem;
-import dev.visum.demoapp.utils.Constants;
 import dev.visum.demoapp.utils.Tools;
-import es.dmoral.toasty.Toasty;
+
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.observers.DisposableObserver;
@@ -128,12 +116,16 @@ public class AddSaleFragment extends Fragment {
     private Spinner spinner;
     private String paymentSelected;
     private RadioButton act_gender_selected;
+    private RadioButton act_peyment_method_selected;
     private boolean auxVerify=true;
 
     private Spinner mProvince;
     private Province selectedProvince;
     private ArrayList<Province> provinces=null;
     private ProvinceSpinnerAdapter adapterProvince;
+    private RadioGroup paymentMetthodRadioGroup;
+    private String paymentMethodID;
+    private LinearLayout linearLayout_installments;
 
     {
         payTypeMap.put(1, "A mão");
@@ -242,6 +234,18 @@ public class AddSaleFragment extends Fragment {
         act_pay_mpesa_code_lyt = parent_view.findViewById(R.id.act_pay_mpesa_code_lyt);
         act_pay_mpesa_code = parent_view.findViewById(R.id.act_pay_mpesa_code);
         spinner = parent_view.findViewById(R.id.act_pay_type_spinner);
+        mProvince = parent_view.findViewById(R.id.region_spinner);
+        paymentMetthodRadioGroup = parent_view.findViewById(R.id.rg_group_0);
+        linearLayout_installments = parent_view.findViewById(R.id.ll_installments);
+
+
+
+
+        selectedPaymentMethod();
+
+
+
+
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -335,6 +339,7 @@ public class AddSaleFragment extends Fragment {
                 });
 
 
+
                 bt_create_client.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -380,7 +385,7 @@ public class AddSaleFragment extends Fragment {
 
                             String gender=act_gender_selected.getText().toString();
 
-                            Toast.makeText(getContext(), age+" "+act_gender_selected.getText(), Toast.LENGTH_LONG).show();
+                           // Toast.makeText(getContext(), age+" "+act_gender_selected.getText(), Toast.LENGTH_LONG).show();
 
                             if (!Tools.isStringNil(name)
                                     && !Tools.isStringNil(address)
@@ -457,19 +462,21 @@ public class AddSaleFragment extends Fragment {
 
         provinces = new ArrayList<>();
         getProvinces();
-        //adapterProvince = new ProvinceSpinnerAdapter(getContext(), provinces);
-        //mProvince.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
-//        mProvince.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                selectedProvince = (Province) parent.getItemAtPosition(position);
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//
-//            }
-//        });
+        adapterProvince = new ProvinceSpinnerAdapter(getContext(), provinces);
+        mProvince.setAdapter(adapterProvince);//setting the adapter data into the AutoCompleteTextView
+        mProvince.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedProvince = (Province) parent.getItemAtPosition(position);
+                selectedPaymentMethod();
+                getProductPrice(paymentMethodID,selectedProvince.getId());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
 
         checkbox_sign.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -545,8 +552,33 @@ public class AddSaleFragment extends Fragment {
         }
     }
 
+    private void selectedPaymentMethod() {
+        int selectedPaymentMethod = paymentMetthodRadioGroup.getCheckedRadioButtonId();
+        act_peyment_method_selected = (RadioButton) parent_view.findViewById(selectedPaymentMethod);
+
+
+        if(act_peyment_method_selected.getText().toString().equals("Cash")){
+            paymentMethodID="1";
+            linearLayout_installments.setVisibility(View.GONE);
+
+
+        }
+        if(act_peyment_method_selected.getText().toString().equals("Prestacao")){
+            paymentMethodID="2";
+            linearLayout_installments.setVisibility(View.VISIBLE);
+        }
+        if(act_peyment_method_selected.getText().toString().equals("Oferta")){
+            paymentMethodID="3";
+            linearLayout_installments.setVisibility(View.GONE);
+
+        }
+    }
+
     private void validatingSale() {
         try {
+            if(!paymentMethodID.equals(2)){
+                act_installments.setText(0);
+            }
             String pay_type = paymentSelected;
             String clientName = act_client.getText().toString();
             String productName = act_product.getText().toString();
@@ -556,6 +588,7 @@ public class AddSaleFragment extends Fragment {
             String house_number = act_nr_house.getText().toString();
             String reference_point = act_ref_street.getText().toString();
             String act_pay_mpesa_code_value=act_pay_mpesa_code.getText().toString();
+
             double first_prestation = Double.parseDouble(act_installments.getText().toString());
             double total = (saleType == SaleType.NEXT_PREST || act_total.getText() == null || act_total.getText().toString().trim().isEmpty()) ? 0 : Double.parseDouble(act_total.getText().toString());
             boolean check_for_first_pay = !productId.equals("") && first_prestation > 0 && first_prestation <= total && !customerId.equals("");
@@ -568,6 +601,7 @@ public class AddSaleFragment extends Fragment {
             }else {
                 act_pay_mpesa_code_lyt.setVisibility(View.GONE);
             }
+
 
             double aux=Double.parseDouble(act_total.getText().toString());
 
@@ -591,7 +625,7 @@ public class AddSaleFragment extends Fragment {
                         KeyStoreLocal.getInstance(getContext()).getUser() != null
                                 && KeyStoreLocal.getInstance(getContext()).getUser().getId() != null ? KeyStoreLocal.getInstance(getContext()).getUser().getId() : KeyStoreLocal.getInstance(getContext()).getUserId(),
                         (Tools.isConnected(getContext()) && !customerId.isEmpty()) || (KeyStoreLocal.getInstance(getContext()).getOfflineClients() != null && !KeyStoreLocal.getInstance(getContext()).getOfflineClients().isEmpty() && !customerId.isEmpty()) ? customerId : clientName,
-                        Tools.isConnected(getContext()) ? productId : productName,total,
+                        Tools.isConnected(getContext()) ? productId : productName,
                         first_prestation,
                         Tools.getMapKey(payTypeMap, pay_type) + "",
                         lat,
@@ -601,7 +635,8 @@ public class AddSaleFragment extends Fragment {
                         city_block,
                         house_number,
                         reference_point,
-                        act_pay_mpesa_code_value
+                        act_pay_mpesa_code_value,total
+
                 );
 
                 Object saleData =  addSaleModel;
@@ -650,7 +685,8 @@ public class AddSaleFragment extends Fragment {
             if (!Tools.isGPS_ON(getContext())) {
                 Snackbar.make(parent_view, getString(R.string.error_sale_fragment_fail_gps), Snackbar.LENGTH_LONG).show();
             } else {
-                Toasty.error(getActivity(), getString(R.string.error_sale_fragment_fail)+" "+e.getMessage(), Toast.LENGTH_SHORT, true).show();
+                Toast.makeText(getContext(), getString(R.string.error_sale_fragment_fail)+" "+e.getMessage(), Toast.LENGTH_SHORT).show();
+
             }
         }
     }
@@ -675,7 +711,7 @@ public class AddSaleFragment extends Fragment {
                                         customerFilteredAdapter.add(customerResponseModel);
                                     }
                                 }else {
-                                    Toasty.error(getContext(), "Selecione o cliente sugerido!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getContext(), "Selecione o cliente sugerido!", Toast.LENGTH_SHORT).show();
                                     act_client.setError("Por favor adicione o novo cliente (+)");
                                 }
                             } else {
@@ -725,7 +761,7 @@ public class AddSaleFragment extends Fragment {
                                         productFilteredAdapter.add(productResponseModel);
                                     }
                                 }else {
-                                    Toasty.error(getContext(), "Produto nao disponivel no stock!", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getContext(), "Produto nao disponivel no stock!", Toast.LENGTH_LONG).show();
                                     act_product.setError("Solicite a adicao do produto ao stock!");
                                 }
                             } else {
@@ -764,50 +800,146 @@ public class AddSaleFragment extends Fragment {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeWith(searchQuery));
     }
+//    private void getProvinces() {
+//
+//
+//        GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
+//        Call<Province> call = service.getProvince();
+//        call.enqueue(new Callback<Province>() {
+//            @Override
+//            public void onResponse(Call<Province> call, retrofit2.Response<Province> response) {
+//                //loginBtn.setEnabled(true);
+//                Log.d("Province", "onResponse: " + response.toString());
+//
+////                spotsDialog.dismiss();
+//                if (!response.isSuccessful()) {
+//                    //Utils.displayToast(StartDay.this, "Login Failed");
+//                    return;
+//                }
+//
+//                Province provi = response.body();
+//                //Log.d("Province", "Province Name: " +provi);
+//                Log.d("Province", "Province Name 2: " +response.body());
+//
+//                // List<Province> data = response.body();
+//                if (provi != null) {
+//
+////                    for (Province p : provi
+////                    ) {
+////                        Log.d("Province", "onResponse: " +p);
+////                        provinces.add(p);
+////                    }
+//                    //adapterProvince.notifyDataSetChanged();
+//
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onFailure(Call<Province> call, Throwable t) {
+//                // loginBtn.setEnabled(true);
+//                //Utils.displayToast(StartDay.this, "Login Failed");
+//                Log.e("Province", "onFailure: " + t.getMessage(), t);
+//            }
+//        });
+//
+//    }
+
     private void getProvinces() {
 
 
-        GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
-        Call<Province> call = service.getProvince();
-        call.enqueue(new Callback<Province>() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://3.10.223.89/api/v1/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        GetDataService getDataService = retrofit.create(GetDataService.class);
+        Call<Provinces> call = getDataService.getProvince();
+        call.enqueue(new Callback<Provinces>() {
             @Override
-            public void onResponse(Call<Province> call, retrofit2.Response<Province> response) {
+            public void onResponse(Call<Provinces> call, retrofit2.Response<Provinces> response) {
                 //loginBtn.setEnabled(true);
                 Log.d("Province", "onResponse: " + response.toString());
-
 //                spotsDialog.dismiss();
                 if (!response.isSuccessful()) {
                     //Utils.displayToast(StartDay.this, "Login Failed");
                     return;
                 }
 
-                Province provi = response.body();
-                Log.d("Province", "onResponse: " +provi);
+                Provinces provi = response.body();
+
 
                 // List<Province> data = response.body();
                 if (provi != null) {
 
-//                    for (Province p : provi
-//                    ) {
-//                        Log.d("Province", "onResponse: " +p);
-//                        provinces.add(p);
-//                    }
-                    //adapterProvince.notifyDataSetChanged();
+                    for (Province p : provi.getProvinces()
+                    ) {
+                        provinces.add(p);
+                        Log.d("Province", "onResponse: "+p.getName());
+                    }
+                   adapterProvince.notifyDataSetChanged();
 
                 }
 
             }
 
             @Override
-            public void onFailure(Call<Province> call, Throwable t) {
+            public void onFailure(Call<Provinces> call, Throwable t) {
                 // loginBtn.setEnabled(true);
                 //Utils.displayToast(StartDay.this, "Login Failed");
-                Log.e("Province", "onFailure: " + t.getMessage(), t);
+                Log.e("TAG", "onFailure: " + t.getMessage(), t);
             }
         });
 
     }
+    private void getProductPrice(String payType, int region_id) {
 
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://3.10.223.89/api/v1/regions/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        GetDataService getDataService = retrofit.create(GetDataService.class);
+        Call<ResponseModel> call = getDataService.getProducttPrice(payType,region_id+"");
+        call.enqueue(new Callback<ResponseModel>() {
+            @Override
+            public void onResponse(Call<ResponseModel> call, retrofit2.Response<ResponseModel> response) {
+                //loginBtn.setEnabled(true);
+                Log.d("ProductPrice", "onResponse: " + response.toString());
+                Log.d("ProductPrice", "onResponse: " + response.body());
+//                spotsDialog.dismiss();
+                if (!response.isSuccessful()) {
+                    //Utils.displayToast(StartDay.this, "Login Failed");
+                    return;
+                }
+                act_total.setText(response.body().getResponse().toString());
+                //Provinces provi = response.body();
+
+
+                // List<Province> data = response.body();
+//                if (provi != null) {
+//
+//                    for (Province p : provi.getProvinces()
+//                    ) {
+//                        provinces.add(p);
+//                        Log.d("Province", "onResponse: "+p.getName());
+//                    }
+//                    adapterProvince.notifyDataSetChanged();
+//
+//                }
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseModel> call, Throwable t) {
+                // loginBtn.setEnabled(true);
+                //Utils.displayToast(StartDay.this, "Login Failed");
+                Log.e("TAG", "onFailure: " + t.getMessage(), t);
+            }
+        });
+
+    }
     private void processSale(Map<String, String> map) {
         progressDialog.setMessage(getString(R.string.loading_sale_fragment));
         progressDialog.show();
@@ -823,7 +955,7 @@ public class AddSaleFragment extends Fragment {
                     progressDialog.hide();
 
                     if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                        Toasty.success(getActivity(), getString(R.string.success_sale_fragment), Toast.LENGTH_SHORT, true).show();
+                        Toast.makeText(getActivity(), getString(R.string.success_sale_fragment), Toast.LENGTH_SHORT).show();
                         Log.d("PDF", "onResponse: "+response.body().getUrl());
                         callback.renderWebView(response.body().getUrl());
 
@@ -852,7 +984,7 @@ public class AddSaleFragment extends Fragment {
 
                     if (response.isSuccessful() && response.body() != null) {
 //                        Snackbar.make(parent_view, getString(R.string.success_sale_next_prest_fragment), Snackbar.LENGTH_LONG).show();
-                        Toasty.success(getContext(), getString(R.string.success_sale_next_prest_fragment), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), getString(R.string.success_sale_next_prest_fragment), Toast.LENGTH_LONG).show();
 
                         getActivity().onBackPressed();
                     } else {

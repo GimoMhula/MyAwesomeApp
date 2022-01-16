@@ -29,7 +29,6 @@ import dev.visum.demoapp.model.UserAgentBodyModel;
 import dev.visum.demoapp.model.UserAgentResponseModel;
 import dev.visum.demoapp.utils.Constants;
 import dev.visum.demoapp.utils.Tools;
-import es.dmoral.toasty.Toasty;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -152,9 +151,9 @@ public class LoginFragment extends Fragment {
                     progressDialog.dismiss();
                     loginBtn.setAlpha(1f);
                     if(t.getMessage().contains("Failed to connect to")){
-                        Toasty.error(getContext(), "Erro de conexao, verifique a ligacao a internet!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Erro de conexao, verifique a ligacao a internet!", Toast.LENGTH_SHORT).show();
                     }else {
-                        Toasty.warning(getContext(), "Por favor verifique as credencias de Login!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Por favor verifique as credencias de Login!", Toast.LENGTH_SHORT).show();
                     }
 
                 }

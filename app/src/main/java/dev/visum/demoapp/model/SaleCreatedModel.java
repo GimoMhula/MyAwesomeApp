@@ -43,7 +43,10 @@ public class SaleCreatedModel {
     @SerializedName("reference_point")
     private String reference_point;
 
-    public SaleCreatedModel(String product_id, String customer_id, String user_id, String qty, String payment_method, String date, double lat, double lng, String region, String neighborhood, String city_block, String house_number, String reference_point) {
+    @SerializedName("totalPrice")
+    private String totalPrice;
+
+    public SaleCreatedModel(String product_id, String customer_id, String user_id, String qty, String payment_method, String date, double lat, double lng, String region, String neighborhood, String city_block, String house_number, String reference_point, String totalPrice) {
         this.product_id = product_id;
         this.customer_id = customer_id;
         this.user_id = user_id;
@@ -57,6 +60,7 @@ public class SaleCreatedModel {
         this.city_block = city_block;
         this.house_number = house_number;
         this.reference_point = reference_point;
+        this.totalPrice = totalPrice;
     }
 
     public String getProduct_id() {
@@ -163,6 +167,14 @@ public class SaleCreatedModel {
         this.reference_point = reference_point;
     }
 
+    public String getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(String totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
     @Override
     public String toString() {
         return "SaleCreatedModel{" +
@@ -179,6 +191,7 @@ public class SaleCreatedModel {
                 ", city_block='" + city_block + '\'' +
                 ", house_number='" + house_number + '\'' +
                 ", reference_point='" + reference_point + '\'' +
+                ", totalPrice='" + totalPrice + '\'' +
                 '}';
     }
 }
