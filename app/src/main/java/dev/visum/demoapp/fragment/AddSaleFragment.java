@@ -577,7 +577,7 @@ public class AddSaleFragment extends Fragment {
     private void validatingSale() {
         try {
             if(!paymentMethodID.equals(2)){
-                act_installments.setText(0);
+                act_installments.setText("0");
             }
             String pay_type = paymentSelected;
             String clientName = act_client.getText().toString();
