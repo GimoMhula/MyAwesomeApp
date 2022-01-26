@@ -576,7 +576,12 @@ public class AddSaleFragment extends Fragment {
 
     private void validatingSale() {
         try {
-            if(!paymentMethodID.equals(2)){
+            Log.d("paymentMethodID", "validatingSale: "+paymentMethodID);
+            if(paymentMethodID.equals("1")){
+                act_installments.setText(act_total.getText().toString());
+                Log.d("paymentMethodID", "validatingSale: "+act_installments.getText().toString());
+            }
+            if(paymentMethodID.equals("3")){
                 act_installments.setText("0");
             }
             String pay_type = paymentSelected;
