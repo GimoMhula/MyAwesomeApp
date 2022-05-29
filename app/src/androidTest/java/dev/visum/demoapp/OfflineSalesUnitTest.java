@@ -37,7 +37,10 @@ public class OfflineSalesUnitTest {
                 "house_number",
                 "reference_point",
                 "asdasd",
-                2.0
+                2.0,
+                "",
+                "",
+                ""
         );
 
         AddSaleModel addSaleModel2 = new AddSaleModel(
@@ -54,7 +57,10 @@ public class OfflineSalesUnitTest {
                 "reference_point",
                 "dsfsdf",
                 "asdad",
-                2.0
+                2.0,
+                "",
+                "",
+                ""
         );
 
         KeyStoreLocal.getInstance(appContext).setOfflineSales(addSaleModel1);

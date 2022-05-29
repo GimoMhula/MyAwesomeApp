@@ -199,8 +199,6 @@
                             android:layout_height="wrap_content"
                             android:hint="@string/act_total_sale"
                             android:layout_weight="2"
-                            android:enabled="false"
-
                             >
 
                             <AutoCompleteTextView
@@ -444,10 +442,66 @@
                         android:layout_weight="2">
 
                         <AutoCompleteTextView
-                            android:id="@+id/act_ref_street"
+                            android:id="@+id/act_pr_use"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="@string/act_ref_street"
+                            android:hint="@string/act_pr_use"
+                            android:maxLines="1"
+                            android:singleLine="true"
+                            android:inputType="text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+
+
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/spacing_mlarge" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/act_pr_type"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/act_pr_type"
+                            android:maxLines="1"
+                            android:singleLine="true"
+                            android:inputType="text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+
+
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/spacing_mlarge" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/act_agent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/act_agent"
                             android:maxLines="1"
                             android:singleLine="true"
                             android:inputType="text" />
@@ -459,7 +513,43 @@
                     android:layout_width="0dp"
                     android:layout_height="@dimen/spacing_mlarge" />
 
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/act_ref_street"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/act_ref_street"
+                            android:maxLines="1"
+                            android:singleLine="true"
+                            android:inputType="text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+
+
             </LinearLayout>
+
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="@dimen/spacing_mlarge" />
+
+
+
+
+
+
 
             <LinearLayout
                 android:visibility="gone"

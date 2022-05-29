@@ -31,7 +31,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:src="@drawable/image_shop_2" />
+                android:src="@drawable/image_shop_2"
+                android:visibility="gone"
+                />
+
+            <ImageButton
+                android:id="@+id/btnPrint"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_baseline_print_24"
+
+                />
 
         </androidx.cardview.widget.CardView>
 

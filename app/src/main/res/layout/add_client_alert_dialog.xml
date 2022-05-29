@@ -10,6 +10,7 @@
         android:layout_width="0dp"
         android:layout_height="?attr/actionBarSize" />
 
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -89,13 +90,14 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
+
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="2">
 
                         <AutoCompleteTextView
-                            android:id="@+id/act_age_day"
+                            android:id="@+id/act_age_motn"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="Dia"
@@ -114,10 +116,10 @@
                         android:layout_weight="2">
 
                         <AutoCompleteTextView
-                            android:id="@+id/act_age_motn"
+                            android:id="@+id/act_age_day"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="mes"
+                            android:hint="Mês"
                             android:maxLength="2"
                             android:inputType="number"
                             android:maxLines="1"
@@ -125,7 +127,9 @@
 
 
 
-                    </com.google.android.material.textfield.TextInputLayout>   <com.google.android.material.textfield.TextInputLayout
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2">
@@ -134,7 +138,7 @@
                         android:id="@+id/act_age_year"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="ano"
+                        android:hint="Ano nascimento"
                         android:inputType="number"
                         android:maxLines="1"
                         android:maxLength="4"

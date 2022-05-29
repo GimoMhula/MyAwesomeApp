@@ -45,6 +45,8 @@ public class SaleCreatedModel {
 
     @SerializedName("totalPrice")
     private String totalPrice;
+    
+
 
     public SaleCreatedModel(String product_id, String customer_id, String user_id, String qty, String payment_method, String date, double lat, double lng, String region, String neighborhood, String city_block, String house_number, String reference_point, String totalPrice) {
         this.product_id = product_id;
@@ -61,6 +63,7 @@ public class SaleCreatedModel {
         this.house_number = house_number;
         this.reference_point = reference_point;
         this.totalPrice = totalPrice;
+
     }
 
     public String getProduct_id() {
@@ -174,6 +177,8 @@ public class SaleCreatedModel {
     public void setTotalPrice(String totalPrice) {
         this.totalPrice = totalPrice;
     }
+
+
 
     @Override
     public String toString() {

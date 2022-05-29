@@ -1,11 +1,14 @@
 package dev.visum.demoapp.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.LayoutRes;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dev.visum.demoapp.R;
+import dev.visum.demoapp.activity.InvoiceActivity;
 import dev.visum.demoapp.model.SoldItem;
 import dev.visum.demoapp.utils.Tools;
 
@@ -48,6 +52,7 @@ public class AdapterListSoldItems extends RecyclerView.Adapter<RecyclerView.View
         public TextView subtitle;
         public TextView date;
         public View lyt_parent;
+        public ImageButton btnPrint;
 
         public OriginalViewHolder(View v) {
             super(v);
@@ -56,6 +61,7 @@ public class AdapterListSoldItems extends RecyclerView.Adapter<RecyclerView.View
             subtitle = v.findViewById(R.id.subtitle);
             date = v.findViewById(R.id.date);
             lyt_parent = v.findViewById(R.id.lyt_parent);
+            btnPrint = v.findViewById(R.id.btnPrint);
         }
     }
 
@@ -67,9 +73,12 @@ public class AdapterListSoldItems extends RecyclerView.Adapter<RecyclerView.View
         return vh;
     }
 
+
+
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+
         if (holder instanceof OriginalViewHolder) {
             OriginalViewHolder view = (OriginalViewHolder) holder;
 
@@ -78,6 +87,22 @@ public class AdapterListSoldItems extends RecyclerView.Adapter<RecyclerView.View
             view.subtitle.setText(soldItem.getSubtitle());
             view.date.setText(soldItem.getDate());
             Tools.displayImageOriginal(ctx, view.image, 0, soldItem.getImgUrl());
+            view.btnPrint.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    Intent intent =  new Intent(ctx, InvoiceActivity.class);
+                    intent.putExtra("invoice_id",items.get(position).getId());
+
+                    ctx.startActivity(intent);
+
+
+
+
+
+
+                }
+            });
             view.lyt_parent.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

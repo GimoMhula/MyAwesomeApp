@@ -23,9 +23,10 @@ public class Constants {
     public String SP_OFFLINE_CLIENTS = "OfflineClients";
 
     // API
-    public String API = "http://3.10.223.89";
+  public String API = "https://mozcarbon.herokuapp.com";
+//  public String API = "http://3.10.223.89";
 //    public String API = "http://34.237.238.49/";
-//    public String API = "192.168.43.216";
+//   public String API = "192.168.27.203:8000";
     public String INVOICE_PATH = "/final_invoice";
 
     // Query

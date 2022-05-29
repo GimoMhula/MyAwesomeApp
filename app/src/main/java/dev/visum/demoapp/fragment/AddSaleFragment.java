@@ -94,7 +94,7 @@ public class AddSaleFragment extends Fragment {
     private ImageView iv_add_client;
     private ProgressDialog progressDialog;
     private TextInputLayout text_input_username, text_input_total;
-    private AutoCompleteTextView act_product, act_client, act_pay_type, act_total, act_installments_nr, act_installments, act_region, act_area, act_quart, act_nr_house, act_ref_street;
+    private AutoCompleteTextView act_product, act_client, act_pay_type, act_total, act_installments_nr, act_installments, act_region, act_area, act_quart, act_nr_house, act_ref_street,act_pr_use,act_pr_type,act_agent;
     private Button bt_submit;
     private CompositeDisposable disposable = new CompositeDisposable();
     private LinearLayout ll_sale_prest, ll_total, ll_product_client, ll_region_date;
@@ -237,6 +237,9 @@ public class AddSaleFragment extends Fragment {
         mProvince = parent_view.findViewById(R.id.region_spinner);
         paymentMetthodRadioGroup = parent_view.findViewById(R.id.rg_group_0);
         linearLayout_installments = parent_view.findViewById(R.id.ll_installments);
+        act_pr_use = parent_view.findViewById(R.id.act_pr_use);
+        act_pr_type = parent_view.findViewById(R.id.act_pr_type);
+        act_agent = parent_view.findViewById(R.id.act_agent);
 
 
 
@@ -593,6 +596,9 @@ public class AddSaleFragment extends Fragment {
             String house_number = act_nr_house.getText().toString();
             String reference_point = act_ref_street.getText().toString();
             String act_pay_mpesa_code_value=act_pay_mpesa_code.getText().toString();
+            String product_type = act_pr_type.getText().toString();
+            String product_use = act_pr_use.getText().toString();
+            String agent_warehouse = act_agent.getText().toString();
 
             double first_prestation = Double.parseDouble(act_installments.getText().toString());
             double total = (saleType == SaleType.NEXT_PREST || act_total.getText() == null || act_total.getText().toString().trim().isEmpty()) ? 0 : Double.parseDouble(act_total.getText().toString());
@@ -610,6 +616,21 @@ public class AddSaleFragment extends Fragment {
 
             double aux=Double.parseDouble(act_total.getText().toString());
 
+            if(Tools.isStringNil(product_type)){
+                act_pr_type.setError("Preencha este campo !");
+
+            }
+
+            if(Tools.isStringNil(product_use)){
+                act_pr_use.setError("Preencha este campo !");
+
+            }
+
+            if(Tools.isStringNil(agent_warehouse)){
+                act_agent.setError("Preencha este campo !");
+
+            }
+
             if(first_prestation > total){
                 Log.d("check", "first_prestation: "+first_prestation);
 //                Log.d("check", "total: "+aux);
@@ -623,7 +644,7 @@ public class AddSaleFragment extends Fragment {
                 lng = Tools.getLatLng(getContext()).getLongitude();
             }
 
-            if (!Tools.isStringNil(pay_type) && (pass_verification || check_for_first_pay || check_for_next_prest || (!Tools.isConnected(getContext()) && !Tools.isStringNil(clientName) && !Tools.isStringNil(productName)))) {
+            if (!Tools.isStringNil(product_type) &&!Tools.isStringNil(product_use) &&!Tools.isStringNil(agent_warehouse) &&!Tools.isStringNil(pay_type) && (pass_verification || check_for_first_pay || check_for_next_prest || (!Tools.isConnected(getContext()) && !Tools.isStringNil(clientName) && !Tools.isStringNil(productName)))) {
 
 
                 AddSaleModel addSaleModel = new AddSaleModel(
@@ -640,7 +661,7 @@ public class AddSaleFragment extends Fragment {
                         city_block,
                         house_number,
                         reference_point,
-                        act_pay_mpesa_code_value,total
+                        act_pay_mpesa_code_value,total,product_use,product_type,agent_warehouse
 
                 );
 

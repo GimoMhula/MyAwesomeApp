@@ -46,7 +46,17 @@ public class AddSaleModel {
     @SerializedName("totalPrice")
     private double totalPrice;
 
-    public AddSaleModel(String agent_id, String customer_id, String product_id, double first_prestation, String payment_method_id, double lat, double lng, String region, String neighborhood, String city_block, String house_number, String reference_point, String payment_ref, Double totalPrice) {
+    @SerializedName("product_use")
+    private String product_use ;
+
+    @SerializedName("product_type")
+    private String product_type ;
+
+
+    @SerializedName("agent_warehouse")
+    private String agent_warehouse ;
+
+    public AddSaleModel(String agent_id, String customer_id, String product_id, double first_prestation, String payment_method_id, double lat, double lng, String region, String neighborhood, String city_block, String house_number, String reference_point, String payment_ref, double totalPrice, String product_use, String product_type, String agent_warehouse) {
         this.agent_id = agent_id;
         this.customer_id = customer_id;
         this.product_id = product_id;
@@ -61,6 +71,9 @@ public class AddSaleModel {
         this.reference_point = reference_point;
         this.payment_ref = payment_ref;
         this.totalPrice = totalPrice;
+        this.product_use = product_use;
+        this.product_type = product_type;
+        this.agent_warehouse = agent_warehouse;
     }
 
     public String getAgent_id() {
@@ -174,5 +187,33 @@ public class AddSaleModel {
 
     public void setPayment_ref(String payment_ref) {
         this.payment_ref = payment_ref;
+    }
+
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public String getProduct_use() {
+        return product_use;
+    }
+
+    public void setProduct_use(String product_use) {
+        this.product_use = product_use;
+    }
+
+    public String getProduct_type() {
+        return product_type;
+    }
+
+    public void setProduct_type(String product_type) {
+        this.product_type = product_type;
+    }
+
+    public String getAgent_warehouse() {
+        return agent_warehouse;
+    }
+
+    public void setAgent_warehouse(String agent_warehouse) {
+        this.agent_warehouse = agent_warehouse;
     }
 }
