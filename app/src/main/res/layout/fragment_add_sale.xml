@@ -132,11 +132,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dip"
                 android:text="Regiao:"
-                android:layout_marginBottom="5dp"/>
+                android:layout_marginBottom="5dp"
+            android:visibility="gone"
+            />
                 <Spinner
                     android:id="@+id/region_spinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     />
 
                 <View
@@ -434,23 +437,21 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="0dp"
+                    <TextView
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2">
+                        android:layout_marginTop="10dip"
+                        android:text="Uso do fogão :"
+                        android:layout_marginBottom="5dp"/>
+                    <Spinner
+                        android:id="@+id/act_pr_use_spinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        />
 
-                        <AutoCompleteTextView
-                            android:id="@+id/act_pr_use"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="@string/act_pr_use"
-                            android:maxLines="1"
-                            android:singleLine="true"
-                            android:inputType="text" />
 
-                    </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
 
 
@@ -462,23 +463,18 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="0dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2">
-
-                        <AutoCompleteTextView
-                            android:id="@+id/act_pr_type"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="@string/act_pr_type"
-                            android:maxLines="1"
-                            android:singleLine="true"
-                            android:inputType="text" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_marginTop="10dip"
+                        android:text="Tipo de fogão :"
+                        android:layout_marginBottom="5dp"/>
+                    <Spinner
+                        android:id="@+id/act_pr_type_spinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        />
                 </LinearLayout>
 
 

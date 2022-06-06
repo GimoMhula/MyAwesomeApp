@@ -14,6 +14,7 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_survey_step.xml" value="0.3161231884057971" />
         <entry key="app/src/main/res/layout/add_client_alert_dialog.xml" value="0.19791666666666666" />
+        <entry key="app/src/main/res/layout/content_inbox_webview.xml" value="0.15677083333333333" />
         <entry key="app/src/main/res/layout/dialog_info.xml" value="0.19947916666666668" />
         <entry key="app/src/main/res/layout/fragment_add_sale.xml" value="0.21422101449275363" />
         <entry key="app/src/main/res/layout/fragment_customer_sign_sale.xml" value="0.19791666666666666" />
@@ -27,6 +28,7 @@
         <entry key="app/src/main/res/layout/item_sold_item_horizontal.xml" value="0.21422101449275363" />
         <entry key="app/src/main/res/layout/item_survey_card.xml" value="0.30978260869565216" />
         <entry key="app/src/main/res/layout/item_survey_question_card.xml" value="0.30978260869565216" />
+        <entry key="app/src/main/res/layout/list_item.xml" value="0.15677083333333333" />
         <entry key="app/src/main/res/menu/menu_dashboard.xml" value="0.23055555555555557" />
         <entry key="app/src/main/res/menu/menu_product_more.xml" value="0.23055555555555557" />
         <entry key="app/src/main/res/menu/menu_search_products.xml" value="0.23055555555555557" />

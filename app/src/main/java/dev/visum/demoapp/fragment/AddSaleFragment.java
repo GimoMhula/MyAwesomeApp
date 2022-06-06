@@ -1,6 +1,7 @@
 package dev.visum.demoapp.fragment;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -94,7 +95,7 @@ public class AddSaleFragment extends Fragment {
     private ImageView iv_add_client;
     private ProgressDialog progressDialog;
     private TextInputLayout text_input_username, text_input_total;
-    private AutoCompleteTextView act_product, act_client, act_pay_type, act_total, act_installments_nr, act_installments, act_region, act_area, act_quart, act_nr_house, act_ref_street,act_pr_use,act_pr_type,act_agent;
+    private AutoCompleteTextView act_product, act_client, act_pay_type, act_total, act_installments_nr, act_installments, act_region, act_area, act_quart, act_nr_house, act_ref_street,act_agent;
     private Button bt_submit;
     private CompositeDisposable disposable = new CompositeDisposable();
     private LinearLayout ll_sale_prest, ll_total, ll_product_client, ll_region_date;
@@ -108,12 +109,14 @@ public class AddSaleFragment extends Fragment {
     private IntentIntegrator qrScan;
 
     private ImageView iv_qrcode;
+    private String [] useList = {"Doméstico","Produtivo","Misto"};
+    private String [] typeList = {"Lenha","Carvão"};
 
     Map<Integer,String> payTypeMap = new HashMap<>();
     private double productPriceToVerify;
     private LinearLayout act_pay_mpesa_code_lyt;
     private AutoCompleteTextView act_pay_mpesa_code;
-    private Spinner spinner;
+    private Spinner spinner,act_pr_use_spinner,act_pr_type_spinner;
     private String paymentSelected;
     private RadioButton act_gender_selected;
     private RadioButton act_peyment_method_selected;
@@ -126,6 +129,8 @@ public class AddSaleFragment extends Fragment {
     private RadioGroup paymentMetthodRadioGroup;
     private String paymentMethodID;
     private LinearLayout linearLayout_installments;
+    private String product_use;
+    private String product_type;
 
     {
         payTypeMap.put(1, "A mão");
@@ -237,15 +242,48 @@ public class AddSaleFragment extends Fragment {
         mProvince = parent_view.findViewById(R.id.region_spinner);
         paymentMetthodRadioGroup = parent_view.findViewById(R.id.rg_group_0);
         linearLayout_installments = parent_view.findViewById(R.id.ll_installments);
-        act_pr_use = parent_view.findViewById(R.id.act_pr_use);
-        act_pr_type = parent_view.findViewById(R.id.act_pr_type);
+//        act_pr_use = parent_view.findViewById(R.id.act_pr_use);
+        act_pr_use_spinner = parent_view.findViewById(R.id.act_pr_use_spinner);
+        act_pr_type_spinner = parent_view.findViewById(R.id.act_pr_type_spinner);
+
+//        act_pr_type = parent_view.findViewById(R.id.act_pr_type);
         act_agent = parent_view.findViewById(R.id.act_agent);
 
 
 
+//        Assign spinners
+
+        assignSpinner(useList,act_pr_use_spinner);
+        assignSpinner(typeList,act_pr_type_spinner);
+
 
         selectedPaymentMethod();
 
+
+        act_pr_use_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                product_use = useList[i];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                product_use = useList[0];
+            }
+        });
+
+
+             act_pr_type_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                product_type = typeList[i];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                product_type = typeList[0];
+            }
+        });
 
 
 
@@ -596,8 +634,8 @@ public class AddSaleFragment extends Fragment {
             String house_number = act_nr_house.getText().toString();
             String reference_point = act_ref_street.getText().toString();
             String act_pay_mpesa_code_value=act_pay_mpesa_code.getText().toString();
-            String product_type = act_pr_type.getText().toString();
-            String product_use = act_pr_use.getText().toString();
+
+
             String agent_warehouse = act_agent.getText().toString();
 
             double first_prestation = Double.parseDouble(act_installments.getText().toString());
@@ -616,15 +654,9 @@ public class AddSaleFragment extends Fragment {
 
             double aux=Double.parseDouble(act_total.getText().toString());
 
-            if(Tools.isStringNil(product_type)){
-                act_pr_type.setError("Preencha este campo !");
 
-            }
 
-            if(Tools.isStringNil(product_use)){
-                act_pr_use.setError("Preencha este campo !");
 
-            }
 
             if(Tools.isStringNil(agent_warehouse)){
                 act_agent.setError("Preencha este campo !");
@@ -1057,5 +1089,14 @@ public class AddSaleFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         disposable.clear();
+    }
+
+
+    public void assignSpinner(String [] list,Spinner spinner ){
+        //Creating the ArrayAdapter instance having the country list
+        ArrayAdapter aa = new ArrayAdapter(getContext(),android.R.layout.simple_spinner_item,list);
+        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //Setting the ArrayAdapter data on the Spinner
+        spinner.setAdapter(aa);
     }
 }
