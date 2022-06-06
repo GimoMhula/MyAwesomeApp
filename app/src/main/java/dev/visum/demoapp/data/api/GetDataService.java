@@ -25,6 +25,7 @@ import dev.visum.demoapp.model.SurveyQuestionResponseModel;
 import dev.visum.demoapp.model.SurveyResponseModel;
 
 import dev.visum.demoapp.model.UserAgentResponseModel;
+import dev.visum.demoapp.model.Warehouse;
 import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -75,6 +76,9 @@ public interface GetDataService {
     @GET("clients/index")
     Call<ResponseModel<ArrayList<ClientResponseModel>>> getMyClients(@NotNull @Query("input") String input);
 
+    @GET("warehouses")
+    Call<List<Warehouse>>getWareHouses();
+
     @Multipart
     @POST("client/signature")
     Call<JsonObject> uploadDigitalSignatureImage(@Part MultipartBody.Part file, @NotNull @Query("id") String input);
@@ -84,5 +88,6 @@ public interface GetDataService {
 
     @GET("clients/index/offline")
     Call<ResponseModel<List<CustomerResponseModel>>> getClientListForOffline();
+
 
 }

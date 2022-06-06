@@ -61,6 +61,7 @@ import dev.visum.demoapp.model.ResponseModel;
 import dev.visum.demoapp.model.SaleAddedResponseModel;
 import dev.visum.demoapp.model.SaleType;
 import dev.visum.demoapp.model.SoldItem;
+import dev.visum.demoapp.model.Warehouse;
 import dev.visum.demoapp.utils.Tools;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -95,7 +96,7 @@ public class AddSaleFragment extends Fragment {
     private ImageView iv_add_client;
     private ProgressDialog progressDialog;
     private TextInputLayout text_input_username, text_input_total;
-    private AutoCompleteTextView act_product, act_client, act_pay_type, act_total, act_installments_nr, act_installments, act_region, act_area, act_quart, act_nr_house, act_ref_street,act_agent;
+    private AutoCompleteTextView act_product, act_client, act_pay_type, act_total, act_installments_nr, act_installments, act_region, act_area, act_quart, act_nr_house, act_ref_street;
     private Button bt_submit;
     private CompositeDisposable disposable = new CompositeDisposable();
     private LinearLayout ll_sale_prest, ll_total, ll_product_client, ll_region_date;
@@ -116,7 +117,7 @@ public class AddSaleFragment extends Fragment {
     private double productPriceToVerify;
     private LinearLayout act_pay_mpesa_code_lyt;
     private AutoCompleteTextView act_pay_mpesa_code;
-    private Spinner spinner,act_pr_use_spinner,act_pr_type_spinner;
+    private Spinner spinner,act_pr_use_spinner,act_pr_type_spinner,act_agent_spinner;
     private String paymentSelected;
     private RadioButton act_gender_selected;
     private RadioButton act_peyment_method_selected;
@@ -131,6 +132,8 @@ public class AddSaleFragment extends Fragment {
     private LinearLayout linearLayout_installments;
     private String product_use;
     private String product_type;
+    private String agent_warehouse;
+    private String[] warehouses;
 
     {
         payTypeMap.put(1, "A mão");
@@ -245,9 +248,10 @@ public class AddSaleFragment extends Fragment {
 //        act_pr_use = parent_view.findViewById(R.id.act_pr_use);
         act_pr_use_spinner = parent_view.findViewById(R.id.act_pr_use_spinner);
         act_pr_type_spinner = parent_view.findViewById(R.id.act_pr_type_spinner);
+        act_agent_spinner = parent_view.findViewById(R.id.act_agent_spinner);
 
 //        act_pr_type = parent_view.findViewById(R.id.act_pr_type);
-        act_agent = parent_view.findViewById(R.id.act_agent);
+//        act_agent = parent_view.findViewById(R.id.act_agent);
 
 
 
@@ -256,9 +260,21 @@ public class AddSaleFragment extends Fragment {
         assignSpinner(useList,act_pr_use_spinner);
         assignSpinner(typeList,act_pr_type_spinner);
 
+        getWareHouses();
 
         selectedPaymentMethod();
 
+        act_agent_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                agent_warehouse = warehouses[i];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                agent_warehouse = warehouses[0];
+            }
+        });
 
         act_pr_use_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -636,7 +652,7 @@ public class AddSaleFragment extends Fragment {
             String act_pay_mpesa_code_value=act_pay_mpesa_code.getText().toString();
 
 
-            String agent_warehouse = act_agent.getText().toString();
+
 
             double first_prestation = Double.parseDouble(act_installments.getText().toString());
             double total = (saleType == SaleType.NEXT_PREST || act_total.getText() == null || act_total.getText().toString().trim().isEmpty()) ? 0 : Double.parseDouble(act_total.getText().toString());
@@ -658,10 +674,7 @@ public class AddSaleFragment extends Fragment {
 
 
 
-            if(Tools.isStringNil(agent_warehouse)){
-                act_agent.setError("Preencha este campo !");
 
-            }
 
             if(first_prestation > total){
                 Log.d("check", "first_prestation: "+first_prestation);
@@ -1099,4 +1112,64 @@ public class AddSaleFragment extends Fragment {
         //Setting the ArrayAdapter data on the Spinner
         spinner.setAdapter(aa);
     }
+
+
+    public void getWareHouses() {
+
+
+        GetDataService service = MozCarbonAPI.getRetrofit(getContext()).create(GetDataService.class);
+        Call<List<Warehouse>> call = service.getWareHouses();
+
+        call.enqueue(new Callback<List<Warehouse>>() {
+            @Override
+            public void onResponse(Call<List<Warehouse>> call, Response<List<Warehouse>> response) {
+                List<Warehouse> myList =  response.body();
+                  warehouses = new String[myList.size()];
+
+             for (int i = 0; i < myList.size(); i++) {
+                  warehouses[i] = myList.get(i).getName();
+               }
+
+             assignSpinner(warehouses,act_agent_spinner);
+
+
+            }
+
+            @Override
+            public void onFailure(Call<List<Warehouse>> call, Throwable t) {
+
+
+                Toast.makeText(getContext(), "Falha ao carregar armazéns, verifique a conexão", Toast.LENGTH_SHORT).show();
+
+                assignSpinner(new String[]{"Escritório(Cumbeza)","MP Group"},act_agent_spinner);
+            }
+        });
+
+//
+//        call.enqueue(new Callback<List<Warehouse>>() {
+//            @Override
+//            public void onResponse(Call<List<WareHouse>> call, Response<List<WareHouse>> response) {
+//                List<WareHouse> myList =  response.body();
+//                String [] warehouses = new String[myList.size()];
+//
+//                for (int i = 0; i < myList.size(); i++) {
+//                    warehouses[i] = myList.get(i).getName();
+//                }
+//
+//                ArrayAdapter arrayAdapter = new ArrayAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,warehouses);
+//
+//                arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//
+//                spinnerWarehouses.setAdapter(arrayAdapter);
+//            }
+//
+//            @Override
+//            public void onFailure(Call<List<WareHouse>> call, Throwable t) {
+//                Log.d("falha",t.getMessage());
+//                Toast.makeText(getApplicationContext(), "An error has occured", Toast.LENGTH_LONG).show();
+//            }
+//        });
+
+    }
+
 }

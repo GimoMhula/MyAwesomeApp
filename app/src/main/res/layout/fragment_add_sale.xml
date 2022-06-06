@@ -486,23 +486,18 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="0dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2">
-
-                        <AutoCompleteTextView
-                            android:id="@+id/act_agent"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="@string/act_agent"
-                            android:maxLines="1"
-                            android:singleLine="true"
-                            android:inputType="text" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_marginTop="10dip"
+                        android:text="Armazém :"
+                        android:layout_marginBottom="5dp"/>
+                    <Spinner
+                        android:id="@+id/act_agent_spinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        />
                 </LinearLayout>
 
                 <View
