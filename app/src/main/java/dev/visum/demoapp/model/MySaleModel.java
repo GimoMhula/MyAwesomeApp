@@ -139,4 +139,21 @@ public class MySaleModel {
     public void setProduct(ProductResponseModel product) {
         this.product = product;
     }
+
+    @Override
+    public String toString() {
+        return "MySaleModel{" +
+                "id='" + id + '\'' +
+                ", product_id='" + product_id + '\'' +
+                ", agent_id='" + agent_id + '\'' +
+                ", customer_id='" + customer_id + '\'' +
+                ", quant=" + quant +
+                ", missing=" + missing +
+                ", totalPrice=" + totalPrice +
+                ", done=" + done +
+                ", created_at='" + created_at + '\'' +
+                ", prestation=" + prestation +
+                ", product=" + product +
+                '}';
+    }
 }

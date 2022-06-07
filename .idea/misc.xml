@@ -19,6 +19,7 @@
         <entry key="app/src/main/res/layout/fragment_add_sale.xml" value="0.21422101449275363" />
         <entry key="app/src/main/res/layout/fragment_customer_sign_sale.xml" value="0.19791666666666666" />
         <entry key="app/src/main/res/layout/fragment_list_client_items.xml" value="0.23055555555555557" />
+        <entry key="app/src/main/res/layout/fragment_list_sold_items.xml" value="0.19166666666666668" />
         <entry key="app/src/main/res/layout/fragment_product_grid.xml" value="0.3161231884057971" />
         <entry key="app/src/main/res/layout/fragment_survey_question.xml" value="0.30978260869565216" />
         <entry key="app/src/main/res/layout/item_client_horizontal.xml" value="0.23055555555555557" />

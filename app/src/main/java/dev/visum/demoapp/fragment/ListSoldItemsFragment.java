@@ -198,20 +198,30 @@ public class ListSoldItemsFragment extends Fragment implements DataUpdateActivit
                                subtitle = "Pagou um total de " + saleResponseModel.getTotalPrice() + "MT";
                                containsPrest = false;
                            }
-                           if (userAgent != null && userAgent.getName() != null && !userAgent.getName().isEmpty()) {
-                               Log.d("agent_id", "onResponse F: "+ userAgent.getId()+ "Name: "+userAgent.getName());
+                           if (userAgent != null ) {
 
-                               if(saleResponseModel.getAgent_id().equals(userAgent.getId())){
-                                    soldItem = new SoldItem(saleResponseModel.getId(),
-                                           "Venda para " + saleResponseModel.getProduct().getName(),
-                                           subtitle,
-                                           saleResponseModel.getCreated_at(),
-                                           Constants.getInstance().API + saleResponseModel.getProduct().getImage(),
-                                           saleResponseModel.getMissing(),
-                                           containsPrest
-                                   );
-                                   soldItemList.add(soldItem);
+                               Log.d("agent_debug", userAgent.toString());
+//                               Log.d("agent_id", "onResponse F: "+ userAgent.getId()+ "Name: "+userAgent.getName());
+
+                               try {
+                                   if(saleResponseModel!=null && saleResponseModel.getAgent_id().equals(userAgent.getId()) && saleResponseModel.getProduct()!=null){
+                                       soldItem = new SoldItem(saleResponseModel.getId(),
+                                               "Venda para " + saleResponseModel.getProduct().getName(),
+                                               subtitle,
+                                               saleResponseModel.getCreated_at(),
+                                               Constants.getInstance().API + saleResponseModel.getProduct().getImage(),
+                                               saleResponseModel.getMissing(),
+                                               containsPrest
+                                       );
+                                       soldItemList.add(soldItem);
+                                   }
+                               }catch (Exception e){
+
+                                   Log.d("vendas", e.getMessage());
+                                   Log.d("vendas", saleResponseModel.toString());
+                                   Snackbar.make(getView(), getString(R.string.error_get_sales), Snackbar.LENGTH_LONG).show();
                                }
+
 
                            }
 
@@ -237,6 +247,7 @@ public class ListSoldItemsFragment extends Fragment implements DataUpdateActivit
                public void onFailure(Call<ResponseModel<ArrayList<MySaleModel>>> call, Throwable t) {
                    progressDialog.dismiss();
                    t.printStackTrace();
+                   Log.d("vendas", t.getMessage());
                    Snackbar.make(getView(), getString(R.string.error_get_sales), Snackbar.LENGTH_LONG).show();
                }
            });
